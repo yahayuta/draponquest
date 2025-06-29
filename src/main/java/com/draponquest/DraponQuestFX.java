@@ -88,7 +88,10 @@ public class DraponQuestFX extends Application {
     private Image sandImage;
     private Image steppeImage;
     private Image forestImage;
-    private Image monsterImage;
+    private Image monster1Image;
+    private Image monster2Image;
+    private Image currentMonsterImage;
+    private String currentMonsterName;
     private int playerHP = 20;
     private int maxPlayerHP = 20;
     private int monsterHP = 15;
@@ -103,6 +106,27 @@ public class DraponQuestFX extends Application {
     private String saveFileName = "draponquest_save.dat";
     private String saveMessage = null;
     private long saveMessageTime = 0;
+    
+    /**
+     * Represents a monster with image, name, HP, and attack range.
+     */
+    private static class Monster {
+        Image image;
+        String name;
+        int maxHP;
+        int minAttack;
+        int maxAttack;
+        Monster(Image image, String name, int maxHP, int minAttack, int maxAttack) {
+            this.image = image;
+            this.name = name;
+            this.maxHP = maxHP;
+            this.minAttack = minAttack;
+            this.maxAttack = maxAttack;
+        }
+    }
+
+    private Monster[] monsters;
+    private Monster currentMonster;
     
     /**
      * Initializes the game and sets up the JavaFX UI.
@@ -168,10 +192,20 @@ public class DraponQuestFX extends Application {
         try { steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif")); } catch (Exception e) { steppeImage = null; }
         try { forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif")); } catch (Exception e) { forestImage = null; }
         try {
-            monsterImage = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
+            monster1Image = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
         } catch (Exception e) {
-            monsterImage = null;
+            monster1Image = null;
         }
+        try {
+            monster2Image = new Image(getClass().getResourceAsStream("/images/monster2.gif"));
+        } catch (Exception e) {
+            monster2Image = null;
+        }
+        // Initialize monsters array
+        monsters = new Monster[] {
+            new Monster(monster1Image, "Monster 1", 15, 1, 3),
+            new Monster(monster2Image, "Monster 2", 25, 2, 5)
+        };
     }
     
     /**
@@ -394,31 +428,39 @@ public class DraponQuestFX extends Application {
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
-            gc.fillText("BATTLE! (ESC to exit)", 64, 60);
-            // Draw monster
-            if (monsterImage != null && !monsterImage.isError()) {
-                gc.drawImage(monsterImage, DISP_WIDTH/2-64, 120, 128, 128);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText("BATTLE! (ESC to exit)", DISP_WIDTH/2, 60);
+            // Draw monster name centered above image
+            if (currentMonster != null && currentMonster.image != null && !currentMonster.image.isError()) {
+                gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.fillText(currentMonster.name, DISP_WIDTH/2, 120);
+                // Draw monster image centered
+                gc.drawImage(currentMonster.image, (DISP_WIDTH-128)/2, 130, 128, 128);
             } else {
                 gc.setFill(javafx.scene.paint.Color.DARKRED);
-                gc.fillRect(DISP_WIDTH/2-64, 120, 128, 128);
+                gc.fillRect((DISP_WIDTH-128)/2, 130, 128, 128);
                 gc.setFill(javafx.scene.paint.Color.WHITE);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
-                gc.fillText("No monster image", DISP_WIDTH/2-60, 190);
+                gc.fillText("No monster image", DISP_WIDTH/2, 190);
             }
-            // Draw HP bars
-            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+            // Draw HP bars, each on its own line, centered
+            gc.setFont(javafx.scene.text.Font.font("Arial", 26));
             gc.setFill(javafx.scene.paint.Color.LIME);
-            gc.fillText("Player HP: " + playerHP + "/" + maxPlayerHP, 40, DISP_HEIGHT-120);
+            String playerHpStr = "Player HP: " + playerHP + "/" + maxPlayerHP;
+            gc.fillText(playerHpStr, DISP_WIDTH/2, 290);
             gc.setFill(javafx.scene.paint.Color.RED);
-            gc.fillText("Monster HP: " + monsterHP, DISP_WIDTH-280, DISP_HEIGHT-120);
+            String monsterHpStr = currentMonster.name + " HP: " + monsterHP;
+            gc.fillText(monsterHpStr, DISP_WIDTH/2, 330);
             // Draw battle message
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-            gc.fillText(battleMessage, 40, DISP_HEIGHT-60);
+            gc.fillText(battleMessage, DISP_WIDTH/2, DISP_HEIGHT-80);
             // Draw action options
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText("A: Attack   D: Defend", 40, DISP_HEIGHT-30);
+            gc.fillText("A: Attack   D: Defend", DISP_WIDTH/2, DISP_HEIGHT-30);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         // Event screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_EVENT) {
@@ -624,10 +666,11 @@ public class DraponQuestFX extends Application {
      * Starts a new battle (resets monster HP, not player HP).
      */
     private void startBattle() {
-        System.out.println("Battle started. playerHP=" + playerHP + ", monsterHP=15");
+        System.out.println("Battle started. playerHP=" + playerHP);
         currentMode = MODE_BATTLE;
-        // Reset only monster and battle state, keep player HP
-        monsterHP = 15;
+        // Randomly select a monster
+        currentMonster = monsters[(int)(Math.random() * monsters.length)];
+        monsterHP = currentMonster.maxHP;
         playerTurn = true;
         battleMessage = "";
     }
@@ -696,7 +739,7 @@ public class DraponQuestFX extends Application {
         if (playerTurn) {
             switch (keyCode) {
                 case A:
-                    int damage = (int)(Math.random() * 5) + 3; // 3-7 damage
+                    int damage = (int)(Math.random() * 5) + 3; // 3-7 damage (player)
                     monsterHP -= damage;
                     battleMessage = "You deal " + damage + " damage!";
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
@@ -712,9 +755,9 @@ public class DraponQuestFX extends Application {
         
         // Monster's turn
         if (!playerTurn) {
-            int monsterDamage = (int)(Math.random() * 4) + 2; // 2-5 damage
+            int monsterDamage = (int)(Math.random() * (currentMonster.maxAttack - currentMonster.minAttack + 1)) + currentMonster.minAttack;
             playerHP -= monsterDamage;
-            battleMessage = "Monster deals " + monsterDamage + " damage!";
+            battleMessage = currentMonster.name + " deals " + monsterDamage + " damage!";
             System.out.println("Monster attacks: playerHP=" + playerHP);
             playerTurn = true;
             
@@ -746,7 +789,7 @@ public class DraponQuestFX extends Application {
             System.out.println("MAGIC selected: starting battle");
             currentMode = MODE_BATTLE;
             // Reset only monster and battle state, keep player HP
-            monsterHP = 15;
+            monsterHP = currentMonster.maxHP;
             playerTurn = true;
             battleMessage = "";
         } else if (currentCommand == COM_STUS) {

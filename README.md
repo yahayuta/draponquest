@@ -24,6 +24,10 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Debug Logging**: Console output for all major game logic (for developers)
 - **Improved Movement**: Player starts in a walkable area; movement logic fixed
 - **Battle System**: HP persists between battles, ESC only exits after battle is over
+- **Random Encounters**: 10% chance of monster encounter when moving
+- **Multiple Monsters**: Two different monsters with unique stats and appearances
+- **Balanced Combat**: Reduced monster attack values for fair gameplay
+- **Modern UI**: Clean, centered battle interface with proper spacing
 
 ## 🚀 Quick Start
 
@@ -165,17 +169,49 @@ draponquest/
 - ✅ ESC only exits battle after win/lose
 - ✅ Javadoc documentation for all main files
 - ✅ Debug logging for all major logic (see console output)
+- ✅ Random monster encounters (10% chance on movement)
+- ✅ Multiple monster types with unique stats and appearances
+- ✅ Monster class with individual HP and attack ranges
+- ✅ Balanced combat with reduced monster attack values
+- ✅ Modern battle UI with centered, spaced elements
 
 ## 🎨 Graphics and Assets
 
 The game uses the original GIF sprites and tile graphics:
 - `me1.gif` - Player character sprite
+- `monster1.gif` - First monster sprite
+- `monster2.gif` - Second monster sprite
 - `sea.gif` - Water tiles
 - `snd.gif` - Sand tiles  
 - `stp.gif` - Steppe/grass tiles
 - `wd.gif` - Forest/wood tiles
 
 All graphics are preserved from the original DoJa version for authentic retro gaming experience.
+
+## ⚔️ Battle System
+
+The game features a turn-based battle system with the following mechanics:
+
+### Random Encounters
+- **10% chance** of encountering a monster when moving on the map
+- Encounters occur after movement, not during
+
+### Monster Types
+- **Monster 1**: 15 HP, attacks for 1-3 damage
+- **Monster 2**: 25 HP, attacks for 2-5 damage
+- Each monster has unique appearance and stats
+
+### Battle Mechanics
+- **Player HP**: Persists between battles, only resets on game over
+- **Turn-based combat**: Player and monster take turns
+- **Actions**: Attack (deals 3-6 damage) or Defend (reduces incoming damage)
+- **Victory**: Defeat the monster to continue exploring
+- **Defeat**: Game over screen with restart option
+
+### Battle Controls
+- **Arrow Keys**: Navigate between Attack/Defend
+- **Enter**: Select action
+- **ESC**: Only exits after battle is complete (win or lose)
 
 ## 🔧 Configuration
 
@@ -238,11 +274,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Areas for Improvement
 
 - Sound effects and music
-- Enhanced battle system
+- Enhanced battle system with more actions (magic, items)
 - Inventory management
 - More sophisticated save system
-- UI polish and animations
-- Additional game content
+- Additional monster types and encounters
+- Level progression and character stats
+- More game content and story elements
 
 ## 📄 License
 
