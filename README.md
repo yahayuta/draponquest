@@ -14,6 +14,7 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 ### Features
 
 - **Classic RPG Gameplay**: Explore maps, interact with NPCs, and engage in battles
+- **Score System**: Each time you move, your score increases by 1. Try to get the highest score by surviving and exploring! Your total score is shown on the game over screen.
 - **Retro Graphics**: Preserved original GIF sprites and tile graphics
 - **Command System**: Traditional menu-based interaction system
 - **Save/Load System**: Save your progress and continue later
@@ -193,24 +194,30 @@ All graphics are preserved from the original DoJa version for authentic retro ga
 The game features a turn-based battle system with the following mechanics:
 
 ### Random Encounters
-- **10% chance** of encountering a monster when moving on the map
+- **3% chance** of encountering a monster when moving on the map
 - Encounters occur after movement, not during
 
 ### Monster Types
-- **Monster 1**: 15 HP, attacks for 1-3 damage
-- **Monster 2**: 25 HP, attacks for 2-5 damage
+- **Tung Tung Tung Sahur**: 15 HP, attacks for 1-3 damage
+- **Tralalero Tralala**: 25 HP, attacks for 2-5 damage
 - Each monster has unique appearance and stats
 
 ### Battle Mechanics
 - **Player HP**: Persists between battles, only resets on game over
 - **Turn-based combat**: Player and monster take turns
-- **Actions**: Attack (deals 3-6 damage) or Defend (reduces incoming damage)
+- **Actions**: Attack (deals 3-6 damage), Defend (reduces incoming damage), Run (try to escape)
 - **Victory**: Defeat the monster to continue exploring
-- **Defeat**: Game over screen with restart option
+- **Defeat**: Game over screen with your total score and restart option
+
+### Score System
+- **Score increases by 1** every time you move one block
+- **Score is displayed** under HP on the main screen
+- **Game Over screen** shows your total score
 
 ### Battle Controls
-- **Arrow Keys**: Navigate between Attack/Defend
-- **Enter**: Select action
+- **A**: Attack
+- **D**: Defend
+- **R**: Run (try to escape)
 - **ESC**: Only exits after battle is complete (win or lose)
 
 ## 🔧 Configuration
@@ -303,3 +310,12 @@ If you encounter any issues or have questions:
 ---
 
 **Enjoy your journey in DraponQuest!** 🐉⚔️ 
+
+## 📝 In-Game Instructions
+
+The in-game script at the bottom of the screen explains:
+- How to move and open the command menu
+- That each move increases your score by 1
+- How to survive, fight, defend, and run
+- That your total score is shown if you are defeated
+- How to save/load your game 

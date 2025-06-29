@@ -71,12 +71,10 @@ public class DraponQuestFX extends Application {
     private int fieldMapEndHeight = 16;
     
     // Script variables
-    private StringBuffer[] scriptBuffer = new StringBuffer[10];
-    private String currentChar = null;
+    private String[] scriptLines = null;
     private int scriptID = 0;
-    private int scriptLine = 0;
-    private int scriptNum = 0;
-    private int scriptHeight = 0;
+    private int scriptLineIndex = 0;
+    private int scriptAdvanceTick = 0;
     
     // JavaFX components
     private Canvas gameCanvas;
@@ -92,10 +90,11 @@ public class DraponQuestFX extends Application {
     private Image monster2Image;
     private Image currentMonsterImage;
     private String currentMonsterName;
-    private int playerHP = 20;
-    private int maxPlayerHP = 20;
+    private int playerHP = 40;
+    private int maxPlayerHP = 40;
     private int monsterHP = 15;
     private boolean playerTurn = true;
+    private boolean isDefending = false; // Track if player is defending
     private String battleMessage = "";
     
     // Message box for command actions
@@ -106,6 +105,8 @@ public class DraponQuestFX extends Application {
     private String saveFileName = "draponquest_save.dat";
     private String saveMessage = null;
     private long saveMessageTime = 0;
+    
+    private int score = 0;
     
     /**
      * Represents a monster with image, name, HP, and attack range.
@@ -171,11 +172,7 @@ public class DraponQuestFX extends Application {
      */
     private void initializeGame() {
         System.out.println("Initializing game components");
-        // Initialize script buffers
-        for (int i = 0; i < 10; i++) {
-            scriptBuffer[i] = new StringBuffer();
-        }
-        
+        // No need to initialize scriptBuffer anymore
         // Initialize map data
         fieldMapData.initialize();
         
@@ -203,8 +200,8 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-            new Monster(monster1Image, "Monster 1", 15, 1, 3),
-            new Monster(monster2Image, "Monster 2", 25, 2, 5)
+            new Monster(monster1Image, "Tung Tung Tung Sahur", 15, 1, 3),
+            new Monster(monster2Image, "Tralalero Tralala", 25, 2, 5)
         };
     }
     
@@ -346,10 +343,11 @@ public class DraponQuestFX extends Application {
             gc.drawImage(playerImage, 8 * 32, 8 * 32, 32, 32);
         }
         
-        // Display HP on map
+        // Display HP and score on map
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
+        gc.fillText("Score: " + score, 10, 60);
     }
     
     /**
@@ -370,29 +368,34 @@ public class DraponQuestFX extends Application {
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.fillRect(0, DISP_HEIGHT - 96, DISP_WIDTH, 96);
             gc.setFill(javafx.scene.paint.Color.BLACK);
-            gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
+            gc.setFont(javafx.scene.text.Font.font("MS Gothic", 16));
 
-            // Update scriptBuffer as in original
-            currentChar = scriptData.returnTestScript(scriptID, scriptNum);
-            if ("@".equals(currentChar)) {
-                scriptLine++;
-            } else if ("E".equals(currentChar)) {
-                scriptLine = 0;
-                scriptHeight = 0;
-                // Optionally reset scriptNum to loop
-                scriptNum = 0;
-                for (int i = 0; i < scriptBuffer.length; i++) scriptBuffer[i] = new StringBuffer();
-            } else {
-                scriptBuffer[scriptLine].append(currentChar);
+            // Initialize script lines if needed
+            if (scriptLines == null) {
+                String rawScript = scriptData.returnTestScript(scriptID, 0);
+                scriptLines = java.util.Arrays.stream(rawScript.split("@"))
+                    .map(String::trim)
+                    .map(line -> line.replaceAll("(H|E|HE)$", "").trim())
+                    .filter(line -> !line.isEmpty())
+                    .toArray(String[]::new);
+                scriptLineIndex = 0;
+                scriptAdvanceTick = 0;
             }
-            // Draw each line (scaled up)
-            for (int i = 0; i <= scriptLine; i++) {
-                gc.fillText(scriptBuffer[i].toString(), 32, DISP_HEIGHT - 64 + i * 32);
+            // Draw up to 3 lines at a time
+            for (int i = 0; i < 3; i++) {
+                int idx = scriptLineIndex + i;
+                if (scriptLines != null && idx < scriptLines.length) {
+                    gc.fillText(scriptLines[idx], 32, DISP_HEIGHT - 64 + i * 32);
+                }
             }
-            if (scriptNum < scriptData.returnTestScriptLength(scriptID) - 1) {
-                scriptNum++;
-            } else {
-                scriptNum = 0;
+            // Advance to next set of lines every 30 ticks (about 1 second)
+            scriptAdvanceTick++;
+            if (scriptAdvanceTick > 30) {
+                scriptLineIndex += 3;
+                if (scriptLineIndex >= scriptLines.length) {
+                    scriptLineIndex = 0;
+                }
+                scriptAdvanceTick = 0;
             }
         }
         // Command menu in GAME_OPEN and MODE_COM
@@ -459,7 +462,7 @@ public class DraponQuestFX extends Application {
             // Draw action options
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText("A: Attack   D: Defend", DISP_WIDTH/2, DISP_HEIGHT-30);
+            gc.fillText("A: Attack   D: Defend   R: Run", DISP_WIDTH/2, DISP_HEIGHT-30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         // Event screen (scaled up)
@@ -506,6 +509,7 @@ public class DraponQuestFX extends Application {
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
         gc.fillText("Press ENTER to restart", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
+        gc.fillText("Total Score: " + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
     }
     
     /**
@@ -521,6 +525,7 @@ public class DraponQuestFX extends Application {
             currentMode = MODE_MOVE;
             fieldMapEndHeight = 16;
             fieldMapEndWidth = 16;
+            score = 0;
             System.out.println("Game restarted - new status: " + currentGameStatus);
         } else if (currentGameStatus == GAME_TITLE) {
             System.out.println("Starting game...");
@@ -652,11 +657,12 @@ public class DraponQuestFX extends Application {
             if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
                 fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
             System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth=" + fieldMapEndWidth);
-            // Random encounter: 10% chance
-            if (Math.random() < 0.10) {
+            // Random encounter: 3% chance
+            if (Math.random() < 0.03) {
                 System.out.println("Random encounter triggered!");
                 startBattle();
             }
+            score += 1;
         } else {
             System.out.println("Move blocked: not walkable or out of bounds");
         }
@@ -672,6 +678,7 @@ public class DraponQuestFX extends Application {
         currentMonster = monsters[(int)(Math.random() * monsters.length)];
         monsterHP = currentMonster.maxHP;
         playerTurn = true;
+        isDefending = false; // Reset defending state
         battleMessage = "";
     }
     
@@ -681,9 +688,9 @@ public class DraponQuestFX extends Application {
     public void saveGame() {
         System.out.println("Saving game...");
         try {
-            String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+            String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d",
                 currentGameStatus, currentMode, currentPlace, currentCommand,
-                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLine, scriptNum, flip);
+                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip);
             Files.write(Paths.get(saveFileName), saveData.getBytes());
             saveMessage = "Game saved successfully!";
             saveMessageTime = System.currentTimeMillis();
@@ -703,7 +710,7 @@ public class DraponQuestFX extends Application {
         try {
             String saveData = Files.readString(Paths.get(saveFileName));
             String[] parts = saveData.split(",");
-            if (parts.length >= 10) {
+            if (parts.length >= 9) {
                 currentGameStatus = Integer.parseInt(parts[0]);
                 currentMode = Integer.parseInt(parts[1]);
                 currentPlace = Integer.parseInt(parts[2]);
@@ -711,9 +718,8 @@ public class DraponQuestFX extends Application {
                 fieldMapEndWidth = Integer.parseInt(parts[4]);
                 fieldMapEndHeight = Integer.parseInt(parts[5]);
                 scriptID = Integer.parseInt(parts[6]);
-                scriptLine = Integer.parseInt(parts[7]);
-                scriptNum = Integer.parseInt(parts[8]);
-                flip = Integer.parseInt(parts[9]);
+                scriptLineIndex = Integer.parseInt(parts[7]);
+                flip = Integer.parseInt(parts[8]);
                 saveMessage = "Game loaded successfully!";
                 saveMessageTime = System.currentTimeMillis();
                 System.out.println("Game loaded.");
@@ -749,6 +755,20 @@ public class DraponQuestFX extends Application {
                     battleMessage = "You defend!";
                     System.out.println("Player defends");
                     playerTurn = false;
+                    isDefending = true;
+                    break;
+                case R:
+                    // Try to escape: 50% chance
+                    if (Math.random() < 0.5) {
+                        battleMessage = "You escaped successfully!";
+                        System.out.println("Player escaped from battle");
+                        currentMode = MODE_MOVE;
+                        return; // Exit battle immediately
+                    } else {
+                        battleMessage = "Escape failed!";
+                        System.out.println("Player failed to escape");
+                        playerTurn = false;
+                    }
                     break;
             }
         }
@@ -756,6 +776,10 @@ public class DraponQuestFX extends Application {
         // Monster's turn
         if (!playerTurn) {
             int monsterDamage = (int)(Math.random() * (currentMonster.maxAttack - currentMonster.minAttack + 1)) + currentMonster.minAttack;
+            if (isDefending) {
+                monsterDamage = (int)(monsterDamage * 0.5); // Reduce damage by 50% if defending
+                isDefending = false;
+            }
             playerHP -= monsterDamage;
             battleMessage = currentMonster.name + " deals " + monsterDamage + " damage!";
             System.out.println("Monster attacks: playerHP=" + playerHP);

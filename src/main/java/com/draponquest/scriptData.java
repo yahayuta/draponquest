@@ -5,10 +5,12 @@ package com.draponquest;
  */
 public class scriptData {
     /**
-     * Test script lines for demonstration purposes.
+     * Game instructions script that explains how to play.
      * '@' indicates a line break, 'H' and 'E' are control characters.
      */
-    private static final String[] testScript = {"This is a test.@Next line is also a test.HE"};
+    private static final String[] testScript = {
+        "Welcome to DraponQuest!@Explore the world using the arrow keys.@Open the command menu with ENTER.@Each time you move, your score increases by 1.@Try to get the highest score by surviving and exploring!@Fight monsters, defend to reduce damage, or run from tough battles.@If you are defeated, your total score will be shown.@Save with F5, load with F9. Good luck, hero!HE"
+    };
 
     /**
      * Returns a single character from the test script for the given script ID and position.
@@ -18,7 +20,7 @@ public class scriptData {
      * @return The character at the specified position as a String.
      */
     public static String returnTestScript(int scriptID, int numString) {
-        return testScript[scriptID].substring(numString, numString + 1);
+        return testScript[scriptID];
     }
 
     /**
