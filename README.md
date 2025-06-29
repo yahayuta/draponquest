@@ -25,9 +25,10 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Debug Logging**: Console output for all major game logic (for developers)
 - **Improved Movement**: Player starts in a walkable area; movement logic fixed
 - **Battle System**: HP persists between battles, ESC only exits after battle is over
-- **Random Encounters**: 10% chance of monster encounter when moving
-- **Multiple Monsters**: Two different monsters with unique stats and appearances
+- **Random Encounters**: 3% chance of monster encounter when moving
+- **Multiple Monsters**: Three different monsters with unique stats and appearances
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
+- **Battle Win Counter**: Track and display the number of battles won
 - **Modern UI**: Clean, centered battle interface with proper spacing
 
 ## 🚀 Quick Start
@@ -170,10 +171,11 @@ draponquest/
 - ✅ ESC only exits battle after win/lose
 - ✅ Javadoc documentation for all main files
 - ✅ Debug logging for all major logic (see console output)
-- ✅ Random monster encounters (10% chance on movement)
+- ✅ Random monster encounters (3% chance on movement)
 - ✅ Multiple monster types with unique stats and appearances
 - ✅ Monster class with individual HP and attack ranges
 - ✅ Balanced combat with reduced monster attack values
+- ✅ Battle win counter with real-time display
 - ✅ Modern battle UI with centered, spaced elements
 
 ## 🎨 Graphics and Assets
@@ -199,9 +201,9 @@ The game features a turn-based battle system with the following mechanics:
 - Encounters occur after movement, not during
 
 ### Monster Types
-- **Tung Tung Tung Sahur**: 15 HP, attacks for 1-3 damage
-- **Tralalero Tralala**: 25 HP, attacks for 2-5 damage
-- **Bombardiro Crocodilo**: 40 HP, attacks for 4-8 damage
+- **Tung Tung Tung Sahur**: 8 HP, attacks for 1-2 damage
+- **Tralalero Tralala**: 12 HP, attacks for 1-3 damage
+- **Bombardiro Crocodilo**: 18 HP, attacks for 2-4 damage
 - Each monster has unique appearance and stats
 
 ### Battle Mechanics
@@ -214,7 +216,8 @@ The game features a turn-based battle system with the following mechanics:
 ### Score System
 - **Score increases by 1** every time you move one block
 - **Score is displayed** under HP on the main screen
-- **Game Over screen** shows your total score
+- **Battles Won counter** shows your combat victories in real-time
+- **Game Over screen** shows your total score and final battle count
 
 ### Battle Controls
 - **A**: Attack

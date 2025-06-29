@@ -108,6 +108,7 @@ public class DraponQuestFX extends Application {
     private long saveMessageTime = 0;
     
     private int score = 0;
+    private int battlesWon = 0; // Track number of battles won
     
     /**
      * Represents a monster with image, name, HP, and attack range.
@@ -206,9 +207,9 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-            new Monster(monster1Image, "Tung Tung Tung Sahur", 15, 1, 3),
-            new Monster(monster2Image, "Tralalero Tralala", 25, 2, 5),
-            new Monster(monster3Image, "Bombardiro Crocodilo", 40, 4, 8)
+            new Monster(monster1Image, "Tung Tung Tung Sahur", 8, 1, 2),
+            new Monster(monster2Image, "Tralalero Tralala", 12, 1, 3),
+            new Monster(monster3Image, "Bombardiro Crocodilo", 18, 2, 4)
         };
     }
     
@@ -355,6 +356,7 @@ public class DraponQuestFX extends Application {
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
         gc.fillText("Score: " + score, 10, 60);
+        gc.fillText("Battles Won: " + battlesWon, 10, 90);
     }
     
     /**
@@ -517,6 +519,7 @@ public class DraponQuestFX extends Application {
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
         gc.fillText("Press ENTER to restart", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
         gc.fillText("Total Score: " + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
+        gc.fillText("Battles Won: " + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
     }
     
     /**
@@ -533,6 +536,7 @@ public class DraponQuestFX extends Application {
             fieldMapEndHeight = 16;
             fieldMapEndWidth = 16;
             score = 0;
+            battlesWon = 0; // Reset battle counter
             System.out.println("Game restarted - new status: " + currentGameStatus);
         } else if (currentGameStatus == GAME_TITLE) {
             System.out.println("Starting game...");
@@ -683,6 +687,7 @@ public class DraponQuestFX extends Application {
         currentMode = MODE_BATTLE;
         // Randomly select a monster
         currentMonster = monsters[(int)(Math.random() * monsters.length)];
+        System.out.println("Selected monster: " + currentMonster.name + " (HP: " + currentMonster.maxHP + ", Attack: " + currentMonster.minAttack + "-" + currentMonster.maxAttack + ")");
         monsterHP = currentMonster.maxHP;
         playerTurn = true;
         isDefending = false; // Reset defending state
@@ -804,8 +809,9 @@ public class DraponQuestFX extends Application {
         // Check for battle victory
         if (monsterHP <= 0) {
             monsterHP = 0;
+            battlesWon++;
             battleMessage = "You won the battle!";
-            System.out.println("Monster defeated. Player wins.");
+            System.out.println("Monster defeated. Player wins. Total battles won: " + battlesWon);
         }
     }
     
