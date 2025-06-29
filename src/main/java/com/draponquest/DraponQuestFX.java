@@ -88,6 +88,7 @@ public class DraponQuestFX extends Application {
     private Image forestImage;
     private Image monster1Image;
     private Image monster2Image;
+    private Image monster3Image;
     private Image currentMonsterImage;
     private String currentMonsterName;
     private int playerHP = 40;
@@ -198,10 +199,16 @@ public class DraponQuestFX extends Application {
         } catch (Exception e) {
             monster2Image = null;
         }
+        try {
+            monster3Image = new Image(getClass().getResourceAsStream("/images/monster3.gif"));
+        } catch (Exception e) {
+            monster3Image = null;
+        }
         // Initialize monsters array
         monsters = new Monster[] {
             new Monster(monster1Image, "Tung Tung Tung Sahur", 15, 1, 3),
-            new Monster(monster2Image, "Tralalero Tralala", 25, 2, 5)
+            new Monster(monster2Image, "Tralalero Tralala", 25, 2, 5),
+            new Monster(monster3Image, "Bombardiro Crocodilo", 40, 4, 8)
         };
     }
     

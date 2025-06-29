@@ -180,8 +180,9 @@ draponquest/
 
 The game uses the original GIF sprites and tile graphics:
 - `me1.gif` - Player character sprite
-- `monster1.gif` - First monster sprite
-- `monster2.gif` - Second monster sprite
+- `monster1.gif` - First monster sprite (Tung Tung Tung Sahur)
+- `monster2.gif` - Second monster sprite (Tralalero Tralala)
+- `monster3.gif` - Third monster sprite (Bombardiro Crocodilo)
 - `sea.gif` - Water tiles
 - `snd.gif` - Sand tiles  
 - `stp.gif` - Steppe/grass tiles
@@ -200,6 +201,7 @@ The game features a turn-based battle system with the following mechanics:
 ### Monster Types
 - **Tung Tung Tung Sahur**: 15 HP, attacks for 1-3 damage
 - **Tralalero Tralala**: 25 HP, attacks for 2-5 damage
+- **Bombardiro Crocodilo**: 40 HP, attacks for 4-8 damage
 - Each monster has unique appearance and stats
 
 ### Battle Mechanics
