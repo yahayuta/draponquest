@@ -1,0 +1,770 @@
+package com.draponquest;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.animation.AnimationTimer;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.image.Image;
+import java.io.*;
+import java.nio.file.*;
+
+/**
+ * DraponQuest JavaFX Application
+ * Modern JavaFX version of the original DoJa mobile game.
+ * Handles main game logic, rendering, and state transitions.
+ *
+ * @author Yakkun (Original)
+ * @author Modern Migration
+ */
+public class DraponQuestFX extends Application {
+    
+    // Game constants (preserved from original)
+    private static final int DISP_WIDTH = 512;
+    private static final int DISP_HEIGHT = 512;
+    private static final int WAIT_MSEC = 100;
+    
+    // Game status constants
+    private static final int GAME_TITLE = 0;
+    private static final int GAME_OPEN = 1;
+    private static final int GAME_WAIT = 2;
+    private static final int GAME_CONT = 3;
+    private static final int GAME_OVER = 4;
+    
+    // Game modes
+    static final int MODE_MOVE = 0;
+    static final int MODE_COM = 1;
+    static final int MODE_BATTLE = 2;
+    static final int MODE_EVENT = 3;
+    
+    // Places
+    private static final int PLACE_FIELD = 0;
+    private static final int PLACE_BLDNG = 1;
+    private static final int PLACE_CAVE = 2;
+    
+    // Commands
+    private static final int COM_TALK = 1;
+    private static final int COM_CHK = 2;
+    private static final int COM_MGK = 3;
+    private static final int COM_ITEM = 4;
+    private static final int COM_STUS = 5;
+    
+    // Battle commands
+    private static final int BCOM_ATK = 1;
+    private static final int BCOM_MGK = 2;
+    private static final int BCOM_ITEM = 3;
+    private static final int BCOM_RUN = 4;
+    
+    // Game state variables
+    private int currentGameStatus = GAME_TITLE;
+    int currentMode = MODE_MOVE;
+    private int currentPlace = PLACE_FIELD;
+    private int currentCommand = COM_TALK;
+    private int flip = 0;
+    
+    // Map variables
+    private int fieldMapEndWidth = 16;
+    private int fieldMapEndHeight = 16;
+    
+    // Script variables
+    private StringBuffer[] scriptBuffer = new StringBuffer[10];
+    private String currentChar = null;
+    private int scriptID = 0;
+    private int scriptLine = 0;
+    private int scriptNum = 0;
+    private int scriptHeight = 0;
+    
+    // JavaFX components
+    private Canvas gameCanvas;
+    private GraphicsContext gc;
+    private GameLoop gameLoop;
+    private GameInputHandler inputHandler;
+    private Image playerImage;
+    private Image seaImage;
+    private Image sandImage;
+    private Image steppeImage;
+    private Image forestImage;
+    private Image monsterImage;
+    private int playerHP = 20;
+    private int maxPlayerHP = 20;
+    private int monsterHP = 15;
+    private boolean playerTurn = true;
+    private String battleMessage = "";
+    
+    // Message box for command actions
+    private String commandMessage = null;
+    private long commandMessageTime = 0;
+    
+    // Save/load data
+    private String saveFileName = "draponquest_save.dat";
+    private String saveMessage = null;
+    private long saveMessageTime = 0;
+    
+    /**
+     * Initializes the game and sets up the JavaFX UI.
+     * @param primaryStage The main application window.
+     */
+    @Override
+    public void start(Stage primaryStage) {
+        System.out.println("Game started: Showing title screen");
+        // Initialize game components
+        initializeGame();
+        
+        // Create JavaFX UI
+        gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
+        gc = gameCanvas.getGraphicsContext2D();
+        
+        // Create input handler
+        inputHandler = new GameInputHandler(this);
+        
+        // Create game loop
+        gameLoop = new GameLoop();
+        
+        // Setup scene
+        StackPane root = new StackPane();
+        root.getChildren().add(gameCanvas);
+        
+        Scene scene = new Scene(root, DISP_WIDTH, DISP_HEIGHT);
+        scene.setOnKeyPressed(inputHandler::handleKeyPressed);
+        scene.setOnKeyReleased(inputHandler::handleKeyReleased);
+        
+        // Setup stage
+        primaryStage.setTitle("DraponQuest JavaFX");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+        
+        // Start game loop
+        gameLoop.start();
+    }
+    
+    /**
+     * Initializes game components, images, and script buffers.
+     */
+    private void initializeGame() {
+        System.out.println("Initializing game components");
+        // Initialize script buffers
+        for (int i = 0; i < 10; i++) {
+            scriptBuffer[i] = new StringBuffer();
+        }
+        
+        // Initialize map data
+        fieldMapData.initialize();
+        
+        // Load player image
+        try {
+            playerImage = new Image(getClass().getResourceAsStream("/images/me1.gif"));
+        } catch (Exception e) {
+            playerImage = null;
+        }
+        
+        // Load tile images
+        try { seaImage = new Image(getClass().getResourceAsStream("/images/sea.gif")); } catch (Exception e) { seaImage = null; }
+        try { sandImage = new Image(getClass().getResourceAsStream("/images/snd.gif")); } catch (Exception e) { sandImage = null; }
+        try { steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif")); } catch (Exception e) { steppeImage = null; }
+        try { forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif")); } catch (Exception e) { forestImage = null; }
+        try {
+            monsterImage = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
+        } catch (Exception e) {
+            monsterImage = null;
+        }
+    }
+    
+    /**
+     * Main game loop using JavaFX AnimationTimer.
+     */
+    private class GameLoop extends AnimationTimer {
+        private long lastUpdate = 0;
+        
+        @Override
+        public void handle(long now) {
+            if (now - lastUpdate >= WAIT_MSEC * 1_000_000) { // Convert to nanoseconds
+                updateGame();
+                renderGame();
+                lastUpdate = now;
+            }
+        }
+    }
+    
+    /**
+     * Updates the game logic based on the current state.
+     */
+    private void updateGame() {
+        // Update game logic based on current state
+        if (commandMessage != null && System.currentTimeMillis() - commandMessageTime > 1000) {
+            System.out.println("Command message cleared");
+            commandMessage = null;
+        }
+        if (saveMessage != null && System.currentTimeMillis() - saveMessageTime > 2000) {
+            System.out.println("Save message cleared");
+            saveMessage = null;
+        }
+        switch (currentGameStatus) {
+            case GAME_TITLE:
+                // Title screen logic
+                break;
+            case GAME_OPEN:
+                // Game open logic
+                break;
+            case GAME_WAIT:
+                // Game wait logic
+                break;
+            case GAME_CONT:
+                // Game continue logic
+                break;
+            case GAME_OVER:
+                // Game over logic
+                break;
+        }
+    }
+    
+    /**
+     * Renders the game based on the current state.
+     */
+    private void renderGame() {
+        // Clear canvas
+        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+        
+        // Render based on game state
+        switch (currentGameStatus) {
+            case GAME_TITLE:
+                renderTitleScreen();
+                break;
+            case GAME_OPEN:
+                renderGameScreen();
+                break;
+            case GAME_WAIT:
+                renderWaitScreen();
+                break;
+            case GAME_CONT:
+                renderContinueScreen();
+                break;
+            case GAME_OVER:
+                renderGameOverScreen();
+                break;
+        }
+    }
+    
+    /**
+     * Renders the title screen.
+     */
+    private void renderTitleScreen() {
+        gc.setFill(javafx.scene.paint.Color.LIME);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 32));
+        
+        gc.fillText("DRAPON QUEST", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.3);
+        gc.fillText("PRESS ENTER", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.5);
+        gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.8);
+        gc.fillText("yahayuta", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.9);
+    }
+    
+    /**
+     * Renders the main game screen (map, player, UI).
+     */
+    private void renderGameScreen() {
+        // Render field map
+        renderFieldMap();
+        
+        // Render player
+        renderPlayer();
+        
+        // Render UI elements
+        renderUI();
+    }
+    
+    /**
+     * Renders the field map and player sprite.
+     */
+    private void renderFieldMap() {
+        // Draw 16x16 tiles, each 32x32 pixels (fills 512x512 window)
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                int tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                Image tileImage = null;
+                switch (tile) {
+                    case 0: tileImage = seaImage; break;
+                    case 1: tileImage = sandImage; break;
+                    case 2: tileImage = steppeImage; break;
+                    case 3: tileImage = forestImage; break;
+                }
+                if (tileImage != null && !tileImage.isError()) {
+                    gc.drawImage(tileImage, j * 32, i * 32, 32, 32);
+                } else {
+                    switch (tile) {
+                        case 0: gc.setFill(javafx.scene.paint.Color.DEEPSKYBLUE); break;
+                        case 1: gc.setFill(javafx.scene.paint.Color.GOLD); break;
+                        case 2: gc.setFill(javafx.scene.paint.Color.LIGHTGRAY); break;
+                        case 3: gc.setFill(javafx.scene.paint.Color.FORESTGREEN); break;
+                        default: gc.setFill(javafx.scene.paint.Color.BLACK); break;
+                    }
+                    gc.fillRect(j * 32, i * 32, 32, 32);
+                }
+            }
+        }
+        
+        // Draw player sprite (scaled up)
+        if (playerImage != null && !playerImage.isError()) {
+            gc.drawImage(playerImage, 8 * 32, 8 * 32, 32, 32);
+        }
+        
+        // Display HP on map
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 20));
+        gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
+    }
+    
+    /**
+     * (No-op) Player is drawn in renderFieldMap().
+     */
+    private void renderPlayer() {
+        // Remove player drawing here to avoid double rendering
+        // Player is already drawn in renderFieldMap()
+    }
+    
+    /**
+     * Renders UI elements such as dialogue, menus, and battle overlays.
+     */
+    private void renderUI() {
+        // Dialogue box in GAME_OPEN and MODE_MOVE
+        if (currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE) {
+            // Draw dialogue box (scaled up)
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.fillRect(0, DISP_HEIGHT - 96, DISP_WIDTH, 96);
+            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
+
+            // Update scriptBuffer as in original
+            currentChar = scriptData.returnTestScript(scriptID, scriptNum);
+            if ("@".equals(currentChar)) {
+                scriptLine++;
+            } else if ("E".equals(currentChar)) {
+                scriptLine = 0;
+                scriptHeight = 0;
+                // Optionally reset scriptNum to loop
+                scriptNum = 0;
+                for (int i = 0; i < scriptBuffer.length; i++) scriptBuffer[i] = new StringBuffer();
+            } else {
+                scriptBuffer[scriptLine].append(currentChar);
+            }
+            // Draw each line (scaled up)
+            for (int i = 0; i <= scriptLine; i++) {
+                gc.fillText(scriptBuffer[i].toString(), 32, DISP_HEIGHT - 64 + i * 32);
+            }
+            if (scriptNum < scriptData.returnTestScriptLength(scriptID) - 1) {
+                scriptNum++;
+            } else {
+                scriptNum = 0;
+            }
+        }
+        // Command menu in GAME_OPEN and MODE_COM
+        if (currentGameStatus == GAME_OPEN && currentMode == MODE_COM) {
+            // Draw menu background (scaled up)
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.fillRect(0, DISP_HEIGHT / 2, 192, 192);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 32));
+            String[] commands = {"TALK", "CHECK", "MAGIC", "ITEM", "STATUS"};
+            for (int i = 0; i < commands.length; i++) {
+                int y = DISP_HEIGHT / 2 + 16 + i * 36;
+                if (currentCommand == i + 1) {
+                    gc.setFill(javafx.scene.paint.Color.LIME);
+                    gc.fillRect(0, y - 24, 192, 36);
+                    gc.setFill(javafx.scene.paint.Color.BLACK);
+                } else {
+                    gc.setFill(javafx.scene.paint.Color.BLACK);
+                }
+                gc.fillText(commands[i], 16, y);
+            }
+        }
+        // Command action message (scaled up)
+        if (currentGameStatus == GAME_OPEN && commandMessage != null) {
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.fillRect(0, DISP_HEIGHT - 64, DISP_WIDTH, 64);
+            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+            gc.fillText(commandMessage, 32, DISP_HEIGHT - 24);
+        }
+        // Battle screen (scaled up)
+        if (currentGameStatus == GAME_OPEN && currentMode == MODE_BATTLE) {
+            gc.setFill(javafx.scene.paint.Color.rgb(32, 32, 64, 0.85));
+            gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 40));
+            gc.fillText("BATTLE! (ESC to exit)", 64, 60);
+            // Draw monster
+            if (monsterImage != null && !monsterImage.isError()) {
+                gc.drawImage(monsterImage, DISP_WIDTH/2-64, 120, 128, 128);
+            } else {
+                gc.setFill(javafx.scene.paint.Color.DARKRED);
+                gc.fillRect(DISP_WIDTH/2-64, 120, 128, 128);
+                gc.setFill(javafx.scene.paint.Color.WHITE);
+                gc.setFont(javafx.scene.text.Font.font("Arial", 18));
+                gc.fillText("No monster image", DISP_WIDTH/2-60, 190);
+            }
+            // Draw HP bars
+            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+            gc.setFill(javafx.scene.paint.Color.LIME);
+            gc.fillText("Player HP: " + playerHP + "/" + maxPlayerHP, 40, DISP_HEIGHT-120);
+            gc.setFill(javafx.scene.paint.Color.RED);
+            gc.fillText("Monster HP: " + monsterHP, DISP_WIDTH-280, DISP_HEIGHT-120);
+            // Draw battle message
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 20));
+            gc.fillText(battleMessage, 40, DISP_HEIGHT-60);
+            // Draw action options
+            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+            gc.fillText("A: Attack   D: Defend", 40, DISP_HEIGHT-30);
+        }
+        // Event screen (scaled up)
+        if (currentGameStatus == GAME_OPEN && currentMode == MODE_EVENT) {
+            gc.setFill(javafx.scene.paint.Color.rgb(64, 32, 32, 0.85));
+            gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 40));
+            gc.fillText("EVENT! (ESC to exit)", 64, DISP_HEIGHT / 2);
+        }
+        // Save/load message (scaled up)
+        if (saveMessage != null && System.currentTimeMillis() - saveMessageTime < 2000) {
+            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.fillRect(0, 0, DISP_WIDTH, 48);
+            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+            gc.fillText(saveMessage, 16, 32);
+        }
+    }
+    
+    /**
+     * Renders the wait screen (not implemented).
+     */
+    private void renderWaitScreen() {
+        // TODO: Implement wait screen
+    }
+    
+    /**
+     * Renders the continue screen (not implemented).
+     */
+    private void renderContinueScreen() {
+        // TODO: Implement continue screen
+    }
+    
+    /**
+     * Renders the game over screen.
+     */
+    private void renderGameOverScreen() {
+        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+        gc.setFill(javafx.scene.paint.Color.RED);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 48));
+        gc.fillText("GAME OVER", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.4);
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+        gc.fillText("Press ENTER to restart", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
+    }
+    
+    /**
+     * Handles ENTER/SPACE key logic for state transitions and command selection.
+     */
+    public void hitKeySelect() {
+        System.out.println("hitKeySelect called - currentGameStatus: " + currentGameStatus);
+        if (currentGameStatus == GAME_OVER) {
+            System.out.println("Restarting game...");
+            // Restart game
+            playerHP = maxPlayerHP;
+            currentGameStatus = GAME_TITLE;
+            currentMode = MODE_MOVE;
+            fieldMapEndHeight = 16;
+            fieldMapEndWidth = 16;
+            System.out.println("Game restarted - new status: " + currentGameStatus);
+        } else if (currentGameStatus == GAME_TITLE) {
+            System.out.println("Starting game...");
+            currentGameStatus = GAME_OPEN;
+        } else if (currentMode == MODE_MOVE) {
+            System.out.println("Opening command menu");
+            currentMode = MODE_COM;
+        } else if (currentMode == MODE_COM) {
+            System.out.println("Command selected: " + currentCommand);
+            // Handle command selection
+            handleCommandSelection();
+        }
+    }
+    
+    /**
+     * Handles UP key/menu navigation.
+     */
+    public void hitUp() {
+        System.out.println("hitUp called - currentMode: " + currentMode);
+        if (commandMessage != null) { commandMessage = null; return; }
+        if (currentMode == MODE_MOVE) {
+            moveFieldMap(0); // Up direction
+        } else if (currentMode == MODE_COM) {
+            currentCommand--;
+            if (currentCommand < COM_TALK) currentCommand = COM_STUS;
+            System.out.println("Command menu up: " + currentCommand);
+        }
+    }
+    
+    /**
+     * Handles DOWN key/menu navigation.
+     */
+    public void hitDown() {
+        System.out.println("hitDown called - currentMode: " + currentMode);
+        if (commandMessage != null) { commandMessage = null; return; }
+        if (currentMode == MODE_MOVE) {
+            moveFieldMap(1); // Down direction
+        } else if (currentMode == MODE_COM) {
+            currentCommand++;
+            if (currentCommand > COM_STUS) currentCommand = COM_TALK;
+            System.out.println("Command menu down: " + currentCommand);
+        }
+    }
+    
+    /**
+     * Handles LEFT key.
+     */
+    public void hitLeft() {
+        System.out.println("hitLeft called - currentMode: " + currentMode);
+        if (commandMessage != null) { commandMessage = null; return; }
+        if (currentMode == MODE_MOVE) {
+            moveFieldMap(2); // Left direction
+        }
+    }
+    
+    /**
+     * Handles RIGHT key.
+     */
+    public void hitRight() {
+        System.out.println("hitRight called - currentMode: " + currentMode);
+        if (commandMessage != null) { commandMessage = null; return; }
+        if (currentMode == MODE_MOVE) {
+            moveFieldMap(3); // Right direction
+        }
+    }
+    
+    /**
+     * Handles ESC key for exiting menus, events, or battle (if over).
+     */
+    public void hitSoft2() {
+        System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP=" + monsterHP);
+        if (commandMessage != null) { commandMessage = null; return; }
+        if (currentMode == MODE_COM || currentMode == MODE_EVENT) {
+            System.out.println("ESC: Exiting command/event mode");
+            currentMode = MODE_MOVE;
+        } else if (currentMode == MODE_BATTLE) {
+            // Only exit battle if battle is over
+            if (playerHP <= 0 || monsterHP <= 0) {
+                System.out.println("ESC: Exiting battle mode (battle over)");
+                currentMode = MODE_MOVE;
+                battleMessage = "";
+            } else {
+                System.out.println("ESC: Battle ongoing, not exiting");
+            }
+        }
+        // TODO: Implement soft key 2 functionality for other modes if needed
+    }
+    
+    /**
+     * Checks if a map tile is walkable (not sea).
+     * @param row The map row.
+     * @param col The map column.
+     * @return True if walkable, false otherwise.
+     */
+    private boolean isWalkable(int row, int col) {
+        int tile = fieldMapData.mapDataReturnField(row, col);
+        boolean walkable = tile != 0;
+        System.out.println("isWalkable: row=" + row + ", col=" + col + ", tile=" + tile + ", walkable=" + walkable);
+        return walkable; // Only sea (tile 0) is unwalkable
+    }
+
+    /**
+     * Moves the player on the map and triggers random encounters.
+     * @param direction 0=up, 1=down, 2=left, 3=right
+     */
+    private void moveFieldMap(int direction) {
+        System.out.println("moveFieldMap called - direction: " + direction);
+        // 0: Up, 1: Down, 2: Left, 3: Right
+        int newRow = fieldMapEndHeight;
+        int newCol = fieldMapEndWidth;
+        switch (direction) {
+            case 0: newRow = fieldMapEndHeight - 1; break;
+            case 1: newRow = fieldMapEndHeight + 1; break;
+            case 2: newCol = fieldMapEndWidth - 1; break;
+            case 3: newCol = fieldMapEndWidth + 1; break;
+        }
+        int playerRow = newRow + 8;
+        int playerCol = newCol + 8;
+        System.out.println("Attempting move to: row=" + playerRow + ", col=" + playerCol);
+        if (playerRow >= 0 && playerRow < fieldMapData.getMapLength() &&
+            playerCol >= 0 && playerCol < fieldMapData.FIELD_MAP_WIDTH &&
+            isWalkable(playerRow, playerCol)) {
+            fieldMapEndHeight = newRow;
+            fieldMapEndWidth = newCol;
+            if (fieldMapEndHeight < 0) fieldMapEndHeight = 0;
+            if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
+                fieldMapEndHeight = fieldMapData.getMapLength() - 16;
+            if (fieldMapEndWidth < 0) fieldMapEndWidth = 0;
+            if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
+                fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
+            System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth=" + fieldMapEndWidth);
+            // Random encounter: 10% chance
+            if (Math.random() < 0.10) {
+                System.out.println("Random encounter triggered!");
+                startBattle();
+            }
+        } else {
+            System.out.println("Move blocked: not walkable or out of bounds");
+        }
+    }
+    
+    /**
+     * Starts a new battle (resets monster HP, not player HP).
+     */
+    private void startBattle() {
+        System.out.println("Battle started. playerHP=" + playerHP + ", monsterHP=15");
+        currentMode = MODE_BATTLE;
+        // Reset only monster and battle state, keep player HP
+        monsterHP = 15;
+        playerTurn = true;
+        battleMessage = "";
+    }
+    
+    /**
+     * Saves the current game state to a file.
+     */
+    public void saveGame() {
+        System.out.println("Saving game...");
+        try {
+            String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+                currentGameStatus, currentMode, currentPlace, currentCommand,
+                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLine, scriptNum, flip);
+            Files.write(Paths.get(saveFileName), saveData.getBytes());
+            saveMessage = "Game saved successfully!";
+            saveMessageTime = System.currentTimeMillis();
+            System.out.println("Game saved.");
+        } catch (IOException e) {
+            saveMessage = "Save failed: " + e.getMessage();
+            saveMessageTime = System.currentTimeMillis();
+            System.out.println("Save failed: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Loads the game state from a file.
+     */
+    public void loadGame() {
+        System.out.println("Loading game...");
+        try {
+            String saveData = Files.readString(Paths.get(saveFileName));
+            String[] parts = saveData.split(",");
+            if (parts.length >= 10) {
+                currentGameStatus = Integer.parseInt(parts[0]);
+                currentMode = Integer.parseInt(parts[1]);
+                currentPlace = Integer.parseInt(parts[2]);
+                currentCommand = Integer.parseInt(parts[3]);
+                fieldMapEndWidth = Integer.parseInt(parts[4]);
+                fieldMapEndHeight = Integer.parseInt(parts[5]);
+                scriptID = Integer.parseInt(parts[6]);
+                scriptLine = Integer.parseInt(parts[7]);
+                scriptNum = Integer.parseInt(parts[8]);
+                flip = Integer.parseInt(parts[9]);
+                saveMessage = "Game loaded successfully!";
+                saveMessageTime = System.currentTimeMillis();
+                System.out.println("Game loaded.");
+            }
+        } catch (IOException e) {
+            saveMessage = "Load failed: " + e.getMessage();
+            saveMessageTime = System.currentTimeMillis();
+            System.out.println("Load failed: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handles battle input (A/D keys) and updates battle state.
+     * @param keyCode The key pressed.
+     */
+    public void handleBattleInput(KeyCode keyCode) {
+        System.out.println("Battle input: " + keyCode + ", playerTurn=" + playerTurn + ", playerHP=" + playerHP + ", monsterHP=" + monsterHP);
+        if (playerHP <= 0 || monsterHP <= 0) {
+            System.out.println("Battle input ignored: battle is over");
+            return; // Battle is over
+        }
+        
+        if (playerTurn) {
+            switch (keyCode) {
+                case A:
+                    int damage = (int)(Math.random() * 5) + 3; // 3-7 damage
+                    monsterHP -= damage;
+                    battleMessage = "You deal " + damage + " damage!";
+                    System.out.println("Player attacks: monsterHP=" + monsterHP);
+                    playerTurn = false;
+                    break;
+                case D:
+                    battleMessage = "You defend!";
+                    System.out.println("Player defends");
+                    playerTurn = false;
+                    break;
+            }
+        }
+        
+        // Monster's turn
+        if (!playerTurn) {
+            int monsterDamage = (int)(Math.random() * 4) + 2; // 2-5 damage
+            playerHP -= monsterDamage;
+            battleMessage = "Monster deals " + monsterDamage + " damage!";
+            System.out.println("Monster attacks: playerHP=" + playerHP);
+            playerTurn = true;
+            
+            // Check for game over
+            if (playerHP <= 0) {
+                playerHP = 0;
+                battleMessage = "You were defeated!";
+                currentGameStatus = GAME_OVER;
+                System.out.println("Player defeated. GAME_OVER");
+            }
+        }
+        
+        // Check for battle victory
+        if (monsterHP <= 0) {
+            monsterHP = 0;
+            battleMessage = "You won the battle!";
+            System.out.println("Monster defeated. Player wins.");
+        }
+    }
+    
+    /**
+     * Handles command menu selection logic.
+     */
+    private void handleCommandSelection() {
+        System.out.println("handleCommandSelection called: currentCommand=" + currentCommand);
+        // Show message for selected command or switch to battle/event
+        String[] commands = {"TALK", "CHECK", "MAGIC", "ITEM", "STATUS"};
+        if (currentCommand == COM_MGK) {
+            System.out.println("MAGIC selected: starting battle");
+            currentMode = MODE_BATTLE;
+            // Reset only monster and battle state, keep player HP
+            monsterHP = 15;
+            playerTurn = true;
+            battleMessage = "";
+        } else if (currentCommand == COM_STUS) {
+            System.out.println("STATUS selected: entering event mode");
+            currentMode = MODE_EVENT;
+        } else {
+            commandMessage = "You selected " + commands[currentCommand - 1];
+            commandMessageTime = System.currentTimeMillis();
+            currentMode = MODE_MOVE;
+            System.out.println("Command message set: " + commandMessage);
+        }
+    }
+    
+    /**
+     * Main entry point for the application.
+     * @param args Command-line arguments.
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+} 
