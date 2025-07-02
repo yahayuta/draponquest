@@ -67,6 +67,22 @@ public class GameInputHandler {
             case F9:
                 game.loadGame();
                 break;
+            case M:
+                // Toggle music on/off
+                game.toggleMusic();
+                break;
+            case T:
+                // Toggle sound effects on/off
+                game.toggleSound();
+                break;
+            case OPEN_BRACKET:
+                // Decrease volume
+                game.decreaseVolume();
+                break;
+            case CLOSE_BRACKET:
+                // Increase volume
+                game.increaseVolume();
+                break;
             default:
                 // Ignore other keys
                 break;

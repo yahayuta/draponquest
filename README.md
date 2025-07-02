@@ -30,6 +30,8 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
 - **Battle Win Counter**: Track and display the number of battles won
 - **Modern UI**: Clean, centered battle interface with proper spacing
+- **Audio System**: Complete sound effects and background music system
+- **Audio Controls**: Toggle music/sound, volume control, and real-time audio status display
 
 ## 🚀 Quick Start
 
@@ -95,6 +97,10 @@ mvn javafx:run
 | **F5** | Save game |
 | **F9** | Load game |
 | **ESC** | Cancel / Back (in battle, only after win/lose) |
+| **M** | Toggle background music on/off |
+| **S** | Toggle sound effects on/off |
+| **[** | Decrease volume |
+| **]** | Increase volume |
 
 ### Game Modes
 
@@ -157,6 +163,7 @@ draponquest/
 - **GameInputHandler**: Keyboard event processing
 - **fieldMapData**: Map rendering and collision detection
 - **scriptData**: Dialogue system and event handling
+- **AudioManager**: Sound effects and background music management
 
 ### Key Features Implemented
 
@@ -177,6 +184,10 @@ draponquest/
 - ✅ Balanced combat with reduced monster attack values
 - ✅ Battle win counter with real-time display
 - ✅ Modern battle UI with centered, spaced elements
+- ✅ Complete audio system with procedurally generated 8-bit sound effects and background music
+- ✅ Audio controls (M/T keys for toggle, [ ] for volume)
+- ✅ Real-time audio status display on main screen
+- ✅ All 12 sound files generated and integrated (move, battle, attack, defend, escape, victory, defeat, menu, save, load, field music, battle music)
 
 ## 🎨 Graphics and Assets
 
@@ -191,6 +202,46 @@ The game uses the original GIF sprites and tile graphics:
 - `wd.gif` - Forest/wood tiles
 
 All graphics are preserved from the original DoJa version for authentic retro gaming experience.
+
+## 🎵 Audio System
+
+DraponQuest features a comprehensive audio system with both sound effects and background music. All audio files are procedurally generated 8-bit style sounds that perfectly match the retro aesthetic of the game:
+
+### Sound Effects
+All sound effects are procedurally generated 8-bit style audio files:
+- **Movement** (`move.wav`): Short blip sound when moving on the map
+- **Battle Start** (`battle_start.wav`): Dramatic alert when entering combat
+- **Attack** (`attack.wav`): Quick hit sound when player attacks
+- **Defend** (`defend.wav`): Soft block sound when player defends
+- **Escape** (`escape.wav`): Whoosh sound when successfully escaping battle
+- **Victory** (`victory.wav`): Jingle when winning a battle
+- **Defeat** (`defeat.wav`): Downward sound when losing a battle
+- **Menu Select** (`menu_select.wav`): Click sound for menu navigation
+- **Save** (`save.wav`): Chime for save operations
+- **Load** (`load.wav`): Different chime for load operations
+
+### Background Music
+All background music tracks are procedurally generated chiptune-style loops:
+- **Field Music** (`bgm_field.wav`): Simple ambient loop while exploring the map
+- **Battle Music** (`bgm_battle.wav`): More intense loop during combat
+- Music tracks loop indefinitely and can be toggled on/off
+
+### Audio Controls
+- **M Key**: Toggle background music on/off
+- **T Key**: Toggle sound effects on/off
+- **[ Key**: Decrease volume (both music and sound)
+- **] Key**: Increase volume (both music and sound)
+
+### Audio Status Display
+The main game screen shows real-time audio status in the top-right corner:
+- **Music ON/OFF indicator** (green/red) - Shows if background music is enabled
+- **Sound ON/OFF indicator** (green/red) - Shows if sound effects are enabled  
+- **Current volume percentage** (yellow) - Shows current volume level (0-100%)
+
+### Audio File Locations
+All audio files are stored in `src/main/resources/sounds/`:
+- Sound effects: `move.wav`, `battle_start.wav`, `attack.wav`, `defend.wav`, `escape.wav`, `victory.wav`, `defeat.wav`, `menu_select.wav`, `save.wav`, `load.wav`
+- Background music: `bgm_field.wav`, `bgm_battle.wav`
 
 ## ⚔️ Battle System
 
@@ -264,7 +315,8 @@ Key game constants in `DraponQuestFX.java`:
    - Verify image files exist in `src/main/resources/images/`
 
 5. **Debugging**
-   - All major game logic prints debug output to the console (movement, battle, state changes)
+   - All major game logic prints debug output to the console (movement, battle, state changes, audio events)
+   - Audio system provides detailed logging of sound effects and music playback
    - Use this output to trace and diagnose issues
 
 ---
@@ -285,13 +337,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Areas for Improvement
 
-- Sound effects and music
 - Enhanced battle system with more actions (magic, items)
 - Inventory management
 - More sophisticated save system
 - Additional monster types and encounters
 - Level progression and character stats
 - More game content and story elements
+- Additional background music tracks for different areas
+- Sound effect variations for different monster types
 
 ## 📄 License
 
@@ -323,4 +376,11 @@ The in-game script at the bottom of the screen explains:
 - That each move increases your score by 1
 - How to survive, fight, defend, and run
 - That your total score is shown if you are defeated
-- How to save/load your game 
+- How to save/load your game
+
+### Audio Instructions
+- **M Key**: Toggle background music on/off
+- **T Key**: Toggle sound effects on/off
+- **[ Key**: Decrease volume
+- **] Key**: Increase volume
+- Audio status is displayed in the top-right corner of the game screen 

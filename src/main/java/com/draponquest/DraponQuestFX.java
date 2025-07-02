@@ -13,6 +13,9 @@ import javafx.scene.image.Image;
 import java.io.*;
 import java.nio.file.*;
 
+// Audio system
+import com.draponquest.AudioManager;
+
 /**
  * DraponQuest JavaFX Application
  * Modern JavaFX version of the original DoJa mobile game.
@@ -110,6 +113,9 @@ public class DraponQuestFX extends Application {
     private int score = 0;
     private int battlesWon = 0; // Track number of battles won
     
+    // Audio system
+    private AudioManager audioManager;
+    
     /**
      * Represents a monster with image, name, HP, and attack range.
      */
@@ -177,6 +183,9 @@ public class DraponQuestFX extends Application {
         // No need to initialize scriptBuffer anymore
         // Initialize map data
         fieldMapData.initialize();
+        
+        // Initialize audio system
+        audioManager = AudioManager.getInstance();
         
         // Load player image
         try {
@@ -298,7 +307,17 @@ public class DraponQuestFX extends Application {
         
         gc.fillText("DRAPON QUEST", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.3);
         gc.fillText("PRESS ENTER", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.5);
-        gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.8);
+        
+        // Audio controls help
+        gc.setFont(javafx.scene.text.Font.font("Arial", 16));
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.fillText("Audio Controls:", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.7);
+        gc.fillText("M: Toggle Music  S: Toggle Sound", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.75);
+        gc.fillText("[ ]: Volume Control", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.8);
+        
+        gc.setFill(javafx.scene.paint.Color.LIME);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 20));
+        gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.85);
         gc.fillText("yahayuta", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.9);
     }
     
@@ -357,6 +376,15 @@ public class DraponQuestFX extends Application {
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
         gc.fillText("Score: " + score, 10, 60);
         gc.fillText("Battles Won: " + battlesWon, 10, 90);
+        
+        // Display audio status
+        gc.setFont(javafx.scene.text.Font.font("Arial", 14));
+        gc.setFill(audioManager.isMusicEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
+        gc.fillText("Music: " + (audioManager.isMusicEnabled() ? "ON" : "OFF"), 10, 120);
+        gc.setFill(audioManager.isSoundEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
+        gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 140);
+        gc.setFill(javafx.scene.paint.Color.YELLOW);
+        gc.fillText("Vol: " + (int)(audioManager.getMusicVolume() * 100) + "%", 10, 160);
     }
     
     /**
@@ -538,14 +566,22 @@ public class DraponQuestFX extends Application {
             score = 0;
             battlesWon = 0; // Reset battle counter
             System.out.println("Game restarted - new status: " + currentGameStatus);
+            // Play title music
+            audioManager.playMusic(AudioManager.MUSIC_TITLE);
         } else if (currentGameStatus == GAME_TITLE) {
             System.out.println("Starting game...");
             currentGameStatus = GAME_OPEN;
+            // Play field music
+            audioManager.playMusic(AudioManager.MUSIC_FIELD);
         } else if (currentMode == MODE_MOVE) {
             System.out.println("Opening command menu");
             currentMode = MODE_COM;
+            // Play menu open sound
+            audioManager.playSound(AudioManager.SOUND_MENU_OPEN);
         } else if (currentMode == MODE_COM) {
             System.out.println("Command selected: " + currentCommand);
+            // Play menu select sound
+            audioManager.playSound(AudioManager.SOUND_MENU_SELECT);
             // Handle command selection
             handleCommandSelection();
         }
@@ -612,12 +648,18 @@ public class DraponQuestFX extends Application {
         if (currentMode == MODE_COM || currentMode == MODE_EVENT) {
             System.out.println("ESC: Exiting command/event mode");
             currentMode = MODE_MOVE;
+            // Return to field music if exiting from command/event mode
+            if (currentGameStatus == GAME_OPEN) {
+                audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            }
         } else if (currentMode == MODE_BATTLE) {
             // Only exit battle if battle is over
             if (playerHP <= 0 || monsterHP <= 0) {
                 System.out.println("ESC: Exiting battle mode (battle over)");
                 currentMode = MODE_MOVE;
                 battleMessage = "";
+                // Return to field music
+                audioManager.playMusic(AudioManager.MUSIC_FIELD);
             } else {
                 System.out.println("ESC: Battle ongoing, not exiting");
             }
@@ -673,6 +715,8 @@ public class DraponQuestFX extends Application {
                 System.out.println("Random encounter triggered!");
                 startBattle();
             }
+            // Play movement sound
+            audioManager.playSound(AudioManager.SOUND_MOVE);
             score += 1;
         } else {
             System.out.println("Move blocked: not walkable or out of bounds");
@@ -692,6 +736,10 @@ public class DraponQuestFX extends Application {
         playerTurn = true;
         isDefending = false; // Reset defending state
         battleMessage = "";
+        
+        // Play battle start sound and music
+        audioManager.playSound(AudioManager.SOUND_BATTLE_START);
+        audioManager.playMusic(AudioManager.MUSIC_BATTLE);
     }
     
     /**
@@ -707,6 +755,8 @@ public class DraponQuestFX extends Application {
             saveMessage = "Game saved successfully!";
             saveMessageTime = System.currentTimeMillis();
             System.out.println("Game saved.");
+            // Play save sound
+            audioManager.playSound(AudioManager.SOUND_SAVE);
         } catch (IOException e) {
             saveMessage = "Save failed: " + e.getMessage();
             saveMessageTime = System.currentTimeMillis();
@@ -735,6 +785,8 @@ public class DraponQuestFX extends Application {
                 saveMessage = "Game loaded successfully!";
                 saveMessageTime = System.currentTimeMillis();
                 System.out.println("Game loaded.");
+                // Play load sound
+                audioManager.playSound(AudioManager.SOUND_LOAD);
             }
         } catch (IOException e) {
             saveMessage = "Load failed: " + e.getMessage();
@@ -762,12 +814,16 @@ public class DraponQuestFX extends Application {
                     battleMessage = "You deal " + damage + " damage!";
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
                     playerTurn = false;
+                    // Play attack sound
+                    audioManager.playSound(AudioManager.SOUND_ATTACK);
                     break;
                 case D:
                     battleMessage = "You defend!";
                     System.out.println("Player defends");
                     playerTurn = false;
                     isDefending = true;
+                    // Play defend sound
+                    audioManager.playSound(AudioManager.SOUND_DEFEND);
                     break;
                 case R:
                     // Try to escape: 50% chance
@@ -775,11 +831,16 @@ public class DraponQuestFX extends Application {
                         battleMessage = "You escaped successfully!";
                         System.out.println("Player escaped from battle");
                         currentMode = MODE_MOVE;
+                        // Play escape sound and return to field music
+                        audioManager.playSound(AudioManager.SOUND_ESCAPE);
+                        audioManager.playMusic(AudioManager.MUSIC_FIELD);
                         return; // Exit battle immediately
                     } else {
                         battleMessage = "Escape failed!";
                         System.out.println("Player failed to escape");
                         playerTurn = false;
+                        // Play escape failed sound
+                        audioManager.playSound(AudioManager.SOUND_DEFEAT);
                     }
                     break;
             }
@@ -797,21 +858,37 @@ public class DraponQuestFX extends Application {
             System.out.println("Monster attacks: playerHP=" + playerHP);
             playerTurn = true;
             
-            // Check for game over
+            // Check for game over after monster attack
             if (playerHP <= 0) {
                 playerHP = 0;
                 battleMessage = "You were defeated!";
                 currentGameStatus = GAME_OVER;
                 System.out.println("Player defeated. GAME_OVER");
+                // Play defeat sound and game over music
+                audioManager.playSound(AudioManager.SOUND_DEFEAT);
+                audioManager.playSound(AudioManager.SOUND_GAME_OVER);
+                return; // Exit battle immediately
             }
         }
         
-        // Check for battle victory
-        if (monsterHP <= 0) {
+        // Check for battle victory (only if player is still alive)
+        if (playerHP > 0 && monsterHP <= 0) {
             monsterHP = 0;
             battlesWon++;
             battleMessage = "You won the battle!";
             System.out.println("Monster defeated. Player wins. Total battles won: " + battlesWon);
+            // Play victory sound and music, then return to field music
+            audioManager.playSound(AudioManager.SOUND_VICTORY);
+            audioManager.playMusic(AudioManager.MUSIC_VICTORY);
+            // Return to field music after a short delay
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000); // Wait 2 seconds
+                    audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+            }).start();
         }
     }
     
@@ -838,6 +915,43 @@ public class DraponQuestFX extends Application {
             currentMode = MODE_MOVE;
             System.out.println("Command message set: " + commandMessage);
         }
+    }
+    
+    /**
+     * Toggle background music on/off
+     */
+    public void toggleMusic() {
+        audioManager.setMusicEnabled(!audioManager.isMusicEnabled());
+        if (audioManager.isMusicEnabled() && currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE) {
+            audioManager.playMusic(AudioManager.MUSIC_FIELD);
+        }
+    }
+    
+    /**
+     * Toggle sound effects on/off
+     */
+    public void toggleSound() {
+        audioManager.setSoundEnabled(!audioManager.isSoundEnabled());
+    }
+    
+    /**
+     * Decrease volume for both music and sound effects
+     */
+    public void decreaseVolume() {
+        double newMusicVol = Math.max(0.0, audioManager.getMusicVolume() - 0.1);
+        double newSoundVol = Math.max(0.0, audioManager.getSoundVolume() - 0.1);
+        audioManager.setMusicVolume(newMusicVol);
+        audioManager.setSoundVolume(newSoundVol);
+    }
+    
+    /**
+     * Increase volume for both music and sound effects
+     */
+    public void increaseVolume() {
+        double newMusicVol = Math.min(1.0, audioManager.getMusicVolume() + 0.1);
+        double newSoundVol = Math.min(1.0, audioManager.getSoundVolume() + 0.1);
+        audioManager.setMusicVolume(newMusicVol);
+        audioManager.setSoundVolume(newSoundVol);
     }
     
     /**
