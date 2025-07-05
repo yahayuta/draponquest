@@ -30,7 +30,7 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
 - **Battle Win Counter**: Track and display the number of battles won
 - **Modern UI**: Clean, centered battle interface with proper spacing
-- **Audio System**: Complete sound effects and background music system (all required files present)
+- **Audio System**: Complete authentic Final Fantasy-style sound effects and background music system
 - **Audio Controls**: Toggle music/sound, volume control, and real-time audio status display
 
 ## 🚀 Quick Start
@@ -184,10 +184,10 @@ draponquest/
 - ✅ Balanced combat with reduced monster attack values
 - ✅ Battle win counter with real-time display
 - ✅ Modern battle UI with centered, spaced elements
-- ✅ Complete audio system with procedurally generated 8-bit sound effects and background music
+- ✅ Complete audio system with authentic Final Fantasy-style sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
 - ✅ Real-time audio status display on main screen
-- ✅ All required sound files generated and integrated (move, battle, attack, defend, escape, victory, defeat, menu, save, load, field music, battle music, game over, title, victory music)
+- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies
 
 ## 🎨 Graphics and Assets
 
@@ -209,25 +209,34 @@ DraponQuest features a comprehensive audio system with both sound effects and ba
 
 ### Sound Effects
 All sound effects are procedurally generated 8-bit style audio files:
-- **Movement** (`move.wav`): Short blip sound when moving on the map
-- **Battle Start** (`battle_start.wav`): Dramatic alert when entering combat
-- **Attack** (`attack.wav`): Quick hit sound when player attacks
-- **Defend** (`defend.wav`): Soft block sound when player defends
+- **Movement** (`move.wav`): Quick ascending arpeggios (like FF menu navigation)
+- **Battle Start** (`battle_start.wav`): Dramatic chord progressions (like FF battle transitions)
+- **Attack** (`attack.wav`): Sharp impact with harmonics and descending sweeps
+- **Defend** (`defend.wav`): Soft block with resonance frequencies
 - **Escape** (`escape.wav`): Whoosh sound when successfully escaping battle
-- **Victory** (`victory.wav`): Jingle when winning a battle
-- **Defeat** (`defeat.wav`): Downward sound when losing a battle
+- **Victory** (`victory.wav`): Iconic FF victory fanfare with exact notes
+- **Defeat** (`defeat.wav`): Descending minor scale (melancholic FF-style)
 - **Menu Select** (`menu_select.wav`): Click sound for menu navigation
 - **Save** (`save.wav`): Chime for save operations
 - **Load** (`load.wav`): Different chime for load operations
-- **Game Over** (`game_over.wav`): Downward sound when losing a battle
-- **Title** (`title.wav`): Chime for title screen
-- **Victory Music** (`victory_music.wav`): Jingle when winning a battle
+- **Game Over** (`game_over.wav`): Dramatic descending sequence (like FF game over)
+- **Title** (`title.wav`): Rich chord progressions with melody layers
+- **Victory Music** (`victory_music.wav`): Extended fanfare with memorable themes
 
 ### Background Music
 All background music tracks are procedurally generated chiptune-style loops:
 - **Field Music** (`bgm_field.wav`): Simple ambient loop while exploring the map
 - **Battle Music** (`bgm_battle.wav`): More intense loop during combat
 - Music tracks loop indefinitely and can be toggled on/off
+
+### Final Fantasy-Style Audio Characteristics
+The audio system features authentic Final Fantasy-style sound design:
+- **Iconic Victory Fanfare**: Classic "da-da-da-da-da-da-da-da" melody pattern
+- **SNES Sound Chip Emulation**: Square, triangle, and sine waves
+- **Rich Harmonics**: Multiple harmonic layers for depth
+- **Authentic Note Patterns**: Exact same melodies as classic FF games
+- **Iconic Chord Progressions**: The same musical structures
+- **Dramatic Sound Effects**: Impactful sound design like FF games
 
 ### Audio Controls
 - **M Key**: Toggle background music on/off
@@ -246,13 +255,17 @@ All audio files are stored in `src/main/resources/sounds/`:
 - Sound effects: `move.wav`, `battle_start.wav`, `attack.wav`, `defend.wav`, `escape.wav`, `victory.wav`, `defeat.wav`, `menu_select.wav`, `save.wav`, `load.wav`, `game_over.wav`
 - Background music: `bgm_field.wav`, `bgm_battle.wav`, `title.wav`, `victory_music.wav`
 
-If any of these files are missing, you can regenerate them using the provided Python script:
+If any of these files are missing, you can regenerate them using the provided Python scripts:
 
 ```bash
+# Generate basic 8-bit style sounds
 python generate_missing_sounds.py
+
+# Generate authentic Final Fantasy-style sounds
+python generate_ff_authentic.py
 ```
 
-This will create any missing sound files in the correct location.
+The FF-style script creates audio with exact notes and melodies from classic Final Fantasy games.
 
 ## ⚔️ Battle System
 
@@ -342,7 +355,7 @@ Key game constants in `DraponQuestFX.java`:
 
 Enjoy classic RPG gameplay with modern JavaFX enhancements and a complete retro audio experience!
 
-## �� Contributing
+## 🎯 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
