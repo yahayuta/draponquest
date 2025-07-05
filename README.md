@@ -30,7 +30,7 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
 - **Battle Win Counter**: Track and display the number of battles won
 - **Modern UI**: Clean, centered battle interface with proper spacing
-- **Audio System**: Complete sound effects and background music system
+- **Audio System**: Complete sound effects and background music system (all required files present)
 - **Audio Controls**: Toggle music/sound, volume control, and real-time audio status display
 
 ## 🚀 Quick Start
@@ -187,7 +187,7 @@ draponquest/
 - ✅ Complete audio system with procedurally generated 8-bit sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
 - ✅ Real-time audio status display on main screen
-- ✅ All 12 sound files generated and integrated (move, battle, attack, defend, escape, victory, defeat, menu, save, load, field music, battle music)
+- ✅ All required sound files generated and integrated (move, battle, attack, defend, escape, victory, defeat, menu, save, load, field music, battle music, game over, title, victory music)
 
 ## 🎨 Graphics and Assets
 
@@ -219,6 +219,9 @@ All sound effects are procedurally generated 8-bit style audio files:
 - **Menu Select** (`menu_select.wav`): Click sound for menu navigation
 - **Save** (`save.wav`): Chime for save operations
 - **Load** (`load.wav`): Different chime for load operations
+- **Game Over** (`game_over.wav`): Downward sound when losing a battle
+- **Title** (`title.wav`): Chime for title screen
+- **Victory Music** (`victory_music.wav`): Jingle when winning a battle
 
 ### Background Music
 All background music tracks are procedurally generated chiptune-style loops:
@@ -240,8 +243,16 @@ The main game screen shows real-time audio status in the top-right corner:
 
 ### Audio File Locations
 All audio files are stored in `src/main/resources/sounds/`:
-- Sound effects: `move.wav`, `battle_start.wav`, `attack.wav`, `defend.wav`, `escape.wav`, `victory.wav`, `defeat.wav`, `menu_select.wav`, `save.wav`, `load.wav`
-- Background music: `bgm_field.wav`, `bgm_battle.wav`
+- Sound effects: `move.wav`, `battle_start.wav`, `attack.wav`, `defend.wav`, `escape.wav`, `victory.wav`, `defeat.wav`, `menu_select.wav`, `save.wav`, `load.wav`, `game_over.wav`
+- Background music: `bgm_field.wav`, `bgm_battle.wav`, `title.wav`, `victory_music.wav`
+
+If any of these files are missing, you can regenerate them using the provided Python script:
+
+```bash
+python generate_missing_sounds.py
+```
+
+This will create any missing sound files in the correct location.
 
 ## ⚔️ Battle System
 
@@ -319,11 +330,19 @@ Key game constants in `DraponQuestFX.java`:
    - Audio system provides detailed logging of sound effects and music playback
    - Use this output to trace and diagnose issues
 
+6. **PowerShell cannot find run.bat**
+   - In PowerShell, you must run batch files with `./run.bat` or `.\run.bat` instead of just `run.bat`.
+   - Example:
+     ```powershell
+     .\run.bat
+     ```
+   - This is a PowerShell security feature.
+
 ---
 
-Enjoy classic RPG gameplay with modern JavaFX enhancements!
+Enjoy classic RPG gameplay with modern JavaFX enhancements and a complete retro audio experience!
 
-## 🤝 Contributing
+## �� Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
