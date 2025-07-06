@@ -187,7 +187,7 @@ draponquest/
 - ✅ Complete audio system with authentic Final Fantasy-style sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
 - ✅ Real-time audio status display on main screen
-- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies
+- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies (B4: 493.88 Hz, G4: 392.00 Hz, A4: 440.00 Hz, C5: 523.25 Hz, A#4: 466.16 Hz, D#5: 622.25 Hz, D5: 587.33 Hz, G#4: 415.30 Hz, F5: 698.46 Hz)
 
 ## 🎨 Graphics and Assets
 
@@ -230,13 +230,13 @@ All background music tracks are procedurally generated chiptune-style loops:
 - Music tracks loop indefinitely and can be toggled on/off
 
 ### Final Fantasy-Style Audio Characteristics
-The audio system features authentic Final Fantasy-style sound design:
-- **Iconic Victory Fanfare**: Classic "da-da-da-da-da-da-da-da" melody pattern
-- **SNES Sound Chip Emulation**: Square, triangle, and sine waves
-- **Rich Harmonics**: Multiple harmonic layers for depth
-- **Authentic Note Patterns**: Exact same melodies as classic FF games
-- **Iconic Chord Progressions**: The same musical structures
-- **Dramatic Sound Effects**: Impactful sound design like FF games
+The audio system features authentic Final Fantasy-style sound design with **exact notes and frequencies** from classic FF games:
+- **Iconic Victory Fanfare**: Classic "b b b b, g a b a b, C a# C a# a#" melody with precise notes
+- **Exact FF Notes**: Uses precise frequencies like B4 (493.88 Hz), G4 (392.00 Hz), A4 (440.00 Hz), C5 (523.25 Hz), A#4 (466.16 Hz), D#5 (622.25 Hz), D5 (587.33 Hz), G#4 (415.30 Hz), F5 (698.46 Hz)
+- **SNES Sound Chip Emulation**: Square, triangle, and saw waves with authentic harmonics
+- **Rich Harmonics**: Multiple harmonic layers for depth (2nd, 3rd, 4th harmonics)
+- **Authentic Note Patterns**: Exact same melodies and chord progressions as classic FF games
+- **Dramatic Sound Effects**: Impactful sound design like FF games with precise timing
 
 ### Audio Controls
 - **M Key**: Toggle background music on/off
@@ -261,11 +261,11 @@ If any of these files are missing, you can regenerate them using the provided Py
 # Generate basic 8-bit style sounds
 python generate_missing_sounds.py
 
-# Generate authentic Final Fantasy-style sounds
-python generate_ff_authentic.py
+# Generate authentic Final Fantasy-style sounds with exact notes
+python generate_ff_exact.py
 ```
 
-The FF-style script creates audio with exact notes and melodies from classic Final Fantasy games.
+The `generate_ff_exact.py` script creates audio with **exact frequencies and notes** from classic Final Fantasy games, including the precise notes used in the iconic victory fanfare: "b b b b, g a b a b, C a# C a# a#, D# D# D D# D D, C a# g# a# g, C a# C a# a#, D# D# D D# D D, C a# C D# F".
 
 ## ⚔️ Battle System
 
