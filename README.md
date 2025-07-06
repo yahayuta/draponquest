@@ -129,6 +129,14 @@ draponquest/
 ├── run.bat                            # Windows run script
 ├── build-and-run.bat                  # Combined build and run
 └── clean.bat                          # Clean build artifacts
+├── soundgen/                           # All sound generation scripts (Python)
+│   ├── generate_ff_victory.py
+│   ├── generate_ff_battle.py
+│   ├── generate_battle_music.py
+│   ├── generate_ff_exact.py
+│   ├── generate_ff_authentic.py
+│   ├── generate_ff_sounds.py
+│   └── generate_missing_sounds.py
 ```
 
 ## 🛠️ Development
@@ -266,10 +274,10 @@ If any of these files are missing, you can regenerate them using the provided Py
 
 ```bash
 # Generate basic 8-bit style sounds
-python generate_missing_sounds.py
+python soundgen/generate_missing_sounds.py
 
 # Generate authentic Final Fantasy-style sounds with exact notes
-python generate_ff_exact.py
+python soundgen/generate_ff_exact.py
 ```
 
 The `generate_ff_exact.py` script creates audio with **exact frequencies and notes** from classic Final Fantasy games, including the precise notes used in the iconic victory fanfare: "b b b b, g a b a b, C a# C a# a#, D# D# D D# D D, C a# g# a# g, C a# C a# a#, D# D# D D# D D, C a# C D# F".
