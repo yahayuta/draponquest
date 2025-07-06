@@ -102,6 +102,8 @@ public class AudioManager {
             loadSoundEffect(SOUND_MENU_SELECT, "/sounds/menu_select.wav");
             loadSoundEffect(SOUND_SAVE, "/sounds/save.wav");
             loadSoundEffect(SOUND_LOAD, "/sounds/load.wav");
+            // Add missing generated sound files
+            loadSoundEffect(SOUND_GAME_OVER, "/sounds/game_over.wav");
             
             System.out.println("Sound effects loaded: " + soundEffects.size() + " effects");
         } catch (Exception e) {
@@ -133,6 +135,9 @@ public class AudioManager {
             // Load background music from resources
             loadBackgroundMusicTrack(MUSIC_FIELD, "/sounds/bgm_field.wav");
             loadBackgroundMusicTrack(MUSIC_BATTLE, "/sounds/bgm_battle.wav");
+            // Add missing generated music files
+            loadBackgroundMusicTrack(MUSIC_TITLE, "/sounds/title.wav");
+            loadBackgroundMusicTrack(MUSIC_VICTORY, "/sounds/victory_music.wav");
             
             System.out.println("Background music loaded: " + backgroundMusic.size() + " tracks");
         } catch (Exception e) {
