@@ -282,6 +282,20 @@ python soundgen/generate_ff_exact.py
 
 The `generate_ff_exact.py` script creates audio with **exact frequencies and notes** from classic Final Fantasy games, including the precise notes used in the iconic victory fanfare: "b b b b, g a b a b, C a# C a# a#, D# D# D D# D D, C a# g# a# g, C a# C a# a#, D# D# D D# D D, C a# C D# F".
 
+### Regenerating All Sounds
+
+To regenerate all sound and music files, use the provided batch file:
+
+```bat
+cd soundgen
+generate_all_sounds.bat
+```
+
+This will run all sound generation scripts and automatically move the generated .wav files to the resource directory (`src/main/resources/sounds/`).
+
+**Note:**
+After running the batch file, no .wav files will remain in the `soundgen/` folder—all generated files are moved to the correct location for the game to use them.
+
 ## ⚔️ Battle System
 
 The game features a turn-based battle system with the following mechanics:
