@@ -441,7 +441,13 @@ public class DraponQuestFX extends Application {
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.fillRect(0, DISP_HEIGHT / 2, 192, 192);
             gc.setFont(javafx.scene.text.Font.font("Arial", 32));
-            String[] commands = {"TALK", "CHECK", "MAGIC", "ITEM", "STATUS"};
+            String[] commands = {
+                LocalizationManager.getText("menu_talk"),
+                LocalizationManager.getText("menu_check"),
+                LocalizationManager.getText("menu_magic"),
+                LocalizationManager.getText("menu_item"),
+                LocalizationManager.getText("menu_status")
+            };
             for (int i = 0; i < commands.length; i++) {
                 int y = DISP_HEIGHT / 2 + 16 + i * 36;
                 if (currentCommand == i + 1) {
@@ -469,7 +475,7 @@ public class DraponQuestFX extends Application {
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText("BATTLE! (ESC to exit)", DISP_WIDTH/2, 60);
+            gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH/2, 60);
             // Draw monster name centered above image
             if (currentMonster != null && currentMonster.image != null && !currentMonster.image.isError()) {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 28));
@@ -482,15 +488,15 @@ public class DraponQuestFX extends Application {
                 gc.fillRect((DISP_WIDTH-128)/2, 130, 128, 128);
                 gc.setFill(javafx.scene.paint.Color.WHITE);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
-                gc.fillText("No monster image", DISP_WIDTH/2, 190);
+                gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH/2, 190);
             }
             // Draw HP bars, each on its own line, centered
             gc.setFont(javafx.scene.text.Font.font("Arial", 26));
             gc.setFill(javafx.scene.paint.Color.LIME);
-            String playerHpStr = "Player HP: " + playerHP + "/" + maxPlayerHP;
+            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP;
             gc.fillText(playerHpStr, DISP_WIDTH/2, 290);
             gc.setFill(javafx.scene.paint.Color.RED);
-            String monsterHpStr = currentMonster.name + " HP: " + monsterHP;
+            String monsterHpStr = currentMonster.name + LocalizationManager.getText("monster_hp") + monsterHP;
             gc.fillText(monsterHpStr, DISP_WIDTH/2, 330);
             // Draw battle message
             gc.setFill(javafx.scene.paint.Color.WHITE);
@@ -499,7 +505,7 @@ public class DraponQuestFX extends Application {
             // Draw action options
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText("A: Attack   D: Defend   R: Run", DISP_WIDTH/2, DISP_HEIGHT-30);
+            gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH/2, DISP_HEIGHT-30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         // Event screen (scaled up)
@@ -542,12 +548,12 @@ public class DraponQuestFX extends Application {
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
         gc.setFill(javafx.scene.paint.Color.RED);
         gc.setFont(javafx.scene.text.Font.font("Arial", 48));
-        gc.fillText("GAME OVER", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.4);
+        gc.fillText(LocalizationManager.getText("game_over"), DISP_WIDTH * 0.25, DISP_HEIGHT * 0.4);
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-        gc.fillText("Press ENTER to restart", DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
-        gc.fillText("Total Score: " + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
-        gc.fillText("Battles Won: " + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
+        gc.fillText(LocalizationManager.getText("press_enter_restart"), DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
+        gc.fillText(LocalizationManager.getText("total_score") + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
+        gc.fillText(LocalizationManager.getText("battles_won") + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
     }
     
     /**
@@ -752,13 +758,13 @@ public class DraponQuestFX extends Application {
                 currentGameStatus, currentMode, currentPlace, currentCommand,
                 fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip);
             Files.write(Paths.get(saveFileName), saveData.getBytes());
-            saveMessage = "Game saved successfully!";
+            saveMessage = LocalizationManager.getText("save_success");
             saveMessageTime = System.currentTimeMillis();
             System.out.println("Game saved.");
             // Play save sound
             audioManager.playSound(AudioManager.SOUND_SAVE);
         } catch (IOException e) {
-            saveMessage = "Save failed: " + e.getMessage();
+            saveMessage = LocalizationManager.getText("save_failed") + e.getMessage();
             saveMessageTime = System.currentTimeMillis();
             System.out.println("Save failed: " + e.getMessage());
         }
@@ -782,14 +788,14 @@ public class DraponQuestFX extends Application {
                 scriptID = Integer.parseInt(parts[6]);
                 scriptLineIndex = Integer.parseInt(parts[7]);
                 flip = Integer.parseInt(parts[8]);
-                saveMessage = "Game loaded successfully!";
+                saveMessage = LocalizationManager.getText("load_success");
                 saveMessageTime = System.currentTimeMillis();
                 System.out.println("Game loaded.");
                 // Play load sound
                 audioManager.playSound(AudioManager.SOUND_LOAD);
             }
         } catch (IOException e) {
-            saveMessage = "Load failed: " + e.getMessage();
+            saveMessage = LocalizationManager.getText("load_failed") + e.getMessage();
             saveMessageTime = System.currentTimeMillis();
             System.out.println("Load failed: " + e.getMessage());
         }
@@ -811,14 +817,14 @@ public class DraponQuestFX extends Application {
                 case A:
                     int damage = (int)(Math.random() * 5) + 3; // 3-7 damage (player)
                     monsterHP -= damage;
-                    battleMessage = "You deal " + damage + " damage!";
+                    battleMessage = LocalizationManager.getText("battle_you_deal") + damage + LocalizationManager.getText("battle_damage");
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
                     playerTurn = false;
                     // Play attack sound
                     audioManager.playSound(AudioManager.SOUND_ATTACK);
                     break;
                 case D:
-                    battleMessage = "You defend!";
+                    battleMessage = LocalizationManager.getText("battle_you_defend");
                     System.out.println("Player defends");
                     playerTurn = false;
                     isDefending = true;
@@ -828,7 +834,7 @@ public class DraponQuestFX extends Application {
                 case R:
                     // Try to escape: 50% chance
                     if (Math.random() < 0.5) {
-                        battleMessage = "You escaped successfully!";
+                        battleMessage = LocalizationManager.getText("battle_escaped");
                         System.out.println("Player escaped from battle");
                         currentMode = MODE_MOVE;
                         // Play escape sound and return to field music
@@ -836,7 +842,7 @@ public class DraponQuestFX extends Application {
                         audioManager.playMusic(AudioManager.MUSIC_FIELD);
                         return; // Exit battle immediately
                     } else {
-                        battleMessage = "Escape failed!";
+                        battleMessage = LocalizationManager.getText("battle_escape_failed");
                         System.out.println("Player failed to escape");
                         playerTurn = false;
                         // Play escape failed sound
@@ -854,7 +860,7 @@ public class DraponQuestFX extends Application {
                 isDefending = false;
             }
             playerHP -= monsterDamage;
-            battleMessage = currentMonster.name + " deals " + monsterDamage + " damage!";
+            battleMessage = currentMonster.name + LocalizationManager.getText("battle_monster_deals") + monsterDamage + LocalizationManager.getText("battle_damage");
             System.out.println("Monster attacks: playerHP=" + playerHP);
             playerTurn = true;
             
@@ -875,7 +881,7 @@ public class DraponQuestFX extends Application {
         if (playerHP > 0 && monsterHP <= 0) {
             monsterHP = 0;
             battlesWon++;
-            battleMessage = "You won the battle!";
+            battleMessage = LocalizationManager.getText("battle_you_won");
             System.out.println("Monster defeated. Player wins. Total battles won: " + battlesWon);
             // Play victory sound and music, then return to field music
             audioManager.playSound(AudioManager.SOUND_VICTORY);
@@ -910,7 +916,7 @@ public class DraponQuestFX extends Application {
             System.out.println("STATUS selected: entering event mode");
             currentMode = MODE_EVENT;
         } else {
-            commandMessage = "You selected " + commands[currentCommand - 1];
+            commandMessage = LocalizationManager.getText("command_selected") + commands[currentCommand - 1];
             commandMessageTime = System.currentTimeMillis();
             currentMode = MODE_MOVE;
             System.out.println("Command message set: " + commandMessage);
@@ -932,6 +938,17 @@ public class DraponQuestFX extends Application {
      */
     public void toggleSound() {
         audioManager.setSoundEnabled(!audioManager.isSoundEnabled());
+    }
+    
+    /**
+     * Toggle between English and Japanese language
+     */
+    public void toggleLanguage() {
+        LocalizationManager.toggleLanguage();
+        scriptData.refreshScript();
+        // Reset script lines to force reload with new language
+        scriptLines = null;
+        System.out.println("Language changed to: " + LocalizationManager.getLanguageDisplayName());
     }
     
     /**

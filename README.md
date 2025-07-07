@@ -1,3 +1,45 @@
+# DraponQuest
+
+A JavaFX port of the classic DoJa mobile game DraponQuest, featuring authentic Final Fantasy-style chiptune audio and modern enhancements.
+
+## Multi-Language Support (English & Japanese)
+
+DraponQuest now supports both English and Japanese for all major game text, menus, and messages.
+
+- **Toggle Language:** Press the `L` key at any time in-game to instantly switch between English and Japanese. All UI, menus, and script text will update immediately.
+- **Supported Text:**
+  - Title, menus, battle messages, UI, and script/instructions
+  - More text will be localized as the game evolves
+- **How it works:**
+  - All user-facing text is managed by `LocalizationManager.java`.
+  - The current language is switched at runtime and all text is updated live.
+
+### Adding/Editing Translations
+- To add or update translations, edit `src/main/java/com/draponquest/LocalizationManager.java`.
+- Add new keys or update existing ones in both the English and Japanese maps.
+- Use `LocalizationManager.getText("key")` in code to fetch the correct string for the current language.
+
+---
+
+# Features
+- Classic field and battle gameplay
+- Authentic chiptune sound and music
+- Save/load system
+- ...
+
+# Controls
+- Arrow keys: Move
+- ENTER: Open command menu / select
+- ESC: Exit battle or menu
+- **L:** Toggle language (English/Japanese)
+- F5: Save
+- F9: Load
+- ...
+
+---
+
+For more details, see the code and comments in `LocalizationManager.java` and `DraponQuestFX.java`.
+
 # DraponQuest JavaFX
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/)
@@ -101,6 +143,7 @@ mvn javafx:run
 | **S** | Toggle sound effects on/off |
 | **[** | Decrease volume |
 | **]** | Increase volume |
+| **L** | Toggle language (English/Japanese) |
 
 ### Game Modes
 

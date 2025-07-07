@@ -75,6 +75,10 @@ public class GameInputHandler {
                 // Toggle sound effects on/off
                 game.toggleSound();
                 break;
+            case L:
+                // Toggle language (English/Japanese)
+                game.toggleLanguage();
+                break;
             case OPEN_BRACKET:
                 // Decrease volume
                 game.decreaseVolume();
