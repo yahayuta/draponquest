@@ -2,7 +2,7 @@
 echo Compiling DraponQuest JavaFX...
 
 REM Set JavaFX SDK path
-set JAVAFX_SDK=C:\javafx-sdk-24.0.1
+set JAVAFX_SDK=C:\javafx-sdk-21.0.2
 
 REM Create output directory
 if not exist "target\classes" mkdir "target\classes"

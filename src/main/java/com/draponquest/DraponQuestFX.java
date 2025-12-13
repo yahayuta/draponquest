@@ -15,6 +15,8 @@ import java.nio.file.*;
 
 // Audio system
 import com.draponquest.AudioManager;
+import com.draponquest.GameMap;
+import com.draponquest.MapManager;
 
 /**
  * DraponQuest JavaFX Application
@@ -70,8 +72,11 @@ public class DraponQuestFX extends Application {
     private int flip = 0;
     
     // Map variables
-    private int fieldMapEndWidth = 16;
-    private int fieldMapEndHeight = 16;
+    private MapManager mapManager;
+    private int playerMapX = 25; // Initial player X position on the map
+    private int playerMapY = 16; // Initial player Y position on the map
+    private int cameraOffsetX = 0; // Top-left X of the camera view on the map
+    private int cameraOffsetY = 0; // Top-left Y of the camera view on the map
     
     // Script variables
     private String[] scriptLines = null;
@@ -181,8 +186,11 @@ public class DraponQuestFX extends Application {
     private void initializeGame() {
         System.out.println("Initializing game components");
         // No need to initialize scriptBuffer anymore
-        // Initialize map data
-        fieldMapData.initialize();
+        // Initialize map manager
+        mapManager = MapManager.getInstance();
+        playerMapX = 25; // Initial player X position
+        playerMapY = 16; // Initial player Y position
+        updateCameraPosition();
         
         // Initialize audio system
         audioManager = AudioManager.getInstance();
@@ -339,10 +347,11 @@ public class DraponQuestFX extends Application {
      * Renders the field map and player sprite.
      */
     private void renderFieldMap() {
+        GameMap currentMap = mapManager.getCurrentMap();
         // Draw 16x16 tiles, each 32x32 pixels (fills 512x512 window)
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                int tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                int tile = currentMap.getTile(i + cameraOffsetY, j + cameraOffsetX);
                 Image tileImage = null;
                 switch (tile) {
                     case 0: tileImage = seaImage; break;
@@ -367,7 +376,7 @@ public class DraponQuestFX extends Application {
         
         // Draw player sprite (scaled up)
         if (playerImage != null && !playerImage.isError()) {
-            gc.drawImage(playerImage, 8 * 32, 8 * 32, 32, 32);
+            gc.drawImage(playerImage, (playerMapX - cameraOffsetX) * 32, (playerMapY - cameraOffsetY) * 32, 32, 32);
         }
         
         // Display HP and score on map
@@ -567,8 +576,9 @@ public class DraponQuestFX extends Application {
             playerHP = maxPlayerHP;
             currentGameStatus = GAME_TITLE;
             currentMode = MODE_MOVE;
-            fieldMapEndHeight = 16;
-            fieldMapEndWidth = 16;
+            playerMapY = 16; // Reset to initial position on the map
+            playerMapX = 25; // Reset to initial position on the map
+            updateCameraPosition(); // Update camera to center on new player position
             score = 0;
             battlesWon = 0; // Reset battle counter
             System.out.println("Game restarted - new status: " + currentGameStatus);
@@ -680,7 +690,11 @@ public class DraponQuestFX extends Application {
      * @return True if walkable, false otherwise.
      */
     private boolean isWalkable(int row, int col) {
-        int tile = fieldMapData.mapDataReturnField(row, col);
+        GameMap currentMap = mapManager.getCurrentMap();
+        if (row < 0 || row >= currentMap.height || col < 0 || col >= currentMap.width) {
+            return false; // Out of bounds is not walkable
+        }
+        int tile = currentMap.getTile(row, col);
         boolean walkable = tile != 0;
         System.out.println("isWalkable: row=" + row + ", col=" + col + ", tile=" + tile + ", walkable=" + walkable);
         return walkable; // Only sea (tile 0) is unwalkable
@@ -692,30 +706,27 @@ public class DraponQuestFX extends Application {
      */
     private void moveFieldMap(int direction) {
         System.out.println("moveFieldMap called - direction: " + direction);
-        // 0: Up, 1: Down, 2: Left, 3: Right
-        int newRow = fieldMapEndHeight;
-        int newCol = fieldMapEndWidth;
+        GameMap currentMap = mapManager.getCurrentMap();
+        int newPlayerMapX = playerMapX;
+        int newPlayerMapY = playerMapY;
+
         switch (direction) {
-            case 0: newRow = fieldMapEndHeight - 1; break;
-            case 1: newRow = fieldMapEndHeight + 1; break;
-            case 2: newCol = fieldMapEndWidth - 1; break;
-            case 3: newCol = fieldMapEndWidth + 1; break;
+            case 0: newPlayerMapY--; break; // Up
+            case 1: newPlayerMapY++; break; // Down
+            case 2: newPlayerMapX--; break; // Left
+            case 3: newPlayerMapX++; break; // Right
         }
-        int playerRow = newRow + 8;
-        int playerCol = newCol + 8;
-        System.out.println("Attempting move to: row=" + playerRow + ", col=" + playerCol);
-        if (playerRow >= 0 && playerRow < fieldMapData.getMapLength() &&
-            playerCol >= 0 && playerCol < fieldMapData.FIELD_MAP_WIDTH &&
-            isWalkable(playerRow, playerCol)) {
-            fieldMapEndHeight = newRow;
-            fieldMapEndWidth = newCol;
-            if (fieldMapEndHeight < 0) fieldMapEndHeight = 0;
-            if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
-                fieldMapEndHeight = fieldMapData.getMapLength() - 16;
-            if (fieldMapEndWidth < 0) fieldMapEndWidth = 0;
-            if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
-                fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
-            System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth=" + fieldMapEndWidth);
+
+        System.out.println("Attempting move to: X=" + newPlayerMapX + ", Y=" + newPlayerMapY);
+        if (newPlayerMapX >= 0 && newPlayerMapX < currentMap.width &&
+            newPlayerMapY >= 0 && newPlayerMapY < currentMap.height &&
+            isWalkable(newPlayerMapY, newPlayerMapX)) { // Note: isWalkable expects (row, col) i.e. (Y, X)
+            playerMapX = newPlayerMapX;
+            playerMapY = newPlayerMapY;
+            updateCameraPosition(); // Update camera to follow player
+            checkForAndHandleTransition(); // Check for map transitions
+
+            System.out.println("Player moved to: playerMapX=" + playerMapX + ", playerMapY=" + playerMapY);
             // Random encounter: 3% chance
             if (Math.random() < 0.03) {
                 System.out.println("Random encounter triggered!");
@@ -756,7 +767,7 @@ public class DraponQuestFX extends Application {
         try {
             String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d",
                 currentGameStatus, currentMode, currentPlace, currentCommand,
-                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip);
+                playerMapX, playerMapY, scriptID, scriptLineIndex, flip);
             Files.write(Paths.get(saveFileName), saveData.getBytes());
             saveMessage = LocalizationManager.getText("save_success");
             saveMessageTime = System.currentTimeMillis();
@@ -783,8 +794,9 @@ public class DraponQuestFX extends Application {
                 currentMode = Integer.parseInt(parts[1]);
                 currentPlace = Integer.parseInt(parts[2]);
                 currentCommand = Integer.parseInt(parts[3]);
-                fieldMapEndWidth = Integer.parseInt(parts[4]);
-                fieldMapEndHeight = Integer.parseInt(parts[5]);
+                playerMapX = Integer.parseInt(parts[4]);
+                playerMapY = Integer.parseInt(parts[5]);
+                updateCameraPosition();
                 scriptID = Integer.parseInt(parts[6]);
                 scriptLineIndex = Integer.parseInt(parts[7]);
                 flip = Integer.parseInt(parts[8]);
@@ -969,6 +981,61 @@ public class DraponQuestFX extends Application {
         double newSoundVol = Math.min(1.0, audioManager.getSoundVolume() + 0.1);
         audioManager.setMusicVolume(newMusicVol);
         audioManager.setSoundVolume(newSoundVol);
+    }
+
+    /**
+     * Updates the camera offset to keep the player centered on the screen,
+     * clamping to map boundaries.
+     */
+    private void updateCameraPosition() {
+        GameMap currentMap = mapManager.getCurrentMap();
+        
+        // Calculate raw camera offsets
+        cameraOffsetX = playerMapX - (DISP_WIDTH / 32 / 2); // Center player horizontally
+        cameraOffsetY = playerMapY - (DISP_HEIGHT / 32 / 2); // Center player vertically
+
+        // Clamp camera to map boundaries
+        // Ensure left edge of map (0) is not exposed if map is large enough
+        cameraOffsetX = Math.max(0, cameraOffsetX);
+        // Ensure right edge of map is not exposed
+        cameraOffsetX = Math.min(cameraOffsetX, currentMap.width - (DISP_WIDTH / 32));
+
+        // Ensure top edge of map (0) is not exposed
+        cameraOffsetY = Math.max(0, cameraOffsetY);
+        // Ensure bottom edge of map is not exposed
+        cameraOffsetY = Math.min(cameraOffsetY, currentMap.height - (DISP_HEIGHT / 32));
+        
+        System.out.println("Camera updated: offsetX=" + cameraOffsetX + ", offsetY=" + cameraOffsetY);
+    }
+
+    /**
+     * Checks if the player is on a transition point and handles the map switch.
+     */
+    private void checkForAndHandleTransition() {
+        GameMap currentMap = mapManager.getCurrentMap();
+        MapTransition transition = mapManager.findTransition(currentMap.mapId, playerMapX, playerMapY);
+
+        if (transition != null) {
+            System.out.println("Transition found to map " + transition.toMapId + " at (" + transition.toX + ", " + transition.toY + ")");
+            
+            // Switch to the new map
+            mapManager.switchMap(transition.toMapId);
+            
+            // Update player's position to the new coordinates
+            playerMapX = transition.toX;
+            playerMapY = transition.toY;
+            
+            // Update the camera to the new position
+            updateCameraPosition();
+            
+            // Optionally, play a sound or change music
+            if (transition.toMapId == MapManager.WORLD_MAP_ID) {
+                audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            } else {
+                // Placeholder for town music, using title music for now
+                audioManager.playMusic(AudioManager.MUSIC_TITLE); 
+            }
+        }
     }
     
     /**
