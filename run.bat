@@ -2,7 +2,10 @@
 echo Running DraponQuest JavaFX...
 
 REM Set JavaFX SDK path
-set JAVAFX_SDK=C:\javafx-sdk-24.0.1
+set JAVAFX_SDK=C:\java\javafx-sdk-25.0.1
+
+REM Set JDK path
+set PATH=C:\java\jdk-25.0.1\bin;%PATH%
 
 REM Check if classes exist
 if not exist "target\classes\com\draponquest\DraponQuestFX.class" (

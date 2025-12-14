@@ -12,7 +12,7 @@ public class fieldMapData {
 
     /**
      * The 2D array representing the map layout.
-     * 0 = sea, 1 = sand, 2 = steppe, 3 = forest
+     * 0 = sea, 1 = sand, 2 = steppe, 3 = forest, 4 = shop
      */
     private static int[][] mapDataField = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -109,6 +109,20 @@ public class fieldMapData {
      * @return The tile value (0=sea, 1=sand, 2=steppe, 3=forest).
      */
     public static int mapDataReturnField(int row, int col) {
+        mapDataField[23][23] = 1;
+        mapDataField[23][24] = 1;
+        mapDataField[23][25] = 1;
+        mapDataField[24][23] = 1;
+        mapDataField[24][25] = 1;
+        mapDataField[25][23] = 1;
+        mapDataField[25][24] = 1;
+        mapDataField[25][25] = 1;
+
+        mapDataField[22][22] = 3;
+        mapDataField[22][26] = 3;
+        mapDataField[26][22] = 3;
+        mapDataField[26][26] = 3;
+
         return mapDataField[row][col];
     }
 

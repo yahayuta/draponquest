@@ -15,6 +15,7 @@ import java.nio.file.*;
 
 // Audio system
 import com.draponquest.AudioManager;
+import com.draponquest.Monster;
 
 /**
  * DraponQuest JavaFX Application
@@ -43,6 +44,8 @@ public class DraponQuestFX extends Application {
     static final int MODE_COM = 1;
     static final int MODE_BATTLE = 2;
     static final int MODE_EVENT = 3;
+    static final int MODE_SHOP = 4;
+    static final int MODE_STATUS = 5;
     
     // Places
     private static final int PLACE_FIELD = 0;
@@ -63,8 +66,8 @@ public class DraponQuestFX extends Application {
     private static final int BCOM_RUN = 4;
     
     // Game state variables
-    private int currentGameStatus = GAME_TITLE;
-    int currentMode = MODE_MOVE;
+    public int currentGameStatus = GAME_TITLE;
+    public int currentMode = MODE_MOVE;
     private int currentPlace = PLACE_FIELD;
     private int currentCommand = COM_TALK;
     private int flip = 0;
@@ -89,21 +92,25 @@ public class DraponQuestFX extends Application {
     private Image sandImage;
     private Image steppeImage;
     private Image forestImage;
+    public Image shopImage;
     private Image monster1Image;
     private Image monster2Image;
     private Image monster3Image;
-    private Image currentMonsterImage;
-    private String currentMonsterName;
-    private int playerHP = 40;
-    private int maxPlayerHP = 40;
-    private int monsterHP = 15;
-    private boolean playerTurn = true;
-    private boolean isDefending = false; // Track if player is defending
-    private String battleMessage = "";
+
+    public int playerHP = 40;
+    public int maxPlayerHP = 40;
+    public int playerXP = 0;
+    public int playerLevel = 1;
+    public int xpToNextLevel = 10;
+    public int playerGold = 0;
+    public int playerAttack = 5;
+    public int playerDefense = 2;
+    public String commandMessage = null;
+    public long commandMessageTime = 0;
     
-    // Message box for command actions
-    private String commandMessage = null;
-    private long commandMessageTime = 0;
+    // Message box for shop actions
+    public String shopMessage = null;
+    public long shopMessageTime = 0;
     
     // Save/load data
     private String saveFileName = "draponquest_save.dat";
@@ -111,32 +118,19 @@ public class DraponQuestFX extends Application {
     private long saveMessageTime = 0;
     
     private int score = 0;
-    private int battlesWon = 0; // Track number of battles won
+    public int battlesWon = 0; // Track number of battles won
     
     // Audio system
-    private AudioManager audioManager;
+    public AudioManager audioManager;
     
-    /**
-     * Represents a monster with image, name, HP, and attack range.
-     */
-    private static class Monster {
-        Image image;
-        String name;
-        int maxHP;
-        int minAttack;
-        int maxAttack;
-        Monster(Image image, String name, int maxHP, int minAttack, int maxAttack) {
-            this.image = image;
-            this.name = name;
-            this.maxHP = maxHP;
-            this.minAttack = minAttack;
-            this.maxAttack = maxAttack;
-        }
-    }
 
-    private Monster[] monsters;
-    private Monster currentMonster;
-    
+
+
+    public Monster[] monsters;
+    private Inventory inventory;
+    private Shop shop;
+    public BattleManager battleManager;
+
     /**
      * Initializes the game and sets up the JavaFX UI.
      * @param primaryStage The main application window.
@@ -146,6 +140,10 @@ public class DraponQuestFX extends Application {
         System.out.println("Game started: Showing title screen");
         // Initialize game components
         initializeGame();
+        inventory = new Inventory();
+        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
+        shop = new Shop();
+        battleManager = new BattleManager(this);
         
         // Create JavaFX UI
         gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
@@ -162,7 +160,7 @@ public class DraponQuestFX extends Application {
         root.getChildren().add(gameCanvas);
         
         Scene scene = new Scene(root, DISP_WIDTH, DISP_HEIGHT);
-        scene.setOnKeyPressed(inputHandler::handleKeyPressed);
+        scene.setOnKeyPressed(this::handleKeyPressed);
         scene.setOnKeyReleased(inputHandler::handleKeyReleased);
         
         // Setup stage
@@ -174,6 +172,61 @@ public class DraponQuestFX extends Application {
         // Start game loop
         gameLoop.start();
     }
+
+    private void handleKeyPressed(KeyEvent event) {
+        // Always allow ENTER or SPACE to work for game state transitions (e.g., restarting from Game Over)
+        if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+            hitKeySelect();
+            return; // Consume the event so other handlers don't process it
+        }
+
+        if (currentMode == MODE_BATTLE) {
+            battleManager.handleBattleInput(event.getCode());
+        } else if (currentMode == MODE_SHOP) {
+
+            if (event.getCode() == KeyCode.B) {
+                Item potion = shop.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst().orElse(null);
+                if (potion != null) {
+                    if (playerGold >= potion.getValue()) {
+                        playerGold -= potion.getValue();
+                        inventory.addItem(potion);
+                        shopMessage = "You bought a potion!";
+                        shopMessageTime = System.currentTimeMillis();
+                    } else {
+                        shopMessage = "You don't have enough gold.";
+                        shopMessageTime = System.currentTimeMillis();
+                    }
+                }
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                currentMode = MODE_MOVE;
+            }
+        } else if (currentMode == MODE_STATUS) {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                currentMode = MODE_MOVE;
+            }
+        } else {
+            inputHandler.handleKeyPressed(event);
+        }
+
+        if (event.getCode() == KeyCode.I) {
+            System.out.println(inventory.toString());
+        }
+
+        if (event.getCode() == KeyCode.P) {
+            Item potion = inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst().orElse(null);
+            if (potion != null) {
+                playerHP += 20;
+                if (playerHP > maxPlayerHP) {
+                    playerHP = maxPlayerHP;
+                }
+                inventory.removeItem(potion);
+                System.out.println("You used a potion and restored 20 HP. You have " + inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).count() + " potions left.");
+            } else {
+                System.out.println("You have no potions left.");
+            }
+        }
+    }
+
     
     /**
      * Initializes game components, images, and script buffers.
@@ -214,11 +267,25 @@ public class DraponQuestFX extends Application {
         } catch (Exception e) {
             monster3Image = null;
         }
+        Image monster4Image;
+        try {
+            monster4Image = new Image(getClass().getResourceAsStream("/images/monster4.gif"));
+        } catch (Exception e) {
+            monster4Image = null;
+        }
+        Image monster5Image;
+        try {
+            monster5Image = new Image(getClass().getResourceAsStream("/images/monster5.gif"));
+        } catch (Exception e) {
+            monster5Image = null;
+        }
         // Initialize monsters array
         monsters = new Monster[] {
-            new Monster(monster1Image, "Tung Tung Tung Sahur", 8, 1, 2),
-            new Monster(monster2Image, "Tralalero Tralala", 12, 1, 3),
-            new Monster(monster3Image, "Bombardiro Crocodilo", 18, 2, 4)
+            new Monster(monster1Image, "Tung Tung Tung Sahur", 8, 5, 2, 5, 10),
+            new Monster(monster2Image, "Tralalero Tralala", 12, 8, 4, 8, 15),
+            new Monster(monster3Image, "Bombardiro Crocodilo", 18, 12, 6, 12, 20),
+            new Monster(monster4Image, "Goblin", 15, 10, 5, 15, 25),
+            new Monster(monster5Image, "Orc", 25, 15, 8, 25, 40)
         };
     }
     
@@ -250,6 +317,10 @@ public class DraponQuestFX extends Application {
         if (saveMessage != null && System.currentTimeMillis() - saveMessageTime > 2000) {
             System.out.println("Save message cleared");
             saveMessage = null;
+        }
+        if (levelUpMessage != null && System.currentTimeMillis() - levelUpMessageTime > 2000) {
+            System.out.println("Level up message cleared");
+            levelUpMessage = null;
         }
         switch (currentGameStatus) {
             case GAME_TITLE:
@@ -349,6 +420,7 @@ public class DraponQuestFX extends Application {
                     case 1: tileImage = sandImage; break;
                     case 2: tileImage = steppeImage; break;
                     case 3: tileImage = forestImage; break;
+                    case 4: tileImage = shopImage; break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
                     gc.drawImage(tileImage, j * 32, i * 32, 32, 32);
@@ -374,17 +446,19 @@ public class DraponQuestFX extends Application {
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
-        gc.fillText("Score: " + score, 10, 60);
-        gc.fillText("Battles Won: " + battlesWon, 10, 90);
+        gc.fillText("Level: " + playerLevel, 10, 60);
+        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 10, 90);
+        gc.fillText("Gold: " + playerGold, 10, 120);
+        gc.fillText("Battles Won: " + battlesWon, 10, 150);
         
         // Display audio status
         gc.setFont(javafx.scene.text.Font.font("Arial", 14));
         gc.setFill(audioManager.isMusicEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
-        gc.fillText("Music: " + (audioManager.isMusicEnabled() ? "ON" : "OFF"), 10, 120);
+        gc.fillText("Music: " + (audioManager.isMusicEnabled() ? "ON" : "OFF"), 10, 180);
         gc.setFill(audioManager.isSoundEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
-        gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 140);
+        gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 200);
         gc.setFill(javafx.scene.paint.Color.YELLOW);
-        gc.fillText("Vol: " + (int)(audioManager.getMusicVolume() * 100) + "%", 10, 160);
+        gc.fillText("Vol: " + (int)(audioManager.getMusicVolume() * 100) + "%", 10, 220);
     }
     
     /**
@@ -399,6 +473,17 @@ public class DraponQuestFX extends Application {
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
+        if (levelUpMessage != null) {
+            if (System.currentTimeMillis() - levelUpMessageTime < 2000) {
+                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.fillRect(0, 0, DISP_WIDTH, 48);
+                gc.setFill(javafx.scene.paint.Color.BLACK);
+                gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+                gc.fillText(levelUpMessage, 16, 32);
+            } else {
+                levelUpMessage = null;
+            }
+        }
         // Dialogue box in GAME_OPEN and MODE_MOVE
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE) {
             // Draw dialogue box (scaled up)
@@ -477,12 +562,12 @@ public class DraponQuestFX extends Application {
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
             gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH/2, 60);
             // Draw monster name centered above image
-            if (currentMonster != null && currentMonster.image != null && !currentMonster.image.isError()) {
+            if (battleManager.getCurrentMonster() != null && battleManager.getCurrentMonster().image != null && !battleManager.getCurrentMonster().image.isError()) {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 28));
                 gc.setFill(javafx.scene.paint.Color.YELLOW);
-                gc.fillText(currentMonster.name, DISP_WIDTH/2, 120);
+                gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH/2, 120);
                 // Draw monster image centered
-                gc.drawImage(currentMonster.image, (DISP_WIDTH-128)/2, 130, 128, 128);
+                gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH-128)/2, 130, 128, 128);
             } else {
                 gc.setFill(javafx.scene.paint.Color.DARKRED);
                 gc.fillRect((DISP_WIDTH-128)/2, 130, 128, 128);
@@ -493,20 +578,55 @@ public class DraponQuestFX extends Application {
             // Draw HP bars, each on its own line, centered
             gc.setFont(javafx.scene.text.Font.font("Arial", 26));
             gc.setFill(javafx.scene.paint.Color.LIME);
-            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP;
+            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: " + playerAttack + " | DEF: " + playerDefense;
             gc.fillText(playerHpStr, DISP_WIDTH/2, 290);
             gc.setFill(javafx.scene.paint.Color.RED);
-            String monsterHpStr = currentMonster.name + LocalizationManager.getText("monster_hp") + monsterHP;
+            String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp") + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: " + battleManager.getCurrentMonster().defense;
             gc.fillText(monsterHpStr, DISP_WIDTH/2, 330);
             // Draw battle message
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-            gc.fillText(battleMessage, DISP_WIDTH/2, DISP_HEIGHT-80);
+            gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH/2, DISP_HEIGHT-80);
             // Draw action options
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH/2, DISP_HEIGHT-30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
+        }
+        if (currentMode == MODE_SHOP) {
+            gc.setFill(javafx.scene.paint.Color.rgb(32, 64, 32, 0.85));
+            gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 40));
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText("Welcome to the Shop!", DISP_WIDTH / 2, 60);
+
+            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.fillText("Items for sale:", DISP_WIDTH / 2, 120);
+
+            java.util.List<Item> items = shop.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                Item item = items.get(i);
+                String text = (i + 1) + ". " + item.getName() + " - " + item.getValue() + " gold";
+                gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
+            }
+
+            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.fillText("Press 'B' to buy a Potion.", DISP_WIDTH/2, DISP_HEIGHT-80);
+            gc.fillText("Press ESC to exit.", DISP_WIDTH/2, DISP_HEIGHT-40);
+
+            if (shopMessage != null) {
+                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.fillText(shopMessage, DISP_WIDTH / 2, DISP_HEIGHT - 120);
+                if (System.currentTimeMillis() - shopMessageTime > 2000) {
+                    shopMessage = null;
+                }
+            }
+        }
+        if (currentMode == MODE_STATUS) {
+            renderStatusScreen();
         }
         // Event screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_EVENT) {
@@ -524,6 +644,25 @@ public class DraponQuestFX extends Application {
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(saveMessage, 16, 32);
         }
+    }
+    
+    private void renderStatusScreen() {
+        gc.setFill(javafx.scene.paint.Color.rgb(32, 32, 32, 0.85));
+        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font("Arial", 40));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        gc.fillText("Status", DISP_WIDTH / 2, 60);
+
+        gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.fillText("Level: " + playerLevel, DISP_WIDTH / 2, 120);
+        gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, DISP_WIDTH / 2, 160);
+        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, DISP_WIDTH / 2, 200);
+        gc.fillText("Gold: " + playerGold, DISP_WIDTH / 2, 240);
+
+        gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+        gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
     }
     
     /**
@@ -564,7 +703,12 @@ public class DraponQuestFX extends Application {
         if (currentGameStatus == GAME_OVER) {
             System.out.println("Restarting game...");
             // Restart game
+            maxPlayerHP = 40;
             playerHP = maxPlayerHP;
+            playerLevel = 1;
+            playerXP = 0;
+            xpToNextLevel = 10;
+            playerGold = 0;
             currentGameStatus = GAME_TITLE;
             currentMode = MODE_MOVE;
             fieldMapEndHeight = 16;
@@ -649,7 +793,7 @@ public class DraponQuestFX extends Application {
      * Handles ESC key for exiting menus, events, or battle (if over).
      */
     public void hitSoft2() {
-        System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP=" + monsterHP);
+        System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP=" + battleManager.getMonsterHP());
         if (commandMessage != null) { commandMessage = null; return; }
         if (currentMode == MODE_COM || currentMode == MODE_EVENT) {
             System.out.println("ESC: Exiting command/event mode");
@@ -660,10 +804,9 @@ public class DraponQuestFX extends Application {
             }
         } else if (currentMode == MODE_BATTLE) {
             // Only exit battle if battle is over
-            if (playerHP <= 0 || monsterHP <= 0) {
+            if (playerHP <= 0 || battleManager.getMonsterHP() <= 0) {
                 System.out.println("ESC: Exiting battle mode (battle over)");
                 currentMode = MODE_MOVE;
-                battleMessage = "";
                 // Return to field music
                 audioManager.playMusic(AudioManager.MUSIC_FIELD);
             } else {
@@ -719,7 +862,7 @@ public class DraponQuestFX extends Application {
             // Random encounter: 3% chance
             if (Math.random() < 0.03) {
                 System.out.println("Random encounter triggered!");
-                startBattle();
+                battleManager.startBattle();
             }
             // Play movement sound
             audioManager.playSound(AudioManager.SOUND_MOVE);
@@ -730,33 +873,15 @@ public class DraponQuestFX extends Application {
     }
     
     /**
-     * Starts a new battle (resets monster HP, not player HP).
-     */
-    private void startBattle() {
-        System.out.println("Battle started. playerHP=" + playerHP);
-        currentMode = MODE_BATTLE;
-        // Randomly select a monster
-        currentMonster = monsters[(int)(Math.random() * monsters.length)];
-        System.out.println("Selected monster: " + currentMonster.name + " (HP: " + currentMonster.maxHP + ", Attack: " + currentMonster.minAttack + "-" + currentMonster.maxAttack + ")");
-        monsterHP = currentMonster.maxHP;
-        playerTurn = true;
-        isDefending = false; // Reset defending state
-        battleMessage = "";
-        
-        // Play battle start sound and music
-        audioManager.playSound(AudioManager.SOUND_BATTLE_START);
-        audioManager.playMusic(AudioManager.MUSIC_BATTLE);
-    }
-    
-    /**
      * Saves the current game state to a file.
      */
     public void saveGame() {
         System.out.println("Saving game...");
         try {
-            String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d",
+            String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
                 currentGameStatus, currentMode, currentPlace, currentCommand,
-                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip);
+                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip,
+                playerXP, playerLevel, xpToNextLevel, maxPlayerHP, playerGold);
             Files.write(Paths.get(saveFileName), saveData.getBytes());
             saveMessage = LocalizationManager.getText("save_success");
             saveMessageTime = System.currentTimeMillis();
@@ -778,7 +903,7 @@ public class DraponQuestFX extends Application {
         try {
             String saveData = Files.readString(Paths.get(saveFileName));
             String[] parts = saveData.split(",");
-            if (parts.length >= 9) {
+            if (parts.length >= 14) {
                 currentGameStatus = Integer.parseInt(parts[0]);
                 currentMode = Integer.parseInt(parts[1]);
                 currentPlace = Integer.parseInt(parts[2]);
@@ -788,6 +913,11 @@ public class DraponQuestFX extends Application {
                 scriptID = Integer.parseInt(parts[6]);
                 scriptLineIndex = Integer.parseInt(parts[7]);
                 flip = Integer.parseInt(parts[8]);
+                playerXP = Integer.parseInt(parts[9]);
+                playerLevel = Integer.parseInt(parts[10]);
+                xpToNextLevel = Integer.parseInt(parts[11]);
+                maxPlayerHP = Integer.parseInt(parts[12]);
+                playerGold = Integer.parseInt(parts[13]);
                 saveMessage = LocalizationManager.getText("load_success");
                 saveMessageTime = System.currentTimeMillis();
                 System.out.println("Game loaded.");
@@ -801,101 +931,18 @@ public class DraponQuestFX extends Application {
         }
     }
     
-    /**
-     * Handles battle input (A/D keys) and updates battle state.
-     * @param keyCode The key pressed.
-     */
-    public void handleBattleInput(KeyCode keyCode) {
-        System.out.println("Battle input: " + keyCode + ", playerTurn=" + playerTurn + ", playerHP=" + playerHP + ", monsterHP=" + monsterHP);
-        if (playerHP <= 0 || monsterHP <= 0) {
-            System.out.println("Battle input ignored: battle is over");
-            return; // Battle is over
-        }
-        
-        if (playerTurn) {
-            switch (keyCode) {
-                case A:
-                    int damage = (int)(Math.random() * 5) + 3; // 3-7 damage (player)
-                    monsterHP -= damage;
-                    battleMessage = LocalizationManager.getText("battle_you_deal") + damage + LocalizationManager.getText("battle_damage");
-                    System.out.println("Player attacks: monsterHP=" + monsterHP);
-                    playerTurn = false;
-                    // Play attack sound
-                    audioManager.playSound(AudioManager.SOUND_ATTACK);
-                    break;
-                case D:
-                    battleMessage = LocalizationManager.getText("battle_you_defend");
-                    System.out.println("Player defends");
-                    playerTurn = false;
-                    isDefending = true;
-                    // Play defend sound
-                    audioManager.playSound(AudioManager.SOUND_DEFEND);
-                    break;
-                case R:
-                    // Try to escape: 50% chance
-                    if (Math.random() < 0.5) {
-                        battleMessage = LocalizationManager.getText("battle_escaped");
-                        System.out.println("Player escaped from battle");
-                        currentMode = MODE_MOVE;
-                        // Play escape sound and return to field music
-                        audioManager.playSound(AudioManager.SOUND_ESCAPE);
-                        audioManager.playMusic(AudioManager.MUSIC_FIELD);
-                        return; // Exit battle immediately
-                    } else {
-                        battleMessage = LocalizationManager.getText("battle_escape_failed");
-                        System.out.println("Player failed to escape");
-                        playerTurn = false;
-                        // Play escape failed sound
-                        audioManager.playSound(AudioManager.SOUND_DEFEAT);
-                    }
-                    break;
-            }
-        }
-        
-        // Monster's turn
-        if (!playerTurn) {
-            int monsterDamage = (int)(Math.random() * (currentMonster.maxAttack - currentMonster.minAttack + 1)) + currentMonster.minAttack;
-            if (isDefending) {
-                monsterDamage = (int)(monsterDamage * 0.5); // Reduce damage by 50% if defending
-                isDefending = false;
-            }
-            playerHP -= monsterDamage;
-            battleMessage = currentMonster.name + LocalizationManager.getText("battle_monster_deals") + monsterDamage + LocalizationManager.getText("battle_damage");
-            System.out.println("Monster attacks: playerHP=" + playerHP);
-            playerTurn = true;
-            
-            // Check for game over after monster attack
-            if (playerHP <= 0) {
-                playerHP = 0;
-                battleMessage = "You were defeated!";
-                currentGameStatus = GAME_OVER;
-                System.out.println("Player defeated. GAME_OVER");
-                // Play defeat sound and game over music
-                audioManager.playSound(AudioManager.SOUND_DEFEAT);
-                audioManager.playSound(AudioManager.SOUND_GAME_OVER);
-                return; // Exit battle immediately
-            }
-        }
-        
-        // Check for battle victory (only if player is still alive)
-        if (playerHP > 0 && monsterHP <= 0) {
-            monsterHP = 0;
-            battlesWon++;
-            battleMessage = LocalizationManager.getText("battle_you_won");
-            System.out.println("Monster defeated. Player wins. Total battles won: " + battlesWon);
-            // Play victory sound and music, then return to field music
-            audioManager.playSound(AudioManager.SOUND_VICTORY);
-            audioManager.playMusic(AudioManager.MUSIC_VICTORY);
-            // Return to field music after a short delay
-            new Thread(() -> {
-                try {
-                    Thread.sleep(2000); // Wait 2 seconds
-                    audioManager.playMusic(AudioManager.MUSIC_FIELD);
-                } catch (InterruptedException e) {
-                    // Ignore interruption
-                }
-            }).start();
-        }
+    private String levelUpMessage = null;
+    private long levelUpMessageTime = 0;
+    
+    public void levelUp() {
+        playerLevel++;
+        xpToNextLevel = (int)(xpToNextLevel * 1.5);
+        maxPlayerHP += 10;
+        playerHP = maxPlayerHP;
+        playerAttack += 2;
+        playerDefense += 1;
+        levelUpMessage = "You have reached level " + playerLevel + "!";
+        levelUpMessageTime = System.currentTimeMillis();
     }
     
     /**
@@ -903,18 +950,24 @@ public class DraponQuestFX extends Application {
      */
     private void handleCommandSelection() {
         System.out.println("handleCommandSelection called: currentCommand=" + currentCommand);
+        int playerRow = fieldMapEndHeight + 8;
+        int playerCol = fieldMapEndWidth + 8;
+        int tile = fieldMapData.mapDataReturnField(playerRow, playerCol);
+
+        if (currentCommand == COM_TALK && tile == 4) {
+            currentMode = MODE_SHOP;
+            shopMessage = "Welcome to the shop! What would you like to buy?";
+            shopMessageTime = System.currentTimeMillis();
+            return;
+        }
         // Show message for selected command or switch to battle/event
         String[] commands = {"TALK", "CHECK", "MAGIC", "ITEM", "STATUS"};
         if (currentCommand == COM_MGK) {
             System.out.println("MAGIC selected: starting battle");
-            currentMode = MODE_BATTLE;
-            // Reset only monster and battle state, keep player HP
-            monsterHP = currentMonster.maxHP;
-            playerTurn = true;
-            battleMessage = "";
+            battleManager.startBattle();
         } else if (currentCommand == COM_STUS) {
             System.out.println("STATUS selected: entering event mode");
-            currentMode = MODE_EVENT;
+            currentMode = MODE_STATUS;
         } else {
             commandMessage = LocalizationManager.getText("command_selected") + commands[currentCommand - 1];
             commandMessageTime = System.currentTimeMillis();

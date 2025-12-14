@@ -41,7 +41,7 @@ public class GameInputHandler {
         isHit = true;
         // Battle mode input
         if (game.currentMode == DraponQuestFX.MODE_BATTLE) {
-            game.handleBattleInput(event.getCode());
+            game.battleManager.handleBattleInput(event.getCode());
             return;
         }
         switch (event.getCode()) {
