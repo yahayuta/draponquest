@@ -65,6 +65,7 @@ public class LocalizationManager {
         englishText.put("battle_escape_failed", "Escape failed!");
         englishText.put("battle_monster_deals", " deals ");
         englishText.put("battle_you_won", "You won the battle!");
+        englishText.put("battle_gained", "You gained ");
         englishText.put("battle_you_defeated", "You were defeated!");
         englishText.put("battle_ongoing", "Battle ongoing, not exiting");
         
@@ -133,6 +134,7 @@ public class LocalizationManager {
         japaneseText.put("battle_escape_failed", "逃げ出しに失敗した！");
         japaneseText.put("battle_monster_deals", " は ");
         japaneseText.put("battle_you_won", "戦いに勝利した！");
+        japaneseText.put("battle_gained", "経験値とゴールドを獲得しました！");
         japaneseText.put("battle_you_defeated", "あなたは倒された！");
         japaneseText.put("battle_ongoing", "戦闘中、終了しません");
         
