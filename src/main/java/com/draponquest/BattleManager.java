@@ -2,6 +2,7 @@ package com.draponquest;
 
 import javafx.scene.input.KeyCode;
 import com.draponquest.Monster;
+import javafx.application.Platform;
 
 public class BattleManager {
 
@@ -110,19 +111,27 @@ public class BattleManager {
             game.battlesWon++;
             game.playerXP += currentMonster.xpValue;
             game.playerGold += currentMonster.goldValue;
-            battleMessage = LocalizationManager.getText("battle_you_won") + " You gained " + currentMonster.xpValue + " XP and " + currentMonster.goldValue + " gold!";
+            
+            // Set the new battle reward message in DraponQuestFX
+            game.battleRewardMessage = LocalizationManager.getText("battle_you_won") + " " + LocalizationManager.getText("battle_gained") + " " + currentMonster.xpValue + " XP and " + currentMonster.goldValue + " gold!";
+            game.battleRewardMessageTime = System.currentTimeMillis();
+
             System.out.println("Monster defeated. Player wins. Total battles won: " + game.battlesWon);
+            
             // Play victory sound and music, then return to field music
             game.audioManager.playSound(AudioManager.SOUND_VICTORY);
             game.audioManager.playMusic(AudioManager.MUSIC_VICTORY);
             // Return to field music after a short delay
             new Thread(() -> {
                 try {
-                    Thread.sleep(2000); // Wait 2 seconds
-                    if (game.playerXP >= game.xpToNextLevel) {
-                        game.levelUp();
-                    }
-                    game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                    Thread.sleep(2000); // Wait 2 seconds (for music and message display)
+                    javafx.application.Platform.runLater(() -> {
+                        if (game.playerXP >= game.xpToNextLevel) {
+                            game.levelUp();
+                        }
+                        game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                        game.currentMode = DraponQuestFX.MODE_MOVE; // Set mode to MOVE after delay
+                    });
                 } catch (InterruptedException e) {
                     // Ignore interruption
                 }

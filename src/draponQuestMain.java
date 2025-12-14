@@ -3,70 +3,70 @@ import com.nttdocomo.ui.*;
 /*************************************************************************/
 //  DraponQuest
 //  programmed by Yakkun
-//  ƒ[ƒvƒŒˆ—ì‚Å‚·
+//  ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‚ï¿½
 /*************************************************************************/
 public class draponQuestMain extends IApplication {
   public void start() {
-    //ƒoƒbƒNƒ‰ƒCƒgƒIƒ“
+    //ï¿½oï¿½bï¿½Nï¿½ï¿½ï¿½Cï¿½gï¿½Iï¿½ï¿½
     PhoneSystem.setAttribute(PhoneSystem.DEV_BACKLIGHT, PhoneSystem.ATTR_BACKLIGHT_ON);
     Display.setCurrent(new canvas());
   }
 
   /*************************************************************************/
-  //  ƒLƒƒƒ“ƒoƒXƒNƒ‰ƒX
+  //  ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½oï¿½Xï¿½Nï¿½ï¿½ï¿½X
   /*************************************************************************/
   class canvas extends Canvas implements Runnable {
-    //’è”‚ÌéŒ¾
-    //“¯ŠúƒXƒs[ƒh
+    //ï¿½è”ï¿½ÌéŒ¾
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½sï¿½[ï¿½h
     final int WAIT_MSEC = 100;
-    //‰æ–Êi•j
+    //ï¿½ï¿½Êiï¿½ï¿½ï¿½j
     final int DISP_WIDTH = 256;
-    //‰æ–Êi‚‚³j
+    //ï¿½ï¿½Êiï¿½ï¿½ï¿½ï¿½ï¿½j
     final int DISP_HEIGHT = 256;
-    //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+    //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
     final int GAME_TITLE = 0;
-    //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+    //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
     final int GAME_OPEN = 1;
-    //ƒQ[ƒ€ó‘ÔiƒEƒGƒCƒgj
+    //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Eï¿½Gï¿½Cï¿½gï¿½j
     final int GAME_WAIT = 2;
-    //ƒQ[ƒ€ó‘ÔiƒRƒ“ƒeƒBƒjƒ…[j
+    //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Rï¿½ï¿½ï¿½eï¿½Bï¿½jï¿½ï¿½ï¿½[ï¿½j
     final int GAME_CONT = 3;
-    //ƒ‚[ƒhiˆÚ“®j
+    //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
     final int MODE_MOVE = 0;
-    //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+    //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
     final int MODE_COM = 1;
-    //ƒ‚[ƒhiƒoƒgƒ‹j
+    //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½oï¿½gï¿½ï¿½ï¿½j
     final int MODE_BATTLE = 2;
-    //ƒ‚[ƒhiƒCƒxƒ“ƒgj
+    //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½j
     final int MODE_EVENT = 3;
-    //êŠiƒtƒB[ƒ‹ƒhj
+    //ï¿½êŠï¿½iï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½j
     final int PLACE_FIELD = 0;
-    //êŠiŒš•¨Œnj
+    //ï¿½êŠï¿½iï¿½ï¿½ï¿½ï¿½ï¿½nï¿½j
     final int PLACE_BLDNG = 1;
-    //êŠi“´ŒAŒnj
+    //ï¿½êŠï¿½iï¿½ï¿½ï¿½Aï¿½nï¿½j
     final int PLACE_CAVE = 2;
-    //ƒRƒ}ƒ“ƒhi˜b‚·j
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½bï¿½ï¿½ï¿½j
     final int COM_TALK = 1;
-    //ƒRƒ}ƒ“ƒhi’²‚×‚éj
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½×‚ï¿½j
     final int COM_CHK = 2;
-    //ƒRƒ}ƒ“ƒhi–‚–@j
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½@ï¿½j
     final int COM_MGK = 3;
-    //ƒRƒ}ƒ“ƒhiƒAƒCƒeƒ€j
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½j
     final int COM_ITEM = 4;
-    //ƒRƒ}ƒ“ƒhi‹­‚³j
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½ï¿½ï¿½j
     final int COM_STUS = 5;
-    //í“¬ƒRƒ}ƒ“ƒhiUŒ‚j
+    //ï¿½í“¬ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½Uï¿½ï¿½ï¿½j
     final int BCOM_ATK = 1;
-    //í“¬ƒRƒ}ƒ“ƒhi–‚–@j
+    //ï¿½í“¬ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½@ï¿½j
     final int BCOM_MGK = 2;
-    //í“¬ƒRƒ}ƒ“ƒhiƒAƒCƒeƒ€j
+    //ï¿½í“¬ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½j
     final int BCOM_ITEM = 3;
-    //í“¬ƒRƒ}ƒ“ƒhi“¦‚°‚éj
+    //ï¿½í“¬ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
     final int BCOM_RUN = 4;
-    //ƒIƒuƒWƒFƒNƒgŒ^•Ï”‚ÌéŒ¾
-    //ƒXƒŒƒbƒh
+    //ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½^ï¿½Ïï¿½ï¿½ÌéŒ¾
+    //ï¿½Xï¿½ï¿½ï¿½bï¿½h
     Thread thDraponQuest = null;
-    //ƒCƒ[ƒW
+    //ï¿½Cï¿½ï¿½ï¿½[ï¿½W
     Image imgMe1 = null;
     Image imgMe2 = null;
     Image imgFieldMap[][] = null;
@@ -74,32 +74,32 @@ public class draponQuestMain extends IApplication {
     Image imgSnd = null;
     Image imgsStp = null;
     Image imgFrst = null;
-    //ƒƒfƒBƒAƒCƒ[ƒW
+    //ï¿½ï¿½ï¿½fï¿½Bï¿½Aï¿½Cï¿½ï¿½ï¿½[ï¿½W
     MediaImage miMe1 = null; 
     MediaImage miMe2 = null; 
     MediaImage miSea = null; 
     MediaImage miSnd = null;
     MediaImage miStp = null;
     MediaImage miFrst = null;
-    //ƒvƒŠƒ~ƒeƒBƒu•Ï”
-    //ƒ{ƒ^ƒ“‰Ÿ‚µ‚Ì§Œä•Ï”
+    //ï¿½vï¿½ï¿½ï¿½~ï¿½eï¿½Bï¿½uï¿½Ïï¿½
+    //ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½Ïï¿½
     boolean isHit = false;
-    //Œ»İ‚ÌƒQ[ƒ€ó‘Ô
+    //ï¿½ï¿½ï¿½İ‚ÌƒQï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½
     int currentGameStatus = GAME_TITLE;
-    //Œ»İ‚Ìƒ‚[ƒh
+    //ï¿½ï¿½ï¿½İ‚Ìƒï¿½ï¿½[ï¿½h
     int currentMode = MODE_MOVE;
-    //Œ»İ‚ÌêŠ
+    //ï¿½ï¿½ï¿½İ‚ÌêŠ
     int currentPlace = PLACE_FIELD;
-    //Œ»İ‚ÌƒRƒ}ƒ“ƒh
+    //ï¿½ï¿½ï¿½İ‚ÌƒRï¿½}ï¿½ï¿½ï¿½h
     int currentCommand = COM_TALK;
-    //ƒLƒƒƒ‰ƒNƒ^ƒAƒjƒ[ƒVƒ‡ƒ“
+    //ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½
     int flip = 0;
-    //ƒ}ƒbƒv—p
+    //ï¿½}ï¿½bï¿½vï¿½p
     int fieldMapEndWidth = 0;
     int fieldMapEndHeight = 0;
     int mapX = 0;
     int mapY = 0;
-    //ƒXƒNƒŠƒvƒg—p•Ï”
+    //ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½pï¿½Ïï¿½
     StringBuffer scriptBuffer[] = new StringBuffer[10];
     String currentChar = null;
     int scriptID = 0;
@@ -108,11 +108,11 @@ public class draponQuestMain extends IApplication {
     int scriptheight = 0;
 
     /*************************************************************************/
-    //  ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-    //  •Ï”‚Ì‰Šú‰»E‰æ‘œƒf[ƒ^‚Ìæ“¾‚ğs‚¤
+    //  ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
+    //  ï¿½Ïï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½æ‘œï¿½fï¿½[ï¿½^ï¿½Ìæ“¾ï¿½ï¿½ï¿½sï¿½ï¿½
     /*************************************************************************/
     public canvas() {
-      //ƒXƒNƒŠƒvƒgƒoƒbƒtƒ@‚Ì‰Šú‰»
+      //ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½oï¿½bï¿½tï¿½@ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
       scriptBuffer[0] = new StringBuffer();
       scriptBuffer[1] = new StringBuffer();
       scriptBuffer[2] = new StringBuffer();
@@ -123,43 +123,43 @@ public class draponQuestMain extends IApplication {
       scriptBuffer[7] = new StringBuffer();
       scriptBuffer[8] = new StringBuffer();
       scriptBuffer[9] = new StringBuffer();
-      //ƒXƒŒƒbƒh‚Ì‰Šú‰»
+      //ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
       thDraponQuest = new Thread(this);
       thDraponQuest.start();
     }
     
     /*************************************************************************/
-    //  ƒCƒxƒ“ƒg‚ğæ“¾‚·‚éŠÖ”
+    //  ï¿½Cï¿½xï¿½ï¿½ï¿½gï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½Öï¿½
     /*************************************************************************/
     public void processEvent(int type,int param) {
       if(type == Display.KEY_PRESSED_EVENT) {
-        //2“x‰Ÿ‚µ‚Ìƒ`ƒFƒbƒN
+        //2ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Ìƒ`ï¿½Fï¿½bï¿½N
         if (isHit) {
-          //2“x‰Ÿ‚µ‚Ì–h~
+          //2ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Ì–hï¿½~
           isHit = false;
           switch (param) {
             case Display.KEY_SELECT:
-              //ƒZƒŒƒNƒgƒL[•ªŠòŠÖ”
+              //ï¿½Zï¿½ï¿½ï¿½Nï¿½gï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitKeySelect();
               break;
             case Display.KEY_UP:
-              //ªƒL[•ªŠòŠÖ”
+              //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitUp();
               break;
             case Display.KEY_DOWN:
-              //«ƒL[•ªŠòŠÖ”
+              //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitDown();
               break;
             case Display.KEY_RIGHT:
-              //¨ƒL[•ªŠòŠÖ”
+              //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitRight();
               break;
             case Display.KEY_LEFT:
-              //©ƒL[•ªŠòŠÖ”
+              //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitLeft();
               break;
             case Display.KEY_SOFT2:
-              //‰Eƒ\ƒtƒgƒL[•ªŠòŠÖ”
+              //ï¿½Eï¿½\ï¿½tï¿½gï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
               hitSoft2();
               break;
             default:
@@ -171,11 +171,11 @@ public class draponQuestMain extends IApplication {
     }
     
     /*************************************************************************/
-    //  •`ÊŠÖ”
+    //  ï¿½`ï¿½ÊŠÖï¿½
     /*************************************************************************/
     public void paint(Graphics g) {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           g.lock();
           g.clearRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
@@ -188,16 +188,16 @@ public class draponQuestMain extends IApplication {
           g.drawString("Yakkun", ((int)DISP_WIDTH * 35 / 100), ((int)DISP_HEIGHT * 90 / 100));
           g.unlock(true);
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           g.lock();
           g.clearRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           g.setColor(Graphics.getColorOfName(Graphics.GRAY));
           g.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           switch (currentPlace) {
-            //êŠiƒtƒB[ƒ‹ƒhj
+            //ï¿½êŠï¿½iï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½j
             case PLACE_FIELD:
-              //ƒ}ƒbƒv•`Ê
+              //ï¿½}ï¿½bï¿½vï¿½`ï¿½ï¿½
               for(int i = 0; i < 8; i++){
                 for(int ii = 0; ii < 16; ii++){
                   g.drawImage(imgFieldMap[i + fieldMapEndHeight][ii + fieldMapEndWidth], mapX, mapY);
@@ -211,7 +211,7 @@ public class draponQuestMain extends IApplication {
                   mapY = 0;
                 }
               }
-              //ƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŠƒbƒv
+              //ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½bï¿½v
               switch (flip) {
                 case 0:
                   g.drawImage(imgMe1, DISP_WIDTH / 2, DISP_HEIGHT / 4);
@@ -231,11 +231,11 @@ public class draponQuestMain extends IApplication {
           g.setColor(Graphics.getColorOfName(Graphics.BLACK));
           g.fillRect(0, DISP_HEIGHT / 2, DISP_WIDTH, DISP_HEIGHT / 2);
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
               g.setColor(Graphics.getColorOfName(Graphics.LIME));
-              g.drawString("ˆÚ“®", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
-//ƒXƒNƒŠƒvƒgˆ—‚ÌƒeƒXƒg_START
+              g.drawString("ï¿½Ú“ï¿½", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
+//ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ìƒeï¿½Xï¿½g_START
               currentChar = scriptData.returnTestScript(scriptID, scriptNum);
               System.out.println("paint():currentChar = " + currentChar);
               
@@ -259,32 +259,32 @@ public class draponQuestMain extends IApplication {
                 System.out.println("paint():scriptNum = 0");
                 scriptNum = 0;
               }
-//ƒXƒNƒŠƒvƒgˆ—‚ÌƒeƒXƒg_END
+//ï¿½Xï¿½Nï¿½ï¿½ï¿½vï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ìƒeï¿½Xï¿½g_END
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               g.setColor(Graphics.getColorOfName(Graphics.LIME));
-              g.drawString("ƒRƒ}ƒ“ƒh", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
+              g.drawString("ï¿½Rï¿½}ï¿½ï¿½ï¿½h", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
               switch (currentCommand) {
-                //ƒRƒ}ƒ“ƒhi˜b‚·j
+                //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½bï¿½ï¿½ï¿½j
                 case COM_TALK:
-                  g.drawString("˜b‚·", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
+                  g.drawString("ï¿½bï¿½ï¿½", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
                   break;
-                //ƒRƒ}ƒ“ƒhi’²‚×‚éj
+                //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½×‚ï¿½j
                 case COM_CHK:
-                  g.drawString("’²‚×‚é", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
+                  g.drawString("ï¿½ï¿½ï¿½×‚ï¿½", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
                   break;
-                //ƒRƒ}ƒ“ƒhi–‚–@j
+                //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½@ï¿½j
                 case COM_MGK:
-                  g.drawString("–‚–@", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
+                  g.drawString("ï¿½ï¿½ï¿½@", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
                   break;
-                //ƒRƒ}ƒ“ƒhiƒAƒCƒeƒ€j
+                //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½j
                 case COM_ITEM:
-                  g.drawString("ƒAƒCƒeƒ€", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
+                  g.drawString("ï¿½Aï¿½Cï¿½eï¿½ï¿½", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
                   break;
-                //ƒRƒ}ƒ“ƒhi‹­‚³j
+                //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½iï¿½ï¿½ï¿½ï¿½ï¿½j
                 case COM_STUS:
-                  g.drawString("‹­‚³", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
+                  g.drawString("ï¿½ï¿½ï¿½ï¿½", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
                   break;
                 default:
                   System.out.println("paint():ERROR UNEXPECTED VALUE:currentCommand = " + currentCommand);
@@ -295,7 +295,7 @@ public class draponQuestMain extends IApplication {
               System.out.println("paint():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
               break;
           }
-          //”’˜g‚Ì•`Ê
+          //ï¿½ï¿½ï¿½gï¿½Ì•`ï¿½ï¿½
           g.setColor(Graphics.getColorOfName(Graphics.WHITE));
           g.fillRect(0, ((int)DISP_HEIGHT * 50 / 100), ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 50 / 100));
           g.fillRect(((int)DISP_WIDTH * 20 / 100), ((int)DISP_HEIGHT * 50 / 100), ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 50 / 100));
@@ -304,15 +304,15 @@ public class draponQuestMain extends IApplication {
           g.fillRect(0, ((int)DISP_HEIGHT * 99 / 100), DISP_WIDTH, ((int)DISP_HEIGHT * 1 / 100));
           g.unlock(true);
           break;
-        //ƒQ[ƒ€ó‘ÔiƒEƒGƒCƒgj
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Eï¿½Gï¿½Cï¿½gï¿½j
         case GAME_WAIT:
           g.lock();
           g.clearRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           g.setColor(Graphics.getColorOfName(Graphics.BLACK));
           g.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           g.setColor(Graphics.getColorOfName(Graphics.LIME));
-          g.drawString("ƒf[ƒ^“Ç‚İ‚İ’†", ((int)DISP_WIDTH * 30 / 100), ((int)DISP_HEIGHT * 50 / 100));
-          //ƒf[ƒ^“Ç‚İ‚İ
+          g.drawString("ï¿½fï¿½[ï¿½^ï¿½Ç‚İï¿½ï¿½İ’ï¿½", ((int)DISP_WIDTH * 30 / 100), ((int)DISP_HEIGHT * 50 / 100));
+          //ï¿½fï¿½[ï¿½^ï¿½Ç‚İï¿½ï¿½ï¿½
           readData();
           g.unlock(true);
           break;
@@ -323,14 +323,14 @@ public class draponQuestMain extends IApplication {
     }
 
     /*************************************************************************/
-    //  ƒXƒŒƒbƒhŠÖ”
+    //  ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½Öï¿½
     /*************************************************************************/
     public void run() {
       while(true) {
         try {
-          //2“x‰Ÿ‚µ‚Ì§Œä
+          //2ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
           isHit = true;
-          //ƒƒCƒ“ƒ‹[ƒv
+          //ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½v
           mainLoop();
           thDraponQuest.sleep(WAIT_MSEC);
         } catch (Throwable th) {
@@ -340,15 +340,15 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //ƒƒCƒ“ƒ‹[ƒv
+    //ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½v
     public void mainLoop() {
-      //ƒQ[ƒ€ƒXƒe[ƒ^ƒXƒ`ƒFƒbƒN
+      //ï¿½Qï¿½[ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½`ï¿½Fï¿½bï¿½N
       chkGameStatus();
-      //Ä•`Ê
+      //ï¿½Ä•`ï¿½ï¿½
       repaint();
     }
   
-    //ƒtƒB[ƒ‹ƒhˆÚ“®ŠÖ”
+    //ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½Ú“ï¿½ï¿½Öï¿½
     public void moveFieldMap(int direction) {      
       switch (direction) {
         case Display.KEY_UP:
@@ -381,21 +381,21 @@ public class draponQuestMain extends IApplication {
       }
     }
     
-    //ƒQ[ƒ€ƒXƒe[ƒ^ƒXƒ`ƒFƒbƒN
+    //ï¿½Qï¿½[ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½`ï¿½Fï¿½bï¿½N
     public void chkGameStatus() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒEƒGƒCƒgj
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Eï¿½Gï¿½Cï¿½gï¿½j
         case GAME_WAIT:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentPlace) {
-            //êŠiƒtƒB[ƒ‹ƒhj
+            //ï¿½êŠï¿½iï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½j
             case PLACE_FIELD:
-              //ƒLƒƒƒ‰ƒNƒ^ƒAƒjƒ[ƒVƒ‡ƒ“—p
+              //ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½^ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½p
               switch (flip) {
                 case 0:
                   flip = 1;
@@ -419,21 +419,21 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //ƒZƒŒƒNƒgƒL[•ªŠòŠÖ”
+    //ï¿½Zï¿½ï¿½ï¿½Nï¿½gï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitKeySelect() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           currentGameStatus = GAME_WAIT;
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
               currentMode = MODE_COM;
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               break;
             default:
@@ -447,23 +447,23 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //ªƒL[•ªŠòŠÖ”
+    //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitUp() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
-              //ƒtƒB[ƒ‹ƒhˆÚ“®ŠÖ”
+              //ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½Ú“ï¿½ï¿½Öï¿½
               moveFieldMap(Display.KEY_UP);
-              //ƒRƒ}ƒ“ƒhƒZƒŒƒNƒgŠÖ”
+              //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½Zï¿½ï¿½ï¿½Nï¿½gï¿½Öï¿½
               selectCommand(Display.KEY_UP);
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               break;
             default:
@@ -477,23 +477,23 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //«ƒL[•ªŠòŠÖ”
+    //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitDown() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
-              //ƒtƒB[ƒ‹ƒhˆÚ“®ŠÖ”
+              //ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½Ú“ï¿½ï¿½Öï¿½
               moveFieldMap(Display.KEY_DOWN);
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
-              //ƒRƒ}ƒ“ƒhƒZƒŒƒNƒgŠÖ”
+              //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½Zï¿½ï¿½ï¿½Nï¿½gï¿½Öï¿½
               selectCommand(Display.KEY_DOWN);
               break;
             default:
@@ -507,21 +507,21 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //¨ƒL[•ªŠòŠÖ”
+    //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitRight() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
-              //ƒtƒB[ƒ‹ƒhˆÚ“®ŠÖ”
+              //ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½Ú“ï¿½ï¿½Öï¿½
               moveFieldMap(Display.KEY_RIGHT);
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               break;
             default:
@@ -535,21 +535,21 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //©ƒL[•ªŠòŠÖ”
+    //ï¿½ï¿½ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitLeft() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
-              //ƒtƒB[ƒ‹ƒhˆÚ“®ŠÖ”
+              //ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½Ú“ï¿½ï¿½Öï¿½
               moveFieldMap(Display.KEY_LEFT);
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               break;
             default:
@@ -563,19 +563,19 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //‰Eƒ\ƒtƒgƒL[•ªŠòŠÖ”
+    //ï¿½Eï¿½\ï¿½tï¿½gï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½Öï¿½
     public void hitSoft2() {
       switch (currentGameStatus) {
-        //ƒQ[ƒ€ó‘Ôiƒ^ƒCƒgƒ‹j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½j
         case GAME_TITLE:
           break;
-        //ƒQ[ƒ€ó‘ÔiƒI[ƒvƒ“j
+        //ï¿½Qï¿½[ï¿½ï¿½ï¿½ï¿½Ôiï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½j
         case GAME_OPEN:
           switch (currentMode) {
-            //ƒ‚[ƒhiˆÚ“®j
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Ú“ï¿½ï¿½j
             case MODE_MOVE:
               break;
-            //ƒ‚[ƒhiƒRƒ}ƒ“ƒhj
+            //ï¿½ï¿½ï¿½[ï¿½hï¿½iï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½j
             case MODE_COM:
               selectCommand(Display.KEY_SOFT2);
               currentMode = MODE_MOVE;
@@ -591,7 +591,7 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //ƒRƒ}ƒ“ƒhƒZƒŒƒNƒgŠÖ”
+    //ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½Zï¿½ï¿½ï¿½Nï¿½gï¿½Öï¿½
     public void selectCommand(int keyName) {
       if(currentMode == MODE_COM){
         switch (keyName) {
@@ -617,18 +617,18 @@ public class draponQuestMain extends IApplication {
       }
     }
 
-    //ƒf[ƒ^“Ç‚İ‚İ
+    //ï¿½fï¿½[ï¿½^ï¿½Ç‚İï¿½ï¿½ï¿½
     public void readData() {
       switch (currentPlace) {
-        //êŠiƒtƒB[ƒ‹ƒhj
+        //ï¿½êŠï¿½iï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½hï¿½j
         case PLACE_FIELD:
-          //‰æ‘œ“Ç‚İ‚İ
-          miMe1 = MediaManager.getImage("resource:///me1.gif");
-          miMe2 = MediaManager.getImage("resource:///me2.gif");
-          miSea = MediaManager.getImage("resource:///sea.gif");
-          miSnd = MediaManager.getImage("resource:///snd.gif");
-          miStp = MediaManager.getImage("resource:///stp.gif");
-          miFrst = MediaManager.getImage("resource:///wd.gif");
+          //ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½
+          miMe1 = MediaManager.getImage("resource:///images/me1.gif");
+          miMe2 = MediaManager.getImage("resource:///images/me2.gif");
+          miSea = MediaManager.getImage("resource:///images/sea.gif");
+          miSnd = MediaManager.getImage("resource:///images/snd.gif");
+          miStp = MediaManager.getImage("resource:///images/stp.gif");
+          miFrst = MediaManager.getImage("resource:///images/wd.gif");
           
           try{
             miMe1.use();
@@ -641,7 +641,7 @@ public class draponQuestMain extends IApplication {
             System.out.println("canvas():SYSTEM ERROR: " + th.toString());
           }
     
-          //ƒCƒ[ƒWƒIƒuƒWƒFƒNƒgŠi”[
+          //ï¿½Cï¿½ï¿½ï¿½[ï¿½Wï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½iï¿½[
           imgMe1 = miMe1.getImage();
           imgMe2 = miMe2.getImage();
           imgSea = miSea.getImage();
@@ -649,9 +649,9 @@ public class draponQuestMain extends IApplication {
           imgsStp = miStp.getImage();
           imgFrst = miFrst.getImage();
 
-          //ƒ}ƒbƒv—p
+          //ï¿½}ï¿½bï¿½vï¿½p
           imgFieldMap = new Image[fieldMapData.getMapLength()][fieldMapData.FIELD_MAP_WIDTH];
-          //ƒ}ƒbƒvƒƒ‚ƒŠ[î•ñ•Û‘¶
+          //ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Û‘ï¿½
           for(int i = 0; i < fieldMapData.getMapLength(); i++){
             for(int ii = 0; ii < fieldMapData.FIELD_MAP_WIDTH; ii++){
               switch (fieldMapData.mapDataReturnField(i, ii)) {
@@ -673,7 +673,7 @@ public class draponQuestMain extends IApplication {
               }
             }
           }
-          //ƒ\ƒtƒgƒL[‚Ìİ’è¨ƒNƒŠƒA
+          //ï¿½\ï¿½tï¿½gï¿½Lï¿½[ï¿½Ìİ’è¨ï¿½Nï¿½ï¿½ï¿½A
           setSoftLabel(SOFT_KEY_2, "CLEAR");
           currentGameStatus = GAME_OPEN;
           break;

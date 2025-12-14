@@ -116,6 +116,10 @@ public class DraponQuestFX extends Application {
     private String saveFileName = "draponquest_save.dat";
     private String saveMessage = null;
     private long saveMessageTime = 0;
+
+    // Battle reward message
+    public String battleRewardMessage = null;
+    public long battleRewardMessageTime = 0;
     
     private int score = 0;
     public int battlesWon = 0; // Track number of battles won
@@ -281,11 +285,11 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-            new Monster(monster1Image, "Tung Tung Tung Sahur", 8, 5, 2, 5, 10),
-            new Monster(monster2Image, "Tralalero Tralala", 12, 8, 4, 8, 15),
-            new Monster(monster3Image, "Bombardiro Crocodilo", 18, 12, 6, 12, 20),
-            new Monster(monster4Image, "Goblin", 15, 10, 5, 15, 25),
-            new Monster(monster5Image, "Orc", 25, 15, 8, 25, 40)
+            new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10),
+            new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15),
+            new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20),
+            new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25),
+            new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40)
         };
     }
     
@@ -473,6 +477,16 @@ public class DraponQuestFX extends Application {
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
+        // Display battle reward message
+        if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for 3 seconds
+            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.fillRect(0, DISP_HEIGHT / 2 - 24, DISP_WIDTH, 48);
+            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText(battleRewardMessage, DISP_WIDTH / 2, DISP_HEIGHT / 2 + 8);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset alignment
+        }
         if (levelUpMessage != null) {
             if (System.currentTimeMillis() - levelUpMessageTime < 2000) {
                 gc.setFill(javafx.scene.paint.Color.YELLOW);
