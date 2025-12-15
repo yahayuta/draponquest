@@ -1,14 +1,14 @@
-//スクリプト用クラス
+// Script class
 public class scriptData {
-  //@ 改行
-  //E スクリプト終了
-  //テストスクリプト
-  private static final String testScript[] = {"これはテストです@こんな感じですか？E"};
-  //テストスクリプト返却関数
+  // @ new line
+  // E script end
+  // Test script
+  private static final String testScript[] = {"This is a test.@This is the main message.HE"};
+  // Test script return function
   public static String returnTestScript(int scriptID, int numString) {
     return testScript[scriptID].substring(numString, numString + 1);
   }
-  //テストスクリプト長さ返却関数
+  // Test script length return function
   public static int returnTestScriptLength(int scriptID) {
     return testScript[scriptID].length();
   }
