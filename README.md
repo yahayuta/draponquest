@@ -56,19 +56,20 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 ### Features
 
 - **Classic RPG Gameplay**: Explore maps, interact with NPCs, and engage in battles
+- **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
 - **Score System**: Each time you move, your score increases by 1. Try to get the highest score by surviving and exploring! Your total score is shown on the game over screen.
 - **Retro Graphics**: Preserved original GIF sprites and tile graphics
 - **Command System**: Traditional menu-based interaction system
 - **Save/Load System**: Save your progress and continue later
 - **Modern Controls**: Keyboard-based navigation adapted for desktop
 - **Cross-Platform**: Runs on Windows, macOS, and Linux
-- **English Test Script**: All in-game test dialogue is now in English
+- **English Test Script & Comments**: All in-game test dialogue and code comments are now in English, improving readability and maintainability.
 - **Javadoc Documentation**: All main Java files are fully documented
 - **Debug Logging**: Console output for all major game logic (for developers)
 - **Improved Movement**: Player starts in a walkable area; movement logic fixed
 - **Battle System**: HP persists between battles, ESC only exits after battle is over
 - **Random Encounters**: 3% chance of monster encounter when moving
-- **Multiple Monsters**: Three different monsters with unique stats and appearances
+- **Multiple Monsters**: Encounter various monsters with unique stats and appearances. (Monster parameters have been adjusted to be weaker for a more forgiving experience.)
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
 - **Battle Win Counter**: Track and display the number of battles won
 - **Modern UI**: Clean, centered battle interface with proper spacing
@@ -157,16 +158,28 @@ mvn javafx:run
 ```
 draponquest/
 ├── src/
+│   ├── draponQuestMain.java             # Legacy DoJa main application (comments translated)
+│   ├── eventMapData.java                # Legacy DoJa event map data (empty)
+│   ├── fieldMapData.java                # Legacy DoJa field map data (comments translated)
+│   ├── scriptData.java                  # Legacy DoJa script data (comments translated)
 │   └── main/
 │       ├── java/com/draponquest/
-│       │   ├── DraponQuestFX.java      # Main game application (Javadoc documented)
-│       │   ├── GameInputHandler.java   # Input handling (Javadoc documented)
-│       │   ├── fieldMapData.java       # Map data and logic (Javadoc documented)
-│       │   └── scriptData.java         # Dialogue and script system (Javadoc documented)
+│       │   ├── AudioManager.java      # Manages game audio (Javadoc documented)
+│       │   ├── BattleManager.java     # Manages battle logic (Javadoc documented)
+│       │   ├── DraponQuestFX.java     # Main JavaFX game application (Javadoc documented)
+│       │   ├── GameInputHandler.java  # Handles user input (Javadoc documented)
+│       │   ├── Inventory.java         # Manages player inventory (Javadoc documented)
+│       │   ├── Item.java              # Represents game items (Javadoc documented)
+│       │   ├── LocalizationManager.java# Handles multi-language support (Javadoc documented)
+│       │   ├── Monster.java           # Represents game monsters (Javadoc documented)
+│       │   ├── Shop.java              # Manages shop interactions (Javadoc documented)
+│       │   └── fieldMapData.java      # Provides main game map data and logic (Javadoc documented)
+│       │   └── scriptData.java        # Provides main game script data and logic (Javadoc documented)
 │       └── resources/
-│           └── images/                  # Game graphics (GIF sprites)
-├── target/                              # Compiled classes
-├── bin/                                 # Original DoJa files
+│           ├── images/                  # Game graphics (GIF sprites)
+│           └── sounds/                  # Game audio files (WAV)
+├── target/                              # Compiled classes and resources (ignored by Git)
+├── bin/                                 # Original DoJa compiled files
 ├── pom.xml                             # Maven configuration
 ├── compile.bat                         # Windows compilation script
 ├── run.bat                            # Windows run script
@@ -218,7 +231,7 @@ draponquest/
 
 ### Key Features Implemented
 
-- ✅ Map rendering with tile-based graphics
+- ✅ **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
 - ✅ Player movement and collision detection (starts in walkable area)
 - ✅ Command menu system
 - ✅ Dialogue and script system (English test script)
@@ -228,12 +241,13 @@ draponquest/
 - ✅ HP persists between battles, resets only on game over
 - ✅ ESC only exits battle after win/lose
 - ✅ Javadoc documentation for all main files
+- ✅ All code comments translated to English for improved readability
 - ✅ Debug logging for all major logic (see console output)
 - ✅ Random monster encounters (3% chance on movement)
 - ✅ Multiple monster types with unique stats and appearances
 - ✅ Monster class with individual HP and attack ranges
-- ✅ Balanced combat with reduced monster attack values
-- ✅ Battle win counter with real-time display
+- ✅ Balanced combat with reduced monster attack values (monsters are weaker)
+- ✅ Battle rewards displayed: Gain XP and Gold after each victory, displayed prominently.
 - ✅ Modern battle UI with centered, spaced elements
 - ✅ Complete audio system with authentic Final Fantasy-style sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
