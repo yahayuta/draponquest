@@ -88,11 +88,19 @@ public class DraponQuestFX extends Application {
     private GameLoop gameLoop;
     private GameInputHandler inputHandler;
     private Image playerImage;
+    private Image playerImage1;
+    private Image playerImage2;
     private Image seaImage;
     private Image sandImage;
     private Image steppeImage;
     private Image forestImage;
     public Image shopImage;
+    private Image plainsImage;
+    private Image mountainImage;
+    private Image townImage;
+    private Image castleImage;
+    private Image bridgeImage;
+    private Image swampImage;
     private Image monster1Image;
     private Image monster2Image;
     private Image monster3Image;
@@ -237,6 +245,8 @@ public class DraponQuestFX extends Application {
      */
     private void initializeGame() {
         System.out.println("Initializing game components");
+        // Initialize map data
+        fieldMapData.initialize();
         // No need to initialize scriptBuffer anymore
         // Initialize map data
         fieldMapData.initialize();
@@ -244,11 +254,16 @@ public class DraponQuestFX extends Application {
         // Initialize audio system
         audioManager = AudioManager.getInstance();
         
-        // Load player image
+        // Load player images for animation
         try {
-            playerImage = new Image(getClass().getResourceAsStream("/images/me1.gif"));
+            playerImage1 = new Image(getClass().getResourceAsStream("/images/me1.gif"));
         } catch (Exception e) {
-            playerImage = null;
+            playerImage1 = null;
+        }
+        try {
+            playerImage2 = new Image(getClass().getResourceAsStream("/images/me2.gif"));
+        } catch (Exception e) {
+            playerImage2 = null;
         }
         
         // Load tile images
@@ -256,6 +271,12 @@ public class DraponQuestFX extends Application {
         try { sandImage = new Image(getClass().getResourceAsStream("/images/snd.gif")); } catch (Exception e) { sandImage = null; }
         try { steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif")); } catch (Exception e) { steppeImage = null; }
         try { forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif")); } catch (Exception e) { forestImage = null; }
+        try { plainsImage = new Image(getClass().getResourceAsStream("/images/plains.gif")); } catch (Exception e) { plainsImage = null; }
+        try { mountainImage = new Image(getClass().getResourceAsStream("/images/mountain.gif")); } catch (Exception e) { mountainImage = null; }
+        try { townImage = new Image(getClass().getResourceAsStream("/images/town.gif")); } catch (Exception e) { townImage = null; }
+        try { castleImage = new Image(getClass().getResourceAsStream("/images/castle.gif")); } catch (Exception e) { castleImage = null; }
+        try { bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.gif")); } catch (Exception e) { bridgeImage = null; }
+        try { swampImage = new Image(getClass().getResourceAsStream("/images/swamp.gif")); } catch (Exception e) { swampImage = null; }
         try {
             monster1Image = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
         } catch (Exception e) {
@@ -420,11 +441,17 @@ public class DraponQuestFX extends Application {
                 int tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
                 Image tileImage = null;
                 switch (tile) {
-                    case 0: tileImage = seaImage; break;
-                    case 1: tileImage = sandImage; break;
-                    case 2: tileImage = steppeImage; break;
-                    case 3: tileImage = forestImage; break;
-                    case 4: tileImage = shopImage; break;
+                    case fieldMapData.TILE_SEA: tileImage = seaImage; break;
+                    case fieldMapData.TILE_SAND: tileImage = sandImage; break;
+                    case fieldMapData.TILE_STEPPE: tileImage = steppeImage; break;
+                    case fieldMapData.TILE_FOREST: tileImage = forestImage; break;
+                    case fieldMapData.TILE_SHOP: tileImage = shopImage; break;
+                    case fieldMapData.TILE_PLAINS: tileImage = plainsImage; break;
+                    case fieldMapData.TILE_MOUNTAIN: tileImage = mountainImage; break;
+                    case fieldMapData.TILE_TOWN: tileImage = townImage; break;
+                    case fieldMapData.TILE_CASTLE: tileImage = castleImage; break;
+                    case fieldMapData.TILE_BRIDGE: tileImage = bridgeImage; break;
+                    case fieldMapData.TILE_SWAMP: tileImage = swampImage; break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
                     gc.drawImage(tileImage, j * 32, i * 32, 32, 32);
@@ -434,6 +461,13 @@ public class DraponQuestFX extends Application {
                         case 1: gc.setFill(javafx.scene.paint.Color.GOLD); break;
                         case 2: gc.setFill(javafx.scene.paint.Color.LIGHTGRAY); break;
                         case 3: gc.setFill(javafx.scene.paint.Color.FORESTGREEN); break;
+                        case fieldMapData.TILE_SHOP: gc.setFill(javafx.scene.paint.Color.BROWN); break; // Shop
+                        case fieldMapData.TILE_PLAINS: gc.setFill(javafx.scene.paint.Color.LIMEGREEN); break; // Plains
+                        case fieldMapData.TILE_MOUNTAIN: gc.setFill(javafx.scene.paint.Color.DARKGRAY); break; // Mountain
+                        case fieldMapData.TILE_TOWN: gc.setFill(javafx.scene.paint.Color.ORANGE); break; // Town
+                        case fieldMapData.TILE_CASTLE: gc.setFill(javafx.scene.paint.Color.LIGHTGRAY); break; // Castle
+                        case fieldMapData.TILE_BRIDGE: gc.setFill(javafx.scene.paint.Color.SADDLEBROWN); break; // Bridge
+                        case fieldMapData.TILE_SWAMP: gc.setFill(javafx.scene.paint.Color.DARKGREEN); break; // Swamp
                         default: gc.setFill(javafx.scene.paint.Color.BLACK); break;
                     }
                     gc.fillRect(j * 32, i * 32, 32, 32);
@@ -442,8 +476,9 @@ public class DraponQuestFX extends Application {
         }
         
         // Draw player sprite (scaled up)
-        if (playerImage != null && !playerImage.isError()) {
-            gc.drawImage(playerImage, 8 * 32, 8 * 32, 32, 32);
+        Image currentPlayerImage = (flip == 0) ? playerImage1 : playerImage2;
+        if (currentPlayerImage != null && !currentPlayerImage.isError()) {
+            gc.drawImage(currentPlayerImage, 8 * 32, 8 * 32, 32, 32);
         }
         
         // Display HP and score on map
