@@ -26,19 +26,19 @@ import com.draponquest.Monster;
  * @author Modern Migration
  */
 public class DraponQuestFX extends Application {
-    
+
     // Game constants (preserved from original)
     private static final int DISP_WIDTH = 512;
     private static final int DISP_HEIGHT = 512;
     private static final int WAIT_MSEC = 100;
-    
+
     // Game status constants
     private static final int GAME_TITLE = 0;
     private static final int GAME_OPEN = 1;
     private static final int GAME_WAIT = 2;
     private static final int GAME_CONT = 3;
     private static final int GAME_OVER = 4;
-    
+
     // Game modes
     static final int MODE_MOVE = 0;
     static final int MODE_COM = 1;
@@ -46,42 +46,42 @@ public class DraponQuestFX extends Application {
     static final int MODE_EVENT = 3;
     static final int MODE_SHOP = 4;
     static final int MODE_STATUS = 5;
-    
+
     // Places
     private static final int PLACE_FIELD = 0;
     private static final int PLACE_BLDNG = 1;
     private static final int PLACE_CAVE = 2;
-    
+
     // Commands
     private static final int COM_TALK = 1;
     private static final int COM_CHK = 2;
     private static final int COM_MGK = 3;
     private static final int COM_ITEM = 4;
     private static final int COM_STUS = 5;
-    
+
     // Battle commands
     private static final int BCOM_ATK = 1;
     private static final int BCOM_MGK = 2;
     private static final int BCOM_ITEM = 3;
     private static final int BCOM_RUN = 4;
-    
+
     // Game state variables
     public int currentGameStatus = GAME_TITLE;
     public int currentMode = MODE_MOVE;
     private int currentPlace = PLACE_FIELD;
     private int currentCommand = COM_TALK;
     private int flip = 0;
-    
+
     // Map variables
     private int fieldMapEndWidth = 16;
     private int fieldMapEndHeight = 16;
-    
+
     // Script variables
     private String[] scriptLines = null;
     private int scriptID = 0;
     private int scriptLineIndex = 0;
     private int scriptAdvanceTick = 0;
-    
+
     // JavaFX components
     private Canvas gameCanvas;
     private GraphicsContext gc;
@@ -104,6 +104,8 @@ public class DraponQuestFX extends Application {
     private Image monster1Image;
     private Image monster2Image;
     private Image monster3Image;
+    private Image monster4Image;
+    private Image monster5Image;
 
     public int playerHP = 40;
     public int maxPlayerHP = 40;
@@ -115,11 +117,11 @@ public class DraponQuestFX extends Application {
     public int playerDefense = 2;
     public String commandMessage = null;
     public long commandMessageTime = 0;
-    
+
     // Message box for shop actions
     public String shopMessage = null;
     public long shopMessageTime = 0;
-    
+
     // Save/load data
     private String saveFileName = "draponquest_save.dat";
     private String saveMessage = null;
@@ -128,15 +130,12 @@ public class DraponQuestFX extends Application {
     // Battle reward message
     public String battleRewardMessage = null;
     public long battleRewardMessageTime = 0;
-    
+
     private int score = 0;
     public int battlesWon = 0; // Track number of battles won
-    
+
     // Audio system
     public AudioManager audioManager;
-    
-
-
 
     public Monster[] monsters;
     private Inventory inventory;
@@ -145,6 +144,7 @@ public class DraponQuestFX extends Application {
 
     /**
      * Initializes the game and sets up the JavaFX UI.
+     * 
      * @param primaryStage The main application window.
      */
     @Override
@@ -156,37 +156,38 @@ public class DraponQuestFX extends Application {
         inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
         shop = new Shop();
         battleManager = new BattleManager(this);
-        
+
         // Create JavaFX UI
         gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
         gc = gameCanvas.getGraphicsContext2D();
-        
+
         // Create input handler
         inputHandler = new GameInputHandler(this);
-        
+
         // Create game loop
         gameLoop = new GameLoop();
-        
+
         // Setup scene
         StackPane root = new StackPane();
         root.getChildren().add(gameCanvas);
-        
+
         Scene scene = new Scene(root, DISP_WIDTH, DISP_HEIGHT);
         scene.setOnKeyPressed(this::handleKeyPressed);
         scene.setOnKeyReleased(inputHandler::handleKeyReleased);
-        
+
         // Setup stage
         primaryStage.setTitle("DraponQuest JavaFX");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-        
+
         // Start game loop
         gameLoop.start();
     }
 
     private void handleKeyPressed(KeyEvent event) {
-        // Always allow ENTER or SPACE to work for game state transitions (e.g., restarting from Game Over)
+        // Always allow ENTER or SPACE to work for game state transitions (e.g.,
+        // restarting from Game Over)
         if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
             hitKeySelect();
             return; // Consume the event so other handlers don't process it
@@ -197,7 +198,8 @@ public class DraponQuestFX extends Application {
         } else if (currentMode == MODE_SHOP) {
 
             if (event.getCode() == KeyCode.B) {
-                Item potion = shop.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst().orElse(null);
+                Item potion = shop.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst()
+                        .orElse(null);
                 if (potion != null) {
                     if (playerGold >= potion.getValue()) {
                         playerGold -= potion.getValue();
@@ -225,21 +227,23 @@ public class DraponQuestFX extends Application {
         }
 
         if (event.getCode() == KeyCode.P) {
-            Item potion = inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst().orElse(null);
+            Item potion = inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst()
+                    .orElse(null);
             if (potion != null) {
                 playerHP += 20;
                 if (playerHP > maxPlayerHP) {
                     playerHP = maxPlayerHP;
                 }
                 inventory.removeItem(potion);
-                System.out.println("You used a potion and restored 20 HP. You have " + inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).count() + " potions left.");
+                System.out.println("You used a potion and restored 20 HP. You have "
+                        + inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).count()
+                        + " potions left.");
             } else {
                 System.out.println("You have no potions left.");
             }
         }
     }
 
-    
     /**
      * Initializes game components, images, and script buffers.
      */
@@ -250,10 +254,10 @@ public class DraponQuestFX extends Application {
         // No need to initialize scriptBuffer anymore
         // Initialize map data
         fieldMapData.initialize();
-        
+
         // Initialize audio system
         audioManager = AudioManager.getInstance();
-        
+
         // Load player images for animation
         try {
             playerImage1 = new Image(getClass().getResourceAsStream("/images/me1.gif"));
@@ -265,18 +269,63 @@ public class DraponQuestFX extends Application {
         } catch (Exception e) {
             playerImage2 = null;
         }
-        
+
         // Load tile images
-        try { seaImage = new Image(getClass().getResourceAsStream("/images/sea.gif")); } catch (Exception e) { seaImage = null; }
-        try { sandImage = new Image(getClass().getResourceAsStream("/images/snd.gif")); } catch (Exception e) { sandImage = null; }
-        try { steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif")); } catch (Exception e) { steppeImage = null; }
-        try { forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif")); } catch (Exception e) { forestImage = null; }
-        try { plainsImage = new Image(getClass().getResourceAsStream("/images/plains.gif")); } catch (Exception e) { plainsImage = null; }
-        try { mountainImage = new Image(getClass().getResourceAsStream("/images/mountain.gif")); } catch (Exception e) { mountainImage = null; }
-        try { townImage = new Image(getClass().getResourceAsStream("/images/town.gif")); } catch (Exception e) { townImage = null; }
-        try { castleImage = new Image(getClass().getResourceAsStream("/images/castle.gif")); } catch (Exception e) { castleImage = null; }
-        try { bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.gif")); } catch (Exception e) { bridgeImage = null; }
-        try { swampImage = new Image(getClass().getResourceAsStream("/images/swamp.gif")); } catch (Exception e) { swampImage = null; }
+        try {
+            seaImage = new Image(getClass().getResourceAsStream("/images/sea.gif"));
+        } catch (Exception e) {
+            seaImage = null;
+        }
+        try {
+            sandImage = new Image(getClass().getResourceAsStream("/images/snd.gif"));
+        } catch (Exception e) {
+            sandImage = null;
+        }
+        try {
+            steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif"));
+        } catch (Exception e) {
+            steppeImage = null;
+        }
+        try {
+            forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif"));
+        } catch (Exception e) {
+            forestImage = null;
+        }
+        try {
+            shopImage = new Image(getClass().getResourceAsStream("/images/shop.gif"));
+        } catch (Exception e) {
+            shopImage = null;
+        }
+        try {
+            plainsImage = new Image(getClass().getResourceAsStream("/images/plains.gif"));
+        } catch (Exception e) {
+            plainsImage = null;
+        }
+        try {
+            mountainImage = new Image(getClass().getResourceAsStream("/images/mountain.gif"));
+        } catch (Exception e) {
+            mountainImage = null;
+        }
+        try {
+            townImage = new Image(getClass().getResourceAsStream("/images/town.gif"));
+        } catch (Exception e) {
+            townImage = null;
+        }
+        try {
+            castleImage = new Image(getClass().getResourceAsStream("/images/castle.gif"));
+        } catch (Exception e) {
+            castleImage = null;
+        }
+        try {
+            bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.gif"));
+        } catch (Exception e) {
+            bridgeImage = null;
+        }
+        try {
+            swampImage = new Image(getClass().getResourceAsStream("/images/swamp.gif"));
+        } catch (Exception e) {
+            swampImage = null;
+        }
         try {
             monster1Image = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
         } catch (Exception e) {
@@ -292,13 +341,11 @@ public class DraponQuestFX extends Application {
         } catch (Exception e) {
             monster3Image = null;
         }
-        Image monster4Image;
         try {
             monster4Image = new Image(getClass().getResourceAsStream("/images/monster4.gif"));
         } catch (Exception e) {
             monster4Image = null;
         }
-        Image monster5Image;
         try {
             monster5Image = new Image(getClass().getResourceAsStream("/images/monster5.gif"));
         } catch (Exception e) {
@@ -306,20 +353,20 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-            new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10),
-            new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15),
-            new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20),
-            new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25),
-            new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40)
+                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10),
+                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15),
+                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20),
+                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25),
+                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40)
         };
     }
-    
+
     /**
      * Main game loop using JavaFX AnimationTimer.
      */
     private class GameLoop extends AnimationTimer {
         private long lastUpdate = 0;
-        
+
         @Override
         public void handle(long now) {
             if (now - lastUpdate >= WAIT_MSEC * 1_000_000) { // Convert to nanoseconds
@@ -329,7 +376,7 @@ public class DraponQuestFX extends Application {
             }
         }
     }
-    
+
     /**
      * Updates the game logic based on the current state.
      */
@@ -365,7 +412,7 @@ public class DraponQuestFX extends Application {
                 break;
         }
     }
-    
+
     /**
      * Renders the game based on the current state.
      */
@@ -373,7 +420,7 @@ public class DraponQuestFX extends Application {
         // Clear canvas
         gc.setFill(javafx.scene.paint.Color.BLACK);
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-        
+
         // Render based on game state
         switch (currentGameStatus) {
             case GAME_TITLE:
@@ -393,44 +440,44 @@ public class DraponQuestFX extends Application {
                 break;
         }
     }
-    
+
     /**
      * Renders the title screen.
      */
     private void renderTitleScreen() {
         gc.setFill(javafx.scene.paint.Color.LIME);
         gc.setFont(javafx.scene.text.Font.font("Arial", 32));
-        
+
         gc.fillText("DRAPON QUEST", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.3);
         gc.fillText("PRESS ENTER", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.5);
-        
+
         // Audio controls help
         gc.setFont(javafx.scene.text.Font.font("Arial", 16));
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.fillText("Audio Controls:", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.7);
         gc.fillText("M: Toggle Music  S: Toggle Sound", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.75);
         gc.fillText("[ ]: Volume Control", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.8);
-        
+
         gc.setFill(javafx.scene.paint.Color.LIME);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.85);
         gc.fillText("yahayuta", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.9);
     }
-    
+
     /**
      * Renders the main game screen (map, player, UI).
      */
     private void renderGameScreen() {
         // Render field map
         renderFieldMap();
-        
+
         // Render player
         renderPlayer();
-        
+
         // Render UI elements
         renderUI();
     }
-    
+
     /**
      * Renders the field map and player sprite.
      */
@@ -441,46 +488,92 @@ public class DraponQuestFX extends Application {
                 int tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
                 Image tileImage = null;
                 switch (tile) {
-                    case fieldMapData.TILE_SEA: tileImage = seaImage; break;
-                    case fieldMapData.TILE_SAND: tileImage = sandImage; break;
-                    case fieldMapData.TILE_STEPPE: tileImage = steppeImage; break;
-                    case fieldMapData.TILE_FOREST: tileImage = forestImage; break;
-                    case fieldMapData.TILE_SHOP: tileImage = shopImage; break;
-                    case fieldMapData.TILE_PLAINS: tileImage = plainsImage; break;
-                    case fieldMapData.TILE_MOUNTAIN: tileImage = mountainImage; break;
-                    case fieldMapData.TILE_TOWN: tileImage = townImage; break;
-                    case fieldMapData.TILE_CASTLE: tileImage = castleImage; break;
-                    case fieldMapData.TILE_BRIDGE: tileImage = bridgeImage; break;
-                    case fieldMapData.TILE_SWAMP: tileImage = swampImage; break;
+                    case fieldMapData.TILE_SEA:
+                        tileImage = seaImage;
+                        break;
+                    case fieldMapData.TILE_SAND:
+                        tileImage = sandImage;
+                        break;
+                    case fieldMapData.TILE_STEPPE:
+                        tileImage = steppeImage;
+                        break;
+                    case fieldMapData.TILE_FOREST:
+                        tileImage = forestImage;
+                        break;
+                    case fieldMapData.TILE_SHOP:
+                        tileImage = shopImage;
+                        break;
+                    case fieldMapData.TILE_PLAINS:
+                        tileImage = plainsImage;
+                        break;
+                    case fieldMapData.TILE_MOUNTAIN:
+                        tileImage = mountainImage;
+                        break;
+                    case fieldMapData.TILE_TOWN:
+                        tileImage = townImage;
+                        break;
+                    case fieldMapData.TILE_CASTLE:
+                        tileImage = castleImage;
+                        break;
+                    case fieldMapData.TILE_BRIDGE:
+                        tileImage = bridgeImage;
+                        break;
+                    case fieldMapData.TILE_SWAMP:
+                        tileImage = swampImage;
+                        break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
                     gc.drawImage(tileImage, j * 32, i * 32, 32, 32);
                 } else {
                     switch (tile) {
-                        case 0: gc.setFill(javafx.scene.paint.Color.DEEPSKYBLUE); break;
-                        case 1: gc.setFill(javafx.scene.paint.Color.GOLD); break;
-                        case 2: gc.setFill(javafx.scene.paint.Color.LIGHTGRAY); break;
-                        case 3: gc.setFill(javafx.scene.paint.Color.FORESTGREEN); break;
-                        case fieldMapData.TILE_SHOP: gc.setFill(javafx.scene.paint.Color.BROWN); break; // Shop
-                        case fieldMapData.TILE_PLAINS: gc.setFill(javafx.scene.paint.Color.LIMEGREEN); break; // Plains
-                        case fieldMapData.TILE_MOUNTAIN: gc.setFill(javafx.scene.paint.Color.DARKGRAY); break; // Mountain
-                        case fieldMapData.TILE_TOWN: gc.setFill(javafx.scene.paint.Color.ORANGE); break; // Town
-                        case fieldMapData.TILE_CASTLE: gc.setFill(javafx.scene.paint.Color.LIGHTGRAY); break; // Castle
-                        case fieldMapData.TILE_BRIDGE: gc.setFill(javafx.scene.paint.Color.SADDLEBROWN); break; // Bridge
-                        case fieldMapData.TILE_SWAMP: gc.setFill(javafx.scene.paint.Color.DARKGREEN); break; // Swamp
-                        default: gc.setFill(javafx.scene.paint.Color.BLACK); break;
+                        case 0:
+                            gc.setFill(javafx.scene.paint.Color.DEEPSKYBLUE);
+                            break;
+                        case 1:
+                            gc.setFill(javafx.scene.paint.Color.GOLD);
+                            break;
+                        case 2:
+                            gc.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            break;
+                        case 3:
+                            gc.setFill(javafx.scene.paint.Color.FORESTGREEN);
+                            break;
+                        case fieldMapData.TILE_SHOP:
+                            gc.setFill(javafx.scene.paint.Color.BROWN);
+                            break; // Shop
+                        case fieldMapData.TILE_PLAINS:
+                            gc.setFill(javafx.scene.paint.Color.LIMEGREEN);
+                            break; // Plains
+                        case fieldMapData.TILE_MOUNTAIN:
+                            gc.setFill(javafx.scene.paint.Color.DARKGRAY);
+                            break; // Mountain
+                        case fieldMapData.TILE_TOWN:
+                            gc.setFill(javafx.scene.paint.Color.ORANGE);
+                            break; // Town
+                        case fieldMapData.TILE_CASTLE:
+                            gc.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            break; // Castle
+                        case fieldMapData.TILE_BRIDGE:
+                            gc.setFill(javafx.scene.paint.Color.SADDLEBROWN);
+                            break; // Bridge
+                        case fieldMapData.TILE_SWAMP:
+                            gc.setFill(javafx.scene.paint.Color.DARKGREEN);
+                            break; // Swamp
+                        default:
+                            gc.setFill(javafx.scene.paint.Color.BLACK);
+                            break;
                     }
                     gc.fillRect(j * 32, i * 32, 32, 32);
                 }
             }
         }
-        
+
         // Draw player sprite (scaled up)
         Image currentPlayerImage = (flip == 0) ? playerImage1 : playerImage2;
         if (currentPlayerImage != null && !currentPlayerImage.isError()) {
             gc.drawImage(currentPlayerImage, 8 * 32, 8 * 32, 32, 32);
         }
-        
+
         // Display HP and score on map
         gc.setFill(javafx.scene.paint.Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
@@ -489,7 +582,7 @@ public class DraponQuestFX extends Application {
         gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 10, 90);
         gc.fillText("Gold: " + playerGold, 10, 120);
         gc.fillText("Battles Won: " + battlesWon, 10, 150);
-        
+
         // Display audio status
         gc.setFont(javafx.scene.text.Font.font("Arial", 14));
         gc.setFill(audioManager.isMusicEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
@@ -497,9 +590,9 @@ public class DraponQuestFX extends Application {
         gc.setFill(audioManager.isSoundEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
         gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 200);
         gc.setFill(javafx.scene.paint.Color.YELLOW);
-        gc.fillText("Vol: " + (int)(audioManager.getMusicVolume() * 100) + "%", 10, 220);
+        gc.fillText("Vol: " + (int) (audioManager.getMusicVolume() * 100) + "%", 10, 220);
     }
-    
+
     /**
      * (No-op) Player is drawn in renderFieldMap().
      */
@@ -507,13 +600,14 @@ public class DraponQuestFX extends Application {
         // Remove player drawing here to avoid double rendering
         // Player is already drawn in renderFieldMap()
     }
-    
+
     /**
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
         // Display battle reward message
-        if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for 3 seconds
+        if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for
+                                                                                                          // 3 seconds
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.fillRect(0, DISP_HEIGHT / 2 - 24, DISP_WIDTH, 48);
             gc.setFill(javafx.scene.paint.Color.BLACK);
@@ -545,10 +639,10 @@ public class DraponQuestFX extends Application {
             if (scriptLines == null) {
                 String rawScript = scriptData.returnTestScript(scriptID, 0);
                 scriptLines = java.util.Arrays.stream(rawScript.split("@"))
-                    .map(String::trim)
-                    .map(line -> line.replaceAll("(H|E|HE)$", "").trim())
-                    .filter(line -> !line.isEmpty())
-                    .toArray(String[]::new);
+                        .map(String::trim)
+                        .map(line -> line.replaceAll("(H|E|HE)$", "").trim())
+                        .filter(line -> !line.isEmpty())
+                        .toArray(String[]::new);
                 scriptLineIndex = 0;
                 scriptAdvanceTick = 0;
             }
@@ -576,11 +670,11 @@ public class DraponQuestFX extends Application {
             gc.fillRect(0, DISP_HEIGHT / 2, 192, 192);
             gc.setFont(javafx.scene.text.Font.font("Arial", 32));
             String[] commands = {
-                LocalizationManager.getText("menu_talk"),
-                LocalizationManager.getText("menu_check"),
-                LocalizationManager.getText("menu_magic"),
-                LocalizationManager.getText("menu_item"),
-                LocalizationManager.getText("menu_status")
+                    LocalizationManager.getText("menu_talk"),
+                    LocalizationManager.getText("menu_check"),
+                    LocalizationManager.getText("menu_magic"),
+                    LocalizationManager.getText("menu_item"),
+                    LocalizationManager.getText("menu_status")
             };
             for (int i = 0; i < commands.length; i++) {
                 int y = DISP_HEIGHT / 2 + 16 + i * 36;
@@ -609,37 +703,41 @@ public class DraponQuestFX extends Application {
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH/2, 60);
+            gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH / 2, 60);
             // Draw monster name centered above image
-            if (battleManager.getCurrentMonster() != null && battleManager.getCurrentMonster().image != null && !battleManager.getCurrentMonster().image.isError()) {
+            if (battleManager.getCurrentMonster() != null && battleManager.getCurrentMonster().image != null
+                    && !battleManager.getCurrentMonster().image.isError()) {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 28));
                 gc.setFill(javafx.scene.paint.Color.YELLOW);
-                gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH/2, 120);
+                gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH / 2, 120);
                 // Draw monster image centered
-                gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH-128)/2, 130, 128, 128);
+                gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH - 128) / 2, 130, 128, 128);
             } else {
                 gc.setFill(javafx.scene.paint.Color.DARKRED);
-                gc.fillRect((DISP_WIDTH-128)/2, 130, 128, 128);
+                gc.fillRect((DISP_WIDTH - 128) / 2, 130, 128, 128);
                 gc.setFill(javafx.scene.paint.Color.WHITE);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
-                gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH/2, 190);
+                gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH / 2, 190);
             }
             // Draw HP bars, each on its own line, centered
             gc.setFont(javafx.scene.text.Font.font("Arial", 26));
             gc.setFill(javafx.scene.paint.Color.LIME);
-            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: " + playerAttack + " | DEF: " + playerDefense;
-            gc.fillText(playerHpStr, DISP_WIDTH/2, 290);
+            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: "
+                    + playerAttack + " | DEF: " + playerDefense;
+            gc.fillText(playerHpStr, DISP_WIDTH / 2, 290);
             gc.setFill(javafx.scene.paint.Color.RED);
-            String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp") + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: " + battleManager.getCurrentMonster().defense;
-            gc.fillText(monsterHpStr, DISP_WIDTH/2, 330);
+            String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp")
+                    + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
+                    + battleManager.getCurrentMonster().defense;
+            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
             // Draw battle message
             gc.setFill(javafx.scene.paint.Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-            gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH/2, DISP_HEIGHT-80);
+            gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH / 2, DISP_HEIGHT - 80);
             // Draw action options
             gc.setFill(javafx.scene.paint.Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH/2, DISP_HEIGHT-30);
+            gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH / 2, DISP_HEIGHT - 30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         if (currentMode == MODE_SHOP) {
@@ -663,8 +761,8 @@ public class DraponQuestFX extends Application {
 
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.setFill(javafx.scene.paint.Color.WHITE);
-            gc.fillText("Press 'B' to buy a Potion.", DISP_WIDTH/2, DISP_HEIGHT-80);
-            gc.fillText("Press ESC to exit.", DISP_WIDTH/2, DISP_HEIGHT-40);
+            gc.fillText("Press 'B' to buy a Potion.", DISP_WIDTH / 2, DISP_HEIGHT - 80);
+            gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
 
             if (shopMessage != null) {
                 gc.setFill(javafx.scene.paint.Color.YELLOW);
@@ -694,7 +792,7 @@ public class DraponQuestFX extends Application {
             gc.fillText(saveMessage, 16, 32);
         }
     }
-    
+
     private void renderStatusScreen() {
         gc.setFill(javafx.scene.paint.Color.rgb(32, 32, 32, 0.85));
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
@@ -713,21 +811,21 @@ public class DraponQuestFX extends Application {
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
         gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
     }
-    
+
     /**
      * Renders the wait screen (not implemented).
      */
     private void renderWaitScreen() {
         // TODO: Implement wait screen
     }
-    
+
     /**
      * Renders the continue screen (not implemented).
      */
     private void renderContinueScreen() {
         // TODO: Implement continue screen
     }
-    
+
     /**
      * Renders the game over screen.
      */
@@ -743,7 +841,7 @@ public class DraponQuestFX extends Application {
         gc.fillText(LocalizationManager.getText("total_score") + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
         gc.fillText(LocalizationManager.getText("battles_won") + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
     }
-    
+
     /**
      * Handles ENTER/SPACE key logic for state transitions and command selection.
      */
@@ -785,65 +883,83 @@ public class DraponQuestFX extends Application {
             handleCommandSelection();
         }
     }
-    
+
     /**
      * Handles UP key/menu navigation.
      */
     public void hitUp() {
         System.out.println("hitUp called - currentMode: " + currentMode);
-        if (commandMessage != null) { commandMessage = null; return; }
+        if (commandMessage != null) {
+            commandMessage = null;
+            return;
+        }
         if (currentMode == MODE_MOVE) {
             moveFieldMap(0); // Up direction
         } else if (currentMode == MODE_COM) {
             currentCommand--;
-            if (currentCommand < COM_TALK) currentCommand = COM_STUS;
+            if (currentCommand < COM_TALK)
+                currentCommand = COM_STUS;
             System.out.println("Command menu up: " + currentCommand);
         }
     }
-    
+
     /**
      * Handles DOWN key/menu navigation.
      */
     public void hitDown() {
         System.out.println("hitDown called - currentMode: " + currentMode);
-        if (commandMessage != null) { commandMessage = null; return; }
+        if (commandMessage != null) {
+            commandMessage = null;
+            return;
+        }
         if (currentMode == MODE_MOVE) {
             moveFieldMap(1); // Down direction
         } else if (currentMode == MODE_COM) {
             currentCommand++;
-            if (currentCommand > COM_STUS) currentCommand = COM_TALK;
+            if (currentCommand > COM_STUS)
+                currentCommand = COM_TALK;
             System.out.println("Command menu down: " + currentCommand);
         }
     }
-    
+
     /**
      * Handles LEFT key.
      */
     public void hitLeft() {
         System.out.println("hitLeft called - currentMode: " + currentMode);
-        if (commandMessage != null) { commandMessage = null; return; }
+        if (commandMessage != null) {
+            commandMessage = null;
+            return;
+        }
         if (currentMode == MODE_MOVE) {
             moveFieldMap(2); // Left direction
         }
     }
-    
+
     /**
      * Handles RIGHT key.
      */
     public void hitRight() {
         System.out.println("hitRight called - currentMode: " + currentMode);
-        if (commandMessage != null) { commandMessage = null; return; }
+        if (commandMessage != null) {
+            commandMessage = null;
+            return;
+        }
         if (currentMode == MODE_MOVE) {
             moveFieldMap(3); // Right direction
         }
     }
-    
+
     /**
      * Handles ESC key for exiting menus, events, or battle (if over).
      */
     public void hitSoft2() {
-        System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP=" + battleManager.getMonsterHP());
-        if (commandMessage != null) { commandMessage = null; return; }
+        System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP="
+                + battleManager.getMonsterHP());
+        if (commandMessage != null) {
+            commandMessage = null;
+            return;
+        }
         if (currentMode == MODE_COM || currentMode == MODE_EVENT) {
             System.out.println("ESC: Exiting command/event mode");
             currentMode = MODE_MOVE;
@@ -864,9 +980,10 @@ public class DraponQuestFX extends Application {
         }
         // TODO: Implement soft key 2 functionality for other modes if needed
     }
-    
+
     /**
      * Checks if a map tile is walkable (not sea).
+     * 
      * @param row The map row.
      * @param col The map column.
      * @return True if walkable, false otherwise.
@@ -880,6 +997,7 @@ public class DraponQuestFX extends Application {
 
     /**
      * Moves the player on the map and triggers random encounters.
+     * 
      * @param direction 0=up, 1=down, 2=left, 3=right
      */
     private void moveFieldMap(int direction) {
@@ -888,26 +1006,37 @@ public class DraponQuestFX extends Application {
         int newRow = fieldMapEndHeight;
         int newCol = fieldMapEndWidth;
         switch (direction) {
-            case 0: newRow = fieldMapEndHeight - 1; break;
-            case 1: newRow = fieldMapEndHeight + 1; break;
-            case 2: newCol = fieldMapEndWidth - 1; break;
-            case 3: newCol = fieldMapEndWidth + 1; break;
+            case 0:
+                newRow = fieldMapEndHeight - 1;
+                break;
+            case 1:
+                newRow = fieldMapEndHeight + 1;
+                break;
+            case 2:
+                newCol = fieldMapEndWidth - 1;
+                break;
+            case 3:
+                newCol = fieldMapEndWidth + 1;
+                break;
         }
         int playerRow = newRow + 8;
         int playerCol = newCol + 8;
         System.out.println("Attempting move to: row=" + playerRow + ", col=" + playerCol);
         if (playerRow >= 0 && playerRow < fieldMapData.getMapLength() &&
-            playerCol >= 0 && playerCol < fieldMapData.FIELD_MAP_WIDTH &&
-            isWalkable(playerRow, playerCol)) {
+                playerCol >= 0 && playerCol < fieldMapData.FIELD_MAP_WIDTH &&
+                isWalkable(playerRow, playerCol)) {
             fieldMapEndHeight = newRow;
             fieldMapEndWidth = newCol;
-            if (fieldMapEndHeight < 0) fieldMapEndHeight = 0;
+            if (fieldMapEndHeight < 0)
+                fieldMapEndHeight = 0;
             if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
                 fieldMapEndHeight = fieldMapData.getMapLength() - 16;
-            if (fieldMapEndWidth < 0) fieldMapEndWidth = 0;
+            if (fieldMapEndWidth < 0)
+                fieldMapEndWidth = 0;
             if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
                 fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
-            System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth=" + fieldMapEndWidth);
+            System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth="
+                    + fieldMapEndWidth);
             // Random encounter: 3% chance
             if (Math.random() < 0.03) {
                 System.out.println("Random encounter triggered!");
@@ -920,7 +1049,7 @@ public class DraponQuestFX extends Application {
             System.out.println("Move blocked: not walkable or out of bounds");
         }
     }
-    
+
     /**
      * Saves the current game state to a file.
      */
@@ -928,9 +1057,9 @@ public class DraponQuestFX extends Application {
         System.out.println("Saving game...");
         try {
             String saveData = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-                currentGameStatus, currentMode, currentPlace, currentCommand,
-                fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip,
-                playerXP, playerLevel, xpToNextLevel, maxPlayerHP, playerGold);
+                    currentGameStatus, currentMode, currentPlace, currentCommand,
+                    fieldMapEndWidth, fieldMapEndHeight, scriptID, scriptLineIndex, flip,
+                    playerXP, playerLevel, xpToNextLevel, maxPlayerHP, playerGold);
             Files.write(Paths.get(saveFileName), saveData.getBytes());
             saveMessage = LocalizationManager.getText("save_success");
             saveMessageTime = System.currentTimeMillis();
@@ -943,7 +1072,7 @@ public class DraponQuestFX extends Application {
             System.out.println("Save failed: " + e.getMessage());
         }
     }
-    
+
     /**
      * Loads the game state from a file.
      */
@@ -979,13 +1108,13 @@ public class DraponQuestFX extends Application {
             System.out.println("Load failed: " + e.getMessage());
         }
     }
-    
+
     private String levelUpMessage = null;
     private long levelUpMessageTime = 0;
-    
+
     public void levelUp() {
         playerLevel++;
-        xpToNextLevel = (int)(xpToNextLevel * 1.5);
+        xpToNextLevel = (int) (xpToNextLevel * 1.5);
         maxPlayerHP += 10;
         playerHP = maxPlayerHP;
         playerAttack += 2;
@@ -993,7 +1122,7 @@ public class DraponQuestFX extends Application {
         levelUpMessage = "You have reached level " + playerLevel + "!";
         levelUpMessageTime = System.currentTimeMillis();
     }
-    
+
     /**
      * Handles command menu selection logic.
      */
@@ -1010,7 +1139,7 @@ public class DraponQuestFX extends Application {
             return;
         }
         // Show message for selected command or switch to battle/event
-        String[] commands = {"TALK", "CHECK", "MAGIC", "ITEM", "STATUS"};
+        String[] commands = { "TALK", "CHECK", "MAGIC", "ITEM", "STATUS" };
         if (currentCommand == COM_MGK) {
             System.out.println("MAGIC selected: starting battle");
             battleManager.startBattle();
@@ -1024,7 +1153,7 @@ public class DraponQuestFX extends Application {
             System.out.println("Command message set: " + commandMessage);
         }
     }
-    
+
     /**
      * Toggle background music on/off
      */
@@ -1034,14 +1163,14 @@ public class DraponQuestFX extends Application {
             audioManager.playMusic(AudioManager.MUSIC_FIELD);
         }
     }
-    
+
     /**
      * Toggle sound effects on/off
      */
     public void toggleSound() {
         audioManager.setSoundEnabled(!audioManager.isSoundEnabled());
     }
-    
+
     /**
      * Toggle between English and Japanese language
      */
@@ -1052,7 +1181,7 @@ public class DraponQuestFX extends Application {
         scriptLines = null;
         System.out.println("Language changed to: " + LocalizationManager.getLanguageDisplayName());
     }
-    
+
     /**
      * Decrease volume for both music and sound effects
      */
@@ -1062,7 +1191,7 @@ public class DraponQuestFX extends Application {
         audioManager.setMusicVolume(newMusicVol);
         audioManager.setSoundVolume(newSoundVol);
     }
-    
+
     /**
      * Increase volume for both music and sound effects
      */
@@ -1072,12 +1201,13 @@ public class DraponQuestFX extends Application {
         audioManager.setMusicVolume(newMusicVol);
         audioManager.setSoundVolume(newSoundVol);
     }
-    
+
     /**
      * Main entry point for the application.
+     * 
      * @param args Command-line arguments.
      */
     public static void main(String[] args) {
         launch(args);
     }
-} 
+}
