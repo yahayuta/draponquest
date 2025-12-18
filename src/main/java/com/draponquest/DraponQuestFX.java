@@ -105,6 +105,7 @@ public class DraponQuestFX extends Application {
     private Image swampImage;
     private Image wallImage;
     private Image floorImage;
+    private Image caveImage;
     private Image monster1Image;
     private Image monster2Image;
     private Image monster3Image;
@@ -341,6 +342,11 @@ public class DraponQuestFX extends Application {
             floorImage = null;
         }
         try {
+            caveImage = new Image(getClass().getResourceAsStream("/images/cave.gif"));
+        } catch (Exception e) {
+            caveImage = null;
+        }
+        try {
             monster1Image = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
         } catch (Exception e) {
             monster1Image = null;
@@ -502,6 +508,8 @@ public class DraponQuestFX extends Application {
                 int tile;
                 if (currentPlace == PLACE_BLDNG) {
                     tile = fieldMapData.mapDataReturnTown(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                } else if (currentPlace == PLACE_CAVE) {
+                    tile = fieldMapData.mapDataReturnCave(i + fieldMapEndHeight, j + fieldMapEndWidth);
                 } else {
                     tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
                 }
@@ -545,6 +553,9 @@ public class DraponQuestFX extends Application {
                         break;
                     case fieldMapData.TILE_FLOOR:
                         tileImage = floorImage;
+                        break;
+                    case fieldMapData.TILE_CAVE:
+                        tileImage = caveImage;
                         break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
@@ -590,6 +601,9 @@ public class DraponQuestFX extends Application {
                         case fieldMapData.TILE_FLOOR:
                             gc.setFill(javafx.scene.paint.Color.rgb(200, 180, 150));
                             break; // Floor
+                        case fieldMapData.TILE_CAVE:
+                            gc.setFill(javafx.scene.paint.Color.BLACK);
+                            break; // Cave
                         default:
                             gc.setFill(javafx.scene.paint.Color.BLACK);
                             break;
@@ -1023,6 +1037,8 @@ public class DraponQuestFX extends Application {
         int tile;
         if (currentPlace == PLACE_BLDNG) {
             tile = fieldMapData.mapDataReturnTown(row, col);
+        } else if (currentPlace == PLACE_CAVE) {
+            tile = fieldMapData.mapDataReturnCave(row, col);
         } else {
             tile = fieldMapData.mapDataReturnField(row, col);
         }
@@ -1059,6 +1075,23 @@ public class DraponQuestFX extends Application {
         int playerRow = newRow + 8;
         int playerCol = newCol + 8;
         System.out.println("Attempting move to: row=" + playerRow + ", col=" + playerCol);
+
+        // EXIT LOGIC FOR TOWN/CAVE (New)
+        if (currentPlace != PLACE_FIELD) {
+            int currentPlayerRow = fieldMapEndHeight + 8;
+            int currentPlayerCol = fieldMapEndWidth + 8;
+            // If at the entrance and moving down, exit to overworld
+            if (currentPlayerRow == 15 && direction == 1 && (currentPlayerCol == 7 || currentPlayerCol == 8)) {
+                currentPlace = PLACE_FIELD;
+                fieldMapEndWidth = savedFieldMapX;
+                fieldMapEndHeight = savedFieldMapY;
+                audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                audioManager.playSound(AudioManager.SOUND_MOVE);
+                System.out.println("Exited area by stepping DOWN at: " + fieldMapEndHeight + "," + fieldMapEndWidth);
+                return;
+            }
+        }
+
         if (playerRow >= 0 && playerRow < fieldMapData.getMapLength() &&
                 playerCol >= 0 && playerCol < fieldMapData.FIELD_MAP_WIDTH &&
                 isWalkable(playerRow, playerCol)) {
@@ -1067,35 +1100,33 @@ public class DraponQuestFX extends Application {
 
             // Transition logic
             int currentTile;
-            if (currentPlace == PLACE_BLDNG) {
-                currentTile = fieldMapData.mapDataReturnTown(playerRow, playerCol);
-                // Exit town if at the exit tile
-                if (playerRow == 15 && (playerCol == 7 || playerCol == 8)) {
-                    currentPlace = PLACE_FIELD;
-                    fieldMapEndWidth = savedFieldMapX;
-                    fieldMapEndHeight = savedFieldMapY;
-                    audioManager.playMusic(AudioManager.MUSIC_FIELD);
-                    System.out.println("Exited town to field at: " + fieldMapEndHeight + "," + fieldMapEndWidth);
-                }
-            } else {
+            if (currentPlace == PLACE_FIELD) {
                 currentTile = fieldMapData.mapDataReturnField(playerRow, playerCol);
-                // Enter town or castle if on appropriate tile
-                if (currentTile == fieldMapData.TILE_TOWN || currentTile == fieldMapData.TILE_CASTLE) {
+                // Enter town, castle, or cave if on appropriate tile
+                if (currentTile == fieldMapData.TILE_TOWN || currentTile == fieldMapData.TILE_CASTLE
+                        || currentTile == fieldMapData.TILE_CAVE) {
                     savedFieldMapX = fieldMapEndWidth;
                     savedFieldMapY = fieldMapEndHeight;
-                    currentPlace = PLACE_BLDNG;
+
+                    if (currentTile == fieldMapData.TILE_CAVE) {
+                        currentPlace = PLACE_CAVE;
+                        audioManager.playMusic(AudioManager.MUSIC_BATTLE); // Use battle music for caves for now
+                    } else {
+                        currentPlace = PLACE_BLDNG;
+                        if (currentTile == fieldMapData.TILE_CASTLE) {
+                            audioManager.playMusic(AudioManager.MUSIC_TITLE);
+                        } else {
+                            audioManager.playMusic(AudioManager.MUSIC_TOWN);
+                        }
+                    }
+
                     // Start at the bottom of the area (entrance)
                     fieldMapEndWidth = 0;
                     fieldMapEndHeight = 7; // 7 + 8 = 15 (bottom row)
-
-                    if (currentTile == fieldMapData.TILE_CASTLE) {
-                        audioManager.playMusic(AudioManager.MUSIC_TITLE); // Use title for castle for now
-                    } else {
-                        audioManager.playMusic(AudioManager.MUSIC_TOWN);
-                    }
                     System.out.println("Entered area from field at: " + savedFieldMapY + "," + savedFieldMapX);
                 }
             }
+            // (Exit logic removed from here as it's now handled at the start of the method)
 
             if (currentPlace == PLACE_FIELD) {
                 if (fieldMapEndHeight < 0)
@@ -1107,21 +1138,22 @@ public class DraponQuestFX extends Application {
                 if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
                     fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
             } else {
-                // Town is 16x16, allow scrolling but keep it reasonable
+                // Town/Cave is 16x16, player centered at 8
                 if (fieldMapEndHeight < -8)
                     fieldMapEndHeight = -8;
-                if (fieldMapEndHeight > 15)
-                    fieldMapEndHeight = 15;
+                if (fieldMapEndHeight > 7)
+                    fieldMapEndHeight = 7;
                 if (fieldMapEndWidth < -8)
                     fieldMapEndWidth = -8;
-                if (fieldMapEndWidth > 15)
-                    fieldMapEndWidth = 15;
+                if (fieldMapEndWidth > 7)
+                    fieldMapEndWidth = 7;
             }
 
             System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth="
                     + fieldMapEndWidth);
-            // Random encounter: 3% chance (only in field)
-            if (currentPlace == PLACE_FIELD && Math.random() < 0.03) {
+            // Random encounter: 3% chance in field, 8% in cave
+            double encounterRate = (currentPlace == PLACE_CAVE) ? 0.08 : 0.03;
+            if ((currentPlace == PLACE_FIELD || currentPlace == PLACE_CAVE) && Math.random() < encounterRate) {
                 System.out.println("Random encounter triggered!");
                 battleManager.startBattle();
             }
