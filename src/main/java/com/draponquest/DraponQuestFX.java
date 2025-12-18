@@ -74,7 +74,9 @@ public class DraponQuestFX extends Application {
 
     // Map variables
     private int fieldMapEndWidth = 16;
-    private int fieldMapEndHeight = 16;
+    private int fieldMapEndHeight = 40;
+    private int savedFieldMapX = 0;
+    private int savedFieldMapY = 0;
 
     // Script variables
     private String[] scriptLines = null;
@@ -101,6 +103,8 @@ public class DraponQuestFX extends Application {
     private Image castleImage;
     private Image bridgeImage;
     private Image swampImage;
+    private Image wallImage;
+    private Image floorImage;
     private Image monster1Image;
     private Image monster2Image;
     private Image monster3Image;
@@ -327,6 +331,16 @@ public class DraponQuestFX extends Application {
             swampImage = null;
         }
         try {
+            wallImage = new Image(getClass().getResourceAsStream("/images/wall.gif"));
+        } catch (Exception e) {
+            wallImage = null;
+        }
+        try {
+            floorImage = new Image(getClass().getResourceAsStream("/images/floor.gif"));
+        } catch (Exception e) {
+            floorImage = null;
+        }
+        try {
             monster1Image = new Image(getClass().getResourceAsStream("/images/monster1.gif"));
         } catch (Exception e) {
             monster1Image = null;
@@ -485,7 +499,12 @@ public class DraponQuestFX extends Application {
         // Draw 16x16 tiles, each 32x32 pixels (fills 512x512 window)
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                int tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                int tile;
+                if (currentPlace == PLACE_BLDNG) {
+                    tile = fieldMapData.mapDataReturnTown(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                } else {
+                    tile = fieldMapData.mapDataReturnField(i + fieldMapEndHeight, j + fieldMapEndWidth);
+                }
                 Image tileImage = null;
                 switch (tile) {
                     case fieldMapData.TILE_SEA:
@@ -520,6 +539,12 @@ public class DraponQuestFX extends Application {
                         break;
                     case fieldMapData.TILE_SWAMP:
                         tileImage = swampImage;
+                        break;
+                    case fieldMapData.TILE_WALL:
+                        tileImage = wallImage;
+                        break;
+                    case fieldMapData.TILE_FLOOR:
+                        tileImage = floorImage;
                         break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
@@ -559,6 +584,12 @@ public class DraponQuestFX extends Application {
                         case fieldMapData.TILE_SWAMP:
                             gc.setFill(javafx.scene.paint.Color.DARKGREEN);
                             break; // Swamp
+                        case fieldMapData.TILE_WALL:
+                            gc.setFill(javafx.scene.paint.Color.DARKSLATEGRAY);
+                            break; // Wall
+                        case fieldMapData.TILE_FLOOR:
+                            gc.setFill(javafx.scene.paint.Color.rgb(200, 180, 150));
+                            break; // Floor
                         default:
                             gc.setFill(javafx.scene.paint.Color.BLACK);
                             break;
@@ -989,10 +1020,16 @@ public class DraponQuestFX extends Application {
      * @return True if walkable, false otherwise.
      */
     private boolean isWalkable(int row, int col) {
-        int tile = fieldMapData.mapDataReturnField(row, col);
-        boolean walkable = tile != 0;
+        int tile;
+        if (currentPlace == PLACE_BLDNG) {
+            tile = fieldMapData.mapDataReturnTown(row, col);
+        } else {
+            tile = fieldMapData.mapDataReturnField(row, col);
+        }
+        // Sea (0) and Wall (11) are unwalkable
+        boolean walkable = tile != 0 && tile != fieldMapData.TILE_WALL;
         System.out.println("isWalkable: row=" + row + ", col=" + col + ", tile=" + tile + ", walkable=" + walkable);
-        return walkable; // Only sea (tile 0) is unwalkable
+        return walkable;
     }
 
     /**
@@ -1027,18 +1064,64 @@ public class DraponQuestFX extends Application {
                 isWalkable(playerRow, playerCol)) {
             fieldMapEndHeight = newRow;
             fieldMapEndWidth = newCol;
-            if (fieldMapEndHeight < 0)
-                fieldMapEndHeight = 0;
-            if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
-                fieldMapEndHeight = fieldMapData.getMapLength() - 16;
-            if (fieldMapEndWidth < 0)
-                fieldMapEndWidth = 0;
-            if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
-                fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
+
+            // Transition logic
+            int currentTile;
+            if (currentPlace == PLACE_BLDNG) {
+                currentTile = fieldMapData.mapDataReturnTown(playerRow, playerCol);
+                // Exit town if at the exit tile
+                if (playerRow == 15 && (playerCol == 7 || playerCol == 8)) {
+                    currentPlace = PLACE_FIELD;
+                    fieldMapEndWidth = savedFieldMapX;
+                    fieldMapEndHeight = savedFieldMapY;
+                    audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                    System.out.println("Exited town to field at: " + fieldMapEndHeight + "," + fieldMapEndWidth);
+                }
+            } else {
+                currentTile = fieldMapData.mapDataReturnField(playerRow, playerCol);
+                // Enter town or castle if on appropriate tile
+                if (currentTile == fieldMapData.TILE_TOWN || currentTile == fieldMapData.TILE_CASTLE) {
+                    savedFieldMapX = fieldMapEndWidth;
+                    savedFieldMapY = fieldMapEndHeight;
+                    currentPlace = PLACE_BLDNG;
+                    // Start at the bottom of the area (entrance)
+                    fieldMapEndWidth = 0;
+                    fieldMapEndHeight = 7; // 7 + 8 = 15 (bottom row)
+
+                    if (currentTile == fieldMapData.TILE_CASTLE) {
+                        audioManager.playMusic(AudioManager.MUSIC_TITLE); // Use title for castle for now
+                    } else {
+                        audioManager.playMusic(AudioManager.MUSIC_TOWN);
+                    }
+                    System.out.println("Entered area from field at: " + savedFieldMapY + "," + savedFieldMapX);
+                }
+            }
+
+            if (currentPlace == PLACE_FIELD) {
+                if (fieldMapEndHeight < 0)
+                    fieldMapEndHeight = 0;
+                if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
+                    fieldMapEndHeight = fieldMapData.getMapLength() - 16;
+                if (fieldMapEndWidth < 0)
+                    fieldMapEndWidth = 0;
+                if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
+                    fieldMapEndWidth = fieldMapData.FIELD_MAP_WIDTH - 16;
+            } else {
+                // Town is 16x16, allow scrolling but keep it reasonable
+                if (fieldMapEndHeight < -8)
+                    fieldMapEndHeight = -8;
+                if (fieldMapEndHeight > 15)
+                    fieldMapEndHeight = 15;
+                if (fieldMapEndWidth < -8)
+                    fieldMapEndWidth = -8;
+                if (fieldMapEndWidth > 15)
+                    fieldMapEndWidth = 15;
+            }
+
             System.out.println("Player moved to: fieldMapEndHeight=" + fieldMapEndHeight + ", fieldMapEndWidth="
                     + fieldMapEndWidth);
-            // Random encounter: 3% chance
-            if (Math.random() < 0.03) {
+            // Random encounter: 3% chance (only in field)
+            if (currentPlace == PLACE_FIELD && Math.random() < 0.03) {
                 System.out.println("Random encounter triggered!");
                 battleManager.startBattle();
             }

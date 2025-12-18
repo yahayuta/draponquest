@@ -29,6 +29,13 @@ public class fieldMapData {
     public static final int TILE_CASTLE = 8;
     public static final int TILE_BRIDGE = 9;
     public static final int TILE_SWAMP = 10;
+    public static final int TILE_WALL = 11;
+    public static final int TILE_FLOOR = 12;
+
+    /**
+     * The 2D array representing the town map layout.
+     */
+    private static int[][] mapDataTown = new int[16][16];
 
     /**
      * Returns the tile value at the specified row and column.
@@ -44,6 +51,20 @@ public class fieldMapData {
             return TILE_SEA; // Return sea for out of bounds
         }
         return mapDataField[row][col];
+    }
+
+    /**
+     * Returns the tile value from the town map at the specified row and column.
+     * 
+     * @param row The row index.
+     * @param col The column index.
+     * @return The tile value.
+     */
+    public static int mapDataReturnTown(int row, int col) {
+        if (row < 0 || row >= mapDataTown.length || col < 0 || col >= mapDataTown[0].length) {
+            return TILE_WALL; // Return wall for out of bounds
+        }
+        return mapDataTown[row][col];
     }
 
     /**
@@ -393,5 +414,37 @@ public class fieldMapData {
 
         // Shop on eastern continent
         mapDataField[22][54] = TILE_SHOP;
+
+        // === INITIALIZE TOWN MAP (Sample: Brecconary) ===
+        // Fill town map data
+        for (int r = 0; r < 16; r++) {
+            for (int c = 0; c < 16; c++) {
+                if (r == 0 || r == 15 || c == 0 || c == 15) {
+                    // Entrance/Exit at the bottom
+                    if (r == 15 && (c == 7 || c == 8)) {
+                        mapDataTown[r][c] = TILE_FLOOR;
+                    } else {
+                        mapDataTown[r][c] = TILE_WALL;
+                    }
+                } else {
+                    mapDataTown[r][c] = TILE_FLOOR;
+                }
+            }
+        }
+        // Add some "buildings" (walls) inside the town
+        for (int c = 3; c < 7; c++)
+            mapDataTown[3][c] = TILE_WALL;
+        for (int c = 9; c < 13; c++)
+            mapDataTown[3][c] = TILE_WALL;
+        for (int r = 4; r < 7; r++) {
+            mapDataTown[r][3] = TILE_WALL;
+            mapDataTown[r][6] = TILE_WALL;
+            mapDataTown[r][9] = TILE_WALL;
+            mapDataTown[r][12] = TILE_WALL;
+        }
+        for (int c = 3; c < 7; c++)
+            mapDataTown[7][c] = TILE_WALL;
+        for (int c = 9; c < 13; c++)
+            mapDataTown[7][c] = TILE_WALL;
     }
 }
