@@ -8,6 +8,7 @@ python generate_ff_exact.py
 python generate_battle_music.py
 python generate_ff_victory.py
 python generate_ff_battle.py
+python generate_town_music.py
 
 REM Move all generated .wav files to the resource directory
 move *.wav ..\src\main\resources\sounds\
