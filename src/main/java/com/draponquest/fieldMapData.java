@@ -31,11 +31,17 @@ public class fieldMapData {
     public static final int TILE_SWAMP = 10;
     public static final int TILE_WALL = 11;
     public static final int TILE_FLOOR = 12;
+    public static final int TILE_CAVE = 13;
 
     /**
      * The 2D array representing the town map layout.
      */
     private static int[][] mapDataTown = new int[16][16];
+
+    /**
+     * The 2D array representing the cave map layout.
+     */
+    private static int[][] mapDataCave = new int[16][16];
 
     /**
      * Returns the tile value at the specified row and column.
@@ -65,6 +71,20 @@ public class fieldMapData {
             return TILE_WALL; // Return wall for out of bounds
         }
         return mapDataTown[row][col];
+    }
+
+    /**
+     * Returns the tile value from the cave map at the specified row and column.
+     * 
+     * @param row The row index.
+     * @param col The column index.
+     * @return The tile value.
+     */
+    public static int mapDataReturnCave(int row, int col) {
+        if (row < 0 || row >= mapDataCave.length || col < 0 || col >= mapDataCave[0].length) {
+            return TILE_WALL; // Return wall for out of bounds
+        }
+        return mapDataCave[row][col];
     }
 
     /**
@@ -405,7 +425,6 @@ public class fieldMapData {
         }
 
         // === SHOPS ===
-
         // Shop near Garinham (northwest)
         mapDataField[18][14] = TILE_SHOP;
 
@@ -414,6 +433,19 @@ public class fieldMapData {
 
         // Shop on eastern continent
         mapDataField[22][54] = TILE_SHOP;
+
+        // === CAVES ===
+        // Erdrick's Cave (Northwest of Tantegel)
+        mapDataField[44][20] = TILE_CAVE;
+
+        // Mountain Cave (Southwest of Tantegel)
+        mapDataField[52][14] = TILE_CAVE;
+
+        // Swamp Cave (Entrance A - North side of swamp)
+        mapDataField[24][44] = TILE_CAVE;
+
+        // Swamp Cave (Entrance B - South side of swamp)
+        mapDataField[24][50] = TILE_CAVE;
 
         // === INITIALIZE TOWN MAP (Sample: Brecconary) ===
         // Fill town map data
@@ -446,5 +478,32 @@ public class fieldMapData {
             mapDataTown[7][c] = TILE_WALL;
         for (int c = 9; c < 13; c++)
             mapDataTown[7][c] = TILE_WALL;
+
+        // === INITIALIZE CAVE MAP (Maze Layout) ===
+        // 16x16 maze, entrance is at (15, 7) and (15, 8).
+        // Each string must be exactly 16 characters.
+        String[] maze = {
+                "WWWWWWWWWWWWWWWW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFWWWWWWWWWWFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WFFFFFFFFFFFFFFW",
+                "WWWWWWWFFWWWWWWW"
+        };
+        for (int r = 0; r < 16; r++) {
+            for (int c = 0; c < 16; c++) {
+                mapDataCave[r][c] = (maze[r].charAt(c) == 'W') ? TILE_WALL : TILE_FLOOR;
+            }
+        }
     }
 }
