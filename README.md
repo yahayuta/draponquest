@@ -56,8 +56,8 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 ### Features
 
 - **Classic RPG Gameplay**: Explore maps, interact with NPCs, and engage in battles
-- **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
-- **Score System**: Each time you move, your score increases by 1. Try to get the highest score by surviving and exploring! Your total score is shown on the game over screen.
+- **Pixel-Accurate 128x128 Alefgard Map**: A high-fidelity reconstruction of the NES Dragon Quest 1 world. Every coastline, island, and landmark (Tantegel, Rimuldar, Kol, etc.) is placed at its authentic pixel coordinates on a massive 128x128 grid.
+- **Enhanced Cave System**: Explorable 16x16 cave mazes with "wide-path" designs (2-tile wide corridors) for smoother navigation and authentic dungeon exploration.
 - **Retro Graphics**: Preserved original GIF sprites and tile graphics
 - **Command System**: Traditional menu-based interaction system
 - **Save/Load System**: Save your progress and continue later
@@ -231,7 +231,8 @@ draponquest/
 
 ### Key Features Implemented
 
-- ✅ **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
+- ✅ **Pixel-Accurate 128x128 Alefgard Map**: An exact 1:1 clone of the original NES map, 4x larger than previous versions, featuring precise continent shaping and accurate landmark positioning.
+- ✅ **Cave Maze Overhaul**: Redesigned cave interiors with structured mazes and wide 2-tile corridors to prevent movement issues in tight spaces.
 - ✅ Player movement and collision detection (starts in walkable area)
 - ✅ Command menu system
 - ✅ Dialogue and script system (English test script)
