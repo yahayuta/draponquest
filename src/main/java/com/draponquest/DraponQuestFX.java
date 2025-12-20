@@ -73,8 +73,8 @@ public class DraponQuestFX extends Application {
     private int flip = 0;
 
     // Map variables
-    private int fieldMapEndWidth = 16;
-    private int fieldMapEndHeight = 40;
+    private int fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
+    private int fieldMapEndHeight = 42; // 42 + 8 = 50 (Tantegel Y)
     private int savedFieldMapX = 0;
     private int savedFieldMapY = 0;
 
@@ -1131,8 +1131,8 @@ public class DraponQuestFX extends Application {
             if (currentPlace == PLACE_FIELD) {
                 if (fieldMapEndHeight < 0)
                     fieldMapEndHeight = 0;
-                if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
-                    fieldMapEndHeight = fieldMapData.getMapLength() - 16;
+                if (fieldMapEndHeight > fieldMapData.FIELD_MAP_WIDTH - 16)
+                    fieldMapEndHeight = fieldMapData.FIELD_MAP_WIDTH - 16;
                 if (fieldMapEndWidth < 0)
                     fieldMapEndWidth = 0;
                 if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)

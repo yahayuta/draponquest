@@ -8,7 +8,7 @@ public class fieldMapData {
     /**
      * The width of the field map.
      */
-    public static final int FIELD_MAP_WIDTH = 64;
+    public static final int FIELD_MAP_WIDTH = 128;
 
     /**
      * The 2D array representing the map layout.
@@ -109,63 +109,36 @@ public class fieldMapData {
             }
         }
 
-        // === MAIN CONTINENT (Crescent-shaped western landmass) ===
-        // Northern section (rows 8-25)
-        for (int r = 8; r < 26; r++) {
-            for (int c = 6; c < 40; c++) {
+        // === MAIN CONTINENT (Western Landmass) ===
+        // Much more detailed shaping for 128x128
+        for (int r = 16; r < 110; r++) {
+            for (int c = 12; c < 80; c++) {
                 boolean isLand = true;
 
-                // Northwestern inlet
-                if (r < 12 && c < 10)
+                // Northwest inlet
+                if (r < 24 && c < 20)
                     isLand = false;
                 // Northern coast shaping
-                if (r < 10 && c < 15)
+                if (r < 20 && c < 30)
                     isLand = false;
-                if (r < 9 && c < 20)
+                if (r < 18 && c < 40)
                     isLand = false;
-                // Eastern edge of northern section
-                if (r < 15 && c > 36)
+                // Eastern edge of northern section (narrowing for the bay)
+                if (r < 30 && c > 72)
                     isLand = false;
-                if (r < 12 && c > 33)
-                    isLand = false;
-
-                if (isLand) {
-                    mapDataField[r][c] = TILE_PLAINS;
-                }
-            }
-        }
-
-        // Central section (rows 26-42)
-        for (int r = 26; r < 43; r++) {
-            for (int c = 8; c < 38; c++) {
-                boolean isLand = true;
-
-                // Western coast
-                if (c < 10 && r > 40)
-                    isLand = false;
-                // Eastern narrowing
-                if (c > 35 && r > 35)
+                if (r < 24 && c > 66)
                     isLand = false;
 
-                if (isLand) {
-                    mapDataField[r][c] = TILE_PLAINS;
-                }
-            }
-        }
-
-        // Southern section (rows 43-56) - Where Tantegel is located
-        for (int r = 43; r < 57; r++) {
-            for (int c = 12; c < 36; c++) {
-                boolean isLand = true;
-
-                // Southwestern inlet
-                if (r > 54 && c < 18)
+                // Central Bay (The sea between Tantegel and Rimuldar)
+                if (r > 40 && r < 80 && c > 60)
                     isLand = false;
-                // Southern coast shaping
-                if (r > 53 && c < 16)
+
+                // Southern narrowing
+                if (r > 100 && c < 36)
                     isLand = false;
-                // Southeastern narrowing
-                if (r > 52 && c > 32)
+                if (r > 106 && c < 40)
+                    isLand = false;
+                if (r > 104 && c > 64)
                     isLand = false;
 
                 if (isLand) {
@@ -175,24 +148,23 @@ public class fieldMapData {
         }
 
         // === EASTERN CONTINENT (Kol's landmass) ===
-        for (int r = 8; r < 28; r++) {
-            for (int c = 48; c < 60; c++) {
+        for (int r = 16; r < 56; r++) {
+            for (int c = 96; c < 120; c++) {
                 boolean isLand = true;
-
                 // Northern shaping
-                if (r < 11 && c > 56)
+                if (r < 22 && c > 112)
                     isLand = false;
-                if (r < 10 && c > 54)
+                if (r < 20 && c > 108)
                     isLand = false;
                 // Western edge
-                if (c < 50 && r < 12)
+                if (c < 100 && r < 24)
                     isLand = false;
-                if (c < 51 && r > 24)
+                if (c < 102 && r > 48)
                     isLand = false;
                 // Southern edge
-                if (r > 25 && c > 57)
+                if (r > 50 && c > 114)
                     isLand = false;
-                if (r > 24 && c < 52)
+                if (r > 48 && c < 104)
                     isLand = false;
 
                 if (isLand) {
@@ -201,30 +173,40 @@ public class fieldMapData {
             }
         }
 
-        // === CHARLOCK ISLAND (Dragonlord's Castle) ===
-        // Small island south of Tantegel
-        for (int r = 52; r < 58; r++) {
-            for (int c = 30; c < 36; c++) {
-                if (r >= 53 && r <= 56 && c >= 31 && c <= 34) {
+        // === RIMULDAR ISLAND (The lower eastern continent) ===
+        for (int r = 80; r < 120; r++) {
+            for (int c = 80; c < 120; c++) {
+                // Circular-ish island
+                double centerR = 100, centerC = 100;
+                double dist = Math.sqrt(Math.pow(r - centerR, 2) + Math.pow(c - centerC, 2));
+                if (dist < 18) {
                     mapDataField[r][c] = TILE_PLAINS;
                 }
             }
         }
 
-        // === COASTAL SAND ===
-        for (int r = 1; r < 63; r++) {
-            for (int c = 1; c < 63; c++) {
+        // === CHARLOCK ISLAND (The center island) ===
+        for (int r = 60; r < 72; r++) {
+            for (int c = 60; c < 72; c++) {
+                double centerR = 66, centerC = 66;
+                double dist = Math.sqrt(Math.pow(r - centerR, 2) + Math.pow(c - centerC, 2));
+                if (dist < 5) {
+                    mapDataField[r][c] = TILE_PLAINS;
+                }
+            }
+        }
+
+        // === COASTAL SAND (Automatic beach generation) ===
+        for (int r = 1; r < FIELD_MAP_WIDTH - 1; r++) {
+            for (int c = 1; c < FIELD_MAP_WIDTH - 1; c++) {
                 if (mapDataField[r][c] == TILE_SEA) {
                     boolean adjacentToLand = false;
-                    if (r > 0 && mapDataField[r - 1][c] == TILE_PLAINS)
-                        adjacentToLand = true;
-                    if (r < 63 && mapDataField[r + 1][c] == TILE_PLAINS)
-                        adjacentToLand = true;
-                    if (c > 0 && mapDataField[r][c - 1] == TILE_PLAINS)
-                        adjacentToLand = true;
-                    if (c < 63 && mapDataField[r][c + 1] == TILE_PLAINS)
-                        adjacentToLand = true;
-
+                    for (int dr = -1; dr <= 1; dr++) {
+                        for (int dc = -1; dc <= 1; dc++) {
+                            if (mapDataField[r + dr][c + dc] == TILE_PLAINS)
+                                adjacentToLand = true;
+                        }
+                    }
                     if (adjacentToLand) {
                         mapDataField[r][c] = TILE_SAND;
                     }
@@ -232,220 +214,63 @@ public class fieldMapData {
             }
         }
 
-        // === MAJOR LANDMARKS ===
+        // === MAJOR LANDMARKS (NES Coordinates scaled x2) ===
+        // Tantegel Castle: ~ [48, 24] -> [96, 48] in original?
+        // Let's use relative positioning for 128x128
+        mapDataField[50][48] = TILE_CASTLE; // Tantegel
+        mapDataField[52][48] = TILE_TOWN; // Brecconary
 
-        // TANTEGEL CASTLE - South-central main continent (the starting point)
-        mapDataField[48][24] = TILE_CASTLE;
+        mapDataField[28][24] = TILE_TOWN; // Garinham
+        mapDataField[24][108] = TILE_TOWN; // Kol
+        mapDataField[100][100] = TILE_TOWN; // Rimuldar
+        mapDataField[32][60] = TILE_TOWN; // Cantlin
+        mapDataField[66][66] = TILE_CASTLE; // Charlock Castle
 
-        // BRECCONARY - Castle town south of Tantegel
-        mapDataField[50][24] = TILE_TOWN;
+        // === BRIDGES ===
+        // Bridge to Eastern Continent
+        for (int c = 80; c < 96; c++)
+            mapDataField[40][c] = TILE_BRIDGE;
+        // Bridge to Rimuldar Island
+        for (int r = 56; r < 80; r++)
+            mapDataField[r][100] = TILE_BRIDGE;
+        // Rainbow Bridge to Charlock
+        mapDataField[66][56] = TILE_BRIDGE;
+        mapDataField[66][57] = TILE_BRIDGE;
+        mapDataField[66][58] = TILE_BRIDGE;
+        mapDataField[66][59] = TILE_BRIDGE;
 
-        // GARINHAM - Northwest region
-        mapDataField[14][12] = TILE_TOWN;
-
-        // KOL - Far northeast on eastern continent (mountain village)
-        mapDataField[12][54] = TILE_TOWN;
-
-        // RIMULDAR - Southwest near poison swamp
-        mapDataField[50][16] = TILE_TOWN;
-
-        // CANTLIN - North-central, surrounded by mountains (walled city)
-        mapDataField[16][30] = TILE_TOWN;
-
-        // CHARLOCK CASTLE - Dragonlord's island
-        mapDataField[54][32] = TILE_CASTLE;
-
-        // === BRIDGE SYSTEM ===
-
-        // Bridge 1: East from central continent toward eastern continent
-        mapDataField[20][42] = TILE_BRIDGE;
-        mapDataField[20][43] = TILE_BRIDGE;
-        mapDataField[21][44] = TILE_BRIDGE;
-
-        // Bridge 2: Final connection to Kol's continent
-        mapDataField[18][46] = TILE_BRIDGE;
-        mapDataField[18][47] = TILE_BRIDGE;
-
-        // Bridge 3: Western passage
-        mapDataField[32][12] = TILE_BRIDGE;
-        mapDataField[33][12] = TILE_BRIDGE;
-
-        // Rainbow Bridge to Charlock (initially just water, player uses Rainbow Drop)
-        mapDataField[51][28] = TILE_BRIDGE;
-        mapDataField[51][29] = TILE_BRIDGE;
-
-        // === MOUNTAIN RANGES ===
-
-        // Mountains around Cantlin (creating walled city effect)
-        for (int r = 14; r < 19; r++) {
-            for (int c = 27; c < 34; c++) {
+        // === MOUNTAINS, FORESTS, SWAMPS (Distribute logically) ===
+        for (int r = 0; r < FIELD_MAP_WIDTH; r++) {
+            for (int c = 0; c < FIELD_MAP_WIDTH; c++) {
                 if (mapDataField[r][c] == TILE_PLAINS) {
-                    // Leave gap for Cantlin and entrance
-                    if (!(r == 16 && c >= 29 && c <= 31)) {
-                        if (r == 14 || r == 18 || c == 27 || c == 33) {
-                            mapDataField[r][c] = TILE_MOUNTAIN;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Northern mountain range
-        for (int r = 10; r < 16; r++) {
-            for (int c = 18; c < 26; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && (r + c) % 3 == 0) {
-                    mapDataField[r][c] = TILE_MOUNTAIN;
-                }
-            }
-        }
-
-        // Central-western mountains
-        for (int r = 28; r < 36; r++) {
-            for (int c = 10; c < 16; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && (r + c) % 2 == 0) {
-                    mapDataField[r][c] = TILE_MOUNTAIN;
-                }
-            }
-        }
-
-        // Eastern continent mountains (around Kol)
-        for (int r = 10; r < 16; r++) {
-            for (int c = 52; c < 58; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && !(r == 12 && c == 54)) {
-                    if ((r + c) % 3 != 0) {
+                    // Eastern Rimuldar area = Swamps
+                    if (r > 90 && c > 90 && (r + c) % 3 == 0)
+                        mapDataField[r][c] = TILE_SWAMP;
+                    // Northern area = Forests
+                    if (r < 40 && (r * c) % 11 == 0)
+                        mapDataField[r][c] = TILE_FOREST;
+                    // Mountain ranges
+                    if (c > 30 && c < 40 && r > 20 && r < 80 && (r + c) % 5 != 0)
                         mapDataField[r][c] = TILE_MOUNTAIN;
-                    }
+                    if (r > 40 && r < 50 && c > 12 && c < 48)
+                        mapDataField[r][c] = TILE_MOUNTAIN;
                 }
             }
         }
 
-        // Southern mountains
-        for (int r = 46; r < 52; r++) {
-            for (int c = 20; c < 24; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && r < 48) {
-                    mapDataField[r][c] = TILE_MOUNTAIN;
-                }
-            }
-        }
-
-        // === FORESTS ===
-
-        // Northwestern forest (near Garinham)
-        for (int r = 16; r < 22; r++) {
-            for (int c = 10; c < 16; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_FOREST;
-                }
-            }
-        }
-
-        // Northern forest
-        for (int r = 12; r < 18; r++) {
-            for (int c = 26; c < 32; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_FOREST;
-                }
-            }
-        }
-
-        // Central forest
-        for (int r = 34; r < 40; r++) {
-            for (int c = 18; c < 26; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_FOREST;
-                }
-            }
-        }
-
-        // Eastern continent forest
-        for (int r = 18; r < 24; r++) {
-            for (int c = 52; c < 58; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_FOREST;
-                }
-            }
-        }
-
-        // Southern forest patches
-        for (int r = 52; r < 56; r++) {
-            for (int c = 18; c < 24; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && (r + c) % 2 == 0) {
-                    mapDataField[r][c] = TILE_FOREST;
-                }
-            }
-        }
-
-        // === POISON SWAMPS ===
-
-        // Poison swamp near Rimuldar (southwest) - famous dangerous area
-        for (int r = 48; r < 52; r++) {
-            for (int c = 12; c < 18; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && !(r == 50 && c == 16)) {
+        // Poison swamp near Rimuldar (classic area)
+        for (int r = 95; r < 105; r++) {
+            for (int c = 95; c < 105; c++) {
+                if (mapDataField[r][c] == TILE_PLAINS)
                     mapDataField[r][c] = TILE_SWAMP;
-                }
             }
         }
-
-        // Northern swamp
-        for (int r = 20; r < 24; r++) {
-            for (int c = 34; c < 38; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_SWAMP;
-                }
-            }
-        }
-
-        // Western swamp patches
-        for (int r = 38; r < 42; r++) {
-            for (int c = 10; c < 14; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && (r + c) % 2 == 1) {
-                    mapDataField[r][c] = TILE_SWAMP;
-                }
-            }
-        }
-
-        // === DESERT/STEPPE ===
-
-        // Southern desert region
-        for (int r = 52; r < 56; r++) {
-            for (int c = 26; c < 30; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    mapDataField[r][c] = TILE_STEPPE;
-                }
-            }
-        }
-
-        // Central steppe patches
-        for (int r = 42; r < 46; r++) {
-            for (int c = 28; c < 34; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS && (r + c) % 3 == 0) {
-                    mapDataField[r][c] = TILE_STEPPE;
-                }
-            }
-        }
-
-        // === SHOPS ===
-        // Shop near Garinham (northwest)
-        mapDataField[18][14] = TILE_SHOP;
-
-        // Shop in central area
-        mapDataField[36][22] = TILE_SHOP;
-
-        // Shop on eastern continent
-        mapDataField[22][54] = TILE_SHOP;
 
         // === CAVES ===
-        // Erdrick's Cave (Northwest of Tantegel)
-        mapDataField[44][20] = TILE_CAVE;
-
-        // Mountain Cave (Southwest of Tantegel)
-        mapDataField[52][14] = TILE_CAVE;
-
-        // Swamp Cave (Entrance A - North side of swamp)
-        mapDataField[24][44] = TILE_CAVE;
-
-        // Swamp Cave (Entrance B - South side of swamp)
-        mapDataField[24][50] = TILE_CAVE;
+        mapDataField[44 * 2][20 * 2] = TILE_CAVE; // Erdrick's Cave
+        mapDataField[52 * 2][14 * 2] = TILE_CAVE; // Mountain Cave
+        mapDataField[24 * 2][44 * 2] = TILE_CAVE; // Swamp Cave A
+        mapDataField[24 * 2][50 * 2] = TILE_CAVE; // Swamp Cave B
 
         // === INITIALIZE TOWN MAP (Sample: Brecconary) ===
         // Fill town map data
