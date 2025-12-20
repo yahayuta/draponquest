@@ -109,175 +109,168 @@ public class fieldMapData {
             }
         }
 
-        // === MAIN CONTINENT (Western Landmass) ===
-        // Much more detailed shaping for 128x128
-        for (int r = 16; r < 110; r++) {
-            for (int c = 12; c < 80; c++) {
-                boolean isLand = true;
+        // --- PHASE 1: MAIN LANDMASS CONTOURS (Matching the Image) ---
 
-                // Northwest inlet
-                if (r < 24 && c < 20)
-                    isLand = false;
-                // Northern coast shaping
-                if (r < 20 && c < 30)
-                    isLand = false;
-                if (r < 18 && c < 40)
-                    isLand = false;
-                // Eastern edge of northern section (narrowing for the bay)
-                if (r < 30 && c > 72)
-                    isLand = false;
-                if (r < 24 && c > 66)
-                    isLand = false;
+        // WESTERN CONTINENT (The "C" shape)
+        fillLand(10, 15, 120, 45); // General vertical strip
+        fillLand(15, 45, 110, 60); // Tantegel area extension
+        fillLand(10, 10, 30, 80); // Garinham/North Coast bridge
+        fillLand(80, 15, 120, 80); // Domdora/West Coast extension
 
-                // Central Bay (The sea between Tantegel and Rimuldar)
-                if (r > 40 && r < 80 && c > 60)
-                    isLand = false;
+        // NORTHERN BRIDGE (Connecting West and East)
+        fillLand(10, 80, 20, 110); // Northern bridge point
 
-                // Southern narrowing
-                if (r > 100 && c < 36)
-                    isLand = false;
-                if (r > 106 && c < 40)
-                    isLand = false;
-                if (r > 104 && c > 64)
-                    isLand = false;
+        // EASTERN CONTINENT (Kol Area)
+        fillLand(15, 100, 60, 125); // Kol landmass
+        fillLand(40, 90, 55, 110); // Bridge point to Kol
 
-                if (isLand) {
+        // CENTER ISLAND (Charlock)
+        fillLand(55, 55, 75, 75); // Charlock Island
+
+        // SOUTHEAST ISLAND (Rimuldar)
+        fillLand(75, 90, 115, 120); // Rimuldar mass
+
+        // SOUTH CENTRAL (Cantlin Area)
+        fillLand(90, 60, 125, 95); // Cantlin Area
+
+        // --- PHASE 2: DETAILED FEATURES (Forests, Mountains, Swamps) ---
+
+        // Garinham area (NW) - Mountainous and Forested
+        fillFeature(15, 15, 25, 25, TILE_MOUNTAIN, 2);
+        fillFeature(25, 15, 35, 30, TILE_FOREST, 3);
+
+        // North Central Mountain range
+        fillFeature(10, 40, 20, 70, TILE_MOUNTAIN, 2);
+
+        // Kol area (NE) - Dense Forest
+        fillFeature(20, 105, 40, 120, TILE_FOREST, 4);
+        fillFeature(40, 105, 55, 115, TILE_MOUNTAIN, 3);
+
+        // Central Area (Tantegel) - Plains with some hills
+        fillFeature(50, 40, 60, 55, TILE_STEPPE, 3);
+
+        // Rimuldar Island (SE) - Moat and internal mountains
+        fillFeature(90, 95, 105, 105, TILE_MOUNTAIN, 2);
+        fillFeature(85, 85, 115, 115, TILE_SWAMP, 5); // Ring of poison
+
+        // Domdora Area (SW) - Large Desert
+        fillFeature(85, 20, 105, 45, TILE_SAND, 1); // Exact desert block
+        fillFeature(80, 10, 115, 20, TILE_MOUNTAIN, 2); // Coastal mountains
+
+        // Cantlin Area (S) - Mountain Fortress
+        fillFeature(105, 80, 120, 95, TILE_MOUNTAIN, 4);
+
+        // Charlock (Center) - High mountains and desert
+        fillFeature(60, 60, 70, 70, TILE_MOUNTAIN, 2);
+        fillFeature(62, 62, 68, 68, TILE_SAND, 1);
+
+        // Coastal Sand generation
+        generateBeaches();
+
+        // --- PHASE 3: LANDMARKS (Coordinates from Reference Image) ---
+
+        // 1. TANTEGEL CASTLE
+        mapDataField[56][48] = TILE_CASTLE; // 1. Tantegel
+        // 2. BRECCONARY
+        mapDataField[56][53] = TILE_TOWN; // 2. Brecconary
+        // 3. GARINHAM
+        mapDataField[15][18] = TILE_TOWN; // 3. Garinham
+        // 4. KOL
+        mapDataField[28][112] = TILE_TOWN; // 4. Kol
+        // 5. RIMULDAR
+        mapDataField[98][102] = TILE_TOWN; // 5. Rimuldar
+        // 6. DOMDORA
+        mapDataField[92][30] = TILE_TOWN; // 6. Domdora
+        // 7. CANTLIN
+        mapDataField[112][88] = TILE_TOWN; // 7. Cantlin
+        // 8. CHARLOCK CASTLE
+        mapDataField[64][64] = TILE_CASTLE; // 8. Charlock
+
+        // --- CAVES (A-F) ---
+        mapDataField[20][72] = TILE_CAVE; // A: Erdrick's Grave
+        mapDataField[45][58] = TILE_CAVE; // B: Mountain Cave
+        mapDataField[12][120] = TILE_CAVE; // C: Northwest Shrine
+        mapDataField[48][115] = TILE_CAVE; // D: Swamp Cave North
+        mapDataField[110][115] = TILE_CAVE; // E: Holy Shrine
+        mapDataField[115][95] = TILE_CAVE; // F: Swamp Cave South
+
+        // --- BRIDGES ---
+        fillFeature(38, 85, 42, 98, TILE_BRIDGE, 1); // Bridge to Kol continent
+        fillFeature(70, 105, 85, 105, TILE_BRIDGE, 1); // Bridge to Rimuldar island
+        fillFeature(64, 55, 64, 59, TILE_BRIDGE, 1); // Rainbow Bridge to Charlock
+
+        // --- PHASE 4: SOUTH TIP AND SWAMP F ---
+        fillLand(110, 100, 125, 115); // Small island E
+        fillFeature(110, 50, 125, 80, TILE_SWAMP, 1); // Exact huge swamp block F
+
+        // --- PHASE 4: TOWN & CAVE INITIALIZATION ---
+        initializeTown();
+        initializeCave();
+    }
+
+    /**
+     * Helper to fill an area with land.
+     */
+    private static void fillLand(int r1, int c1, int r2, int c2) {
+        for (int r = r1; r < r2; r++) {
+            for (int c = c1; c < c2; c++) {
+                if (r >= 0 && r < FIELD_MAP_WIDTH && c >= 0 && c < FIELD_MAP_WIDTH) {
                     mapDataField[r][c] = TILE_PLAINS;
                 }
             }
         }
+    }
 
-        // === EASTERN CONTINENT (Kol's landmass) ===
-        for (int r = 16; r < 56; r++) {
-            for (int c = 96; c < 120; c++) {
-                boolean isLand = true;
-                // Northern shaping
-                if (r < 22 && c > 112)
-                    isLand = false;
-                if (r < 20 && c > 108)
-                    isLand = false;
-                // Western edge
-                if (c < 100 && r < 24)
-                    isLand = false;
-                if (c < 102 && r > 48)
-                    isLand = false;
-                // Southern edge
-                if (r > 50 && c > 114)
-                    isLand = false;
-                if (r > 48 && c < 104)
-                    isLand = false;
-
-                if (isLand) {
-                    mapDataField[r][c] = TILE_PLAINS;
+    /**
+     * Helper to fill an area with a feature (randomly distributed).
+     */
+    private static void fillFeature(int r1, int c1, int r2, int c2, int type, int frequency) {
+        for (int r = r1; r < r2; r++) {
+            for (int c = c1; c < c2; c++) {
+                if (r >= 0 && r < FIELD_MAP_WIDTH && c >= 0 && c < FIELD_MAP_WIDTH) {
+                    if (mapDataField[r][c] != TILE_SEA && (r + c * 7) % frequency == 0) {
+                        mapDataField[r][c] = type;
+                    }
+                    if (frequency == 1)
+                        mapDataField[r][c] = type; // Solid fill
                 }
             }
         }
+    }
 
-        // === RIMULDAR ISLAND (The lower eastern continent) ===
-        for (int r = 80; r < 120; r++) {
-            for (int c = 80; c < 120; c++) {
-                // Circular-ish island
-                double centerR = 100, centerC = 100;
-                double dist = Math.sqrt(Math.pow(r - centerR, 2) + Math.pow(c - centerC, 2));
-                if (dist < 18) {
-                    mapDataField[r][c] = TILE_PLAINS;
-                }
-            }
-        }
-
-        // === CHARLOCK ISLAND (The center island) ===
-        for (int r = 60; r < 72; r++) {
-            for (int c = 60; c < 72; c++) {
-                double centerR = 66, centerC = 66;
-                double dist = Math.sqrt(Math.pow(r - centerR, 2) + Math.pow(c - centerC, 2));
-                if (dist < 5) {
-                    mapDataField[r][c] = TILE_PLAINS;
-                }
-            }
-        }
-
-        // === COASTAL SAND (Automatic beach generation) ===
+    /**
+     * Helper to generate beaches around land.
+     */
+    private static void generateBeaches() {
         for (int r = 1; r < FIELD_MAP_WIDTH - 1; r++) {
             for (int c = 1; c < FIELD_MAP_WIDTH - 1; c++) {
                 if (mapDataField[r][c] == TILE_SEA) {
-                    boolean adjacentToLand = false;
+                    boolean nearLand = false;
                     for (int dr = -1; dr <= 1; dr++) {
                         for (int dc = -1; dc <= 1; dc++) {
-                            if (mapDataField[r + dr][c + dc] == TILE_PLAINS)
-                                adjacentToLand = true;
+                            int nr = r + dr;
+                            int nc = c + dc;
+                            int tile = mapDataField[nr][nc];
+                            if (tile == TILE_PLAINS || tile == TILE_STEPPE || tile == TILE_MOUNTAIN
+                                    || tile == TILE_FOREST) {
+                                nearLand = true;
+                                break;
+                            }
                         }
+                        if (nearLand)
+                            break;
                     }
-                    if (adjacentToLand) {
+                    if (nearLand)
                         mapDataField[r][c] = TILE_SAND;
-                    }
                 }
             }
         }
+    }
 
-        // === MAJOR LANDMARKS (NES Coordinates scaled x2) ===
-        // Tantegel Castle: ~ [48, 24] -> [96, 48] in original?
-        // Let's use relative positioning for 128x128
-        mapDataField[50][48] = TILE_CASTLE; // Tantegel
-        mapDataField[52][48] = TILE_TOWN; // Brecconary
-
-        mapDataField[28][24] = TILE_TOWN; // Garinham
-        mapDataField[24][108] = TILE_TOWN; // Kol
-        mapDataField[100][100] = TILE_TOWN; // Rimuldar
-        mapDataField[32][60] = TILE_TOWN; // Cantlin
-        mapDataField[66][66] = TILE_CASTLE; // Charlock Castle
-
-        // === BRIDGES ===
-        // Bridge to Eastern Continent
-        for (int c = 80; c < 96; c++)
-            mapDataField[40][c] = TILE_BRIDGE;
-        // Bridge to Rimuldar Island
-        for (int r = 56; r < 80; r++)
-            mapDataField[r][100] = TILE_BRIDGE;
-        // Rainbow Bridge to Charlock
-        mapDataField[66][56] = TILE_BRIDGE;
-        mapDataField[66][57] = TILE_BRIDGE;
-        mapDataField[66][58] = TILE_BRIDGE;
-        mapDataField[66][59] = TILE_BRIDGE;
-
-        // === MOUNTAINS, FORESTS, SWAMPS (Distribute logically) ===
-        for (int r = 0; r < FIELD_MAP_WIDTH; r++) {
-            for (int c = 0; c < FIELD_MAP_WIDTH; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS) {
-                    // Eastern Rimuldar area = Swamps
-                    if (r > 90 && c > 90 && (r + c) % 3 == 0)
-                        mapDataField[r][c] = TILE_SWAMP;
-                    // Northern area = Forests
-                    if (r < 40 && (r * c) % 11 == 0)
-                        mapDataField[r][c] = TILE_FOREST;
-                    // Mountain ranges
-                    if (c > 30 && c < 40 && r > 20 && r < 80 && (r + c) % 5 != 0)
-                        mapDataField[r][c] = TILE_MOUNTAIN;
-                    if (r > 40 && r < 50 && c > 12 && c < 48)
-                        mapDataField[r][c] = TILE_MOUNTAIN;
-                }
-            }
-        }
-
-        // Poison swamp near Rimuldar (classic area)
-        for (int r = 95; r < 105; r++) {
-            for (int c = 95; c < 105; c++) {
-                if (mapDataField[r][c] == TILE_PLAINS)
-                    mapDataField[r][c] = TILE_SWAMP;
-            }
-        }
-
-        // === CAVES ===
-        mapDataField[44 * 2][20 * 2] = TILE_CAVE; // Erdrick's Cave
-        mapDataField[52 * 2][14 * 2] = TILE_CAVE; // Mountain Cave
-        mapDataField[24 * 2][44 * 2] = TILE_CAVE; // Swamp Cave A
-        mapDataField[24 * 2][50 * 2] = TILE_CAVE; // Swamp Cave B
-
-        // === INITIALIZE TOWN MAP (Sample: Brecconary) ===
-        // Fill town map data
+    private static void initializeTown() {
         for (int r = 0; r < 16; r++) {
             for (int c = 0; c < 16; c++) {
                 if (r == 0 || r == 15 || c == 0 || c == 15) {
-                    // Entrance/Exit at the bottom
                     if (r == 15 && (c == 7 || c == 8)) {
                         mapDataTown[r][c] = TILE_FLOOR;
                     } else {
@@ -288,25 +281,22 @@ public class fieldMapData {
                 }
             }
         }
-        // Add some "buildings" (walls) inside the town
-        for (int c = 3; c < 7; c++)
-            mapDataTown[3][c] = TILE_WALL;
-        for (int c = 9; c < 13; c++)
-            mapDataTown[3][c] = TILE_WALL;
+        // Basic town buildings
+        for (int c = 3; c < 13; c++) {
+            if (c < 7 || c > 9)
+                mapDataTown[3][c] = TILE_WALL;
+            if (c < 7 || c > 9)
+                mapDataTown[7][c] = TILE_WALL;
+        }
         for (int r = 4; r < 7; r++) {
             mapDataTown[r][3] = TILE_WALL;
             mapDataTown[r][6] = TILE_WALL;
             mapDataTown[r][9] = TILE_WALL;
             mapDataTown[r][12] = TILE_WALL;
         }
-        for (int c = 3; c < 7; c++)
-            mapDataTown[7][c] = TILE_WALL;
-        for (int c = 9; c < 13; c++)
-            mapDataTown[7][c] = TILE_WALL;
+    }
 
-        // === INITIALIZE CAVE MAP (Maze Layout) ===
-        // 16x16 maze, entrance is at (15, 7) and (15, 8).
-        // Each string must be exactly 16 characters.
+    private static void initializeCave() {
         String[] maze = {
                 "WWWWWWWWWWWWWWWW",
                 "WFFFFFFFFFFFFFFW",
@@ -327,7 +317,8 @@ public class fieldMapData {
         };
         for (int r = 0; r < 16; r++) {
             for (int c = 0; c < 16; c++) {
-                mapDataCave[r][c] = (maze[r].charAt(c) == 'W') ? TILE_WALL : TILE_FLOOR;
+                char ch = maze[r].charAt(c);
+                mapDataCave[r][c] = (ch == 'W') ? TILE_WALL : TILE_FLOOR;
             }
         }
     }

@@ -74,7 +74,7 @@ public class DraponQuestFX extends Application {
 
     // Map variables
     private int fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
-    private int fieldMapEndHeight = 42; // 42 + 8 = 50 (Tantegel Y)
+    private int fieldMapEndHeight = 48; // 48 + 8 = 56 (Tantegel Y)
     private int savedFieldMapX = 0;
     private int savedFieldMapY = 0;
 
