@@ -56,8 +56,8 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 ### Features
 
 - **Classic RPG Gameplay**: Explore maps, interact with NPCs, and engage in battles
-- **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
-- **Score System**: Each time you move, your score increases by 1. Try to get the highest score by surviving and exploring! Your total score is shown on the game over screen.
+- **Pixel-Accurate 128x128 Alefgard Map**: A high-fidelity reconstruction of the NES Dragon Quest 1 world. Every coastline, island, and landmark (Tantegel, Rimuldar, Kol, etc.) is placed at its authentic pixel coordinates on a massive 128x128 grid.
+- **Enhanced Cave System**: Explorable 16x16 cave mazes with "wide-path" designs (2-tile wide corridors) for smoother navigation and authentic dungeon exploration.
 - **Retro Graphics**: Preserved original GIF sprites and tile graphics
 - **Command System**: Traditional menu-based interaction system
 - **Save/Load System**: Save your progress and continue later
@@ -75,6 +75,7 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Modern UI**: Clean, centered battle interface with proper spacing
 - **Audio System**: Complete authentic Final Fantasy-style sound effects and background music system
 - **Audio Controls**: Toggle music/sound, volume control, and real-time audio status display
+- **Minimap System**: A real-time 128x128 pixel minimap in the top-right corner. It provides a global world view on the field and automatically switches to a detailed local view in towns. (Automatically hidden during battles and in caves for a clean experience.)
 
 ## 🚀 Quick Start
 
@@ -140,11 +141,12 @@ mvn javafx:run
 | **F5** | Save game |
 | **F9** | Load game |
 | **ESC** | Cancel / Back (in battle, only after win/lose) |
-| **M** | Toggle background music on/off |
+| **U** | Toggle background music on/off |
 | **S** | Toggle sound effects on/off |
 | **[** | Decrease volume |
 | **]** | Increase volume |
 | **L** | Toggle language (English/Japanese) |
+| **M** | Toggle minimap on/off |
 
 ### Game Modes
 
@@ -231,7 +233,8 @@ draponquest/
 
 ### Key Features Implemented
 
-- ✅ **NES Dragon Quest-style World Map**: An expansive world map featuring diverse tile types (plains, mountains, towns, castles, bridges, swamps) and an Alefgard-like layout, encouraging exploration.
+- ✅ **Pixel-Accurate 128x128 Alefgard Map**: An exact 1:1 clone of the original NES map, 4x larger than previous versions, featuring precise continent shaping and accurate landmark positioning.
+- ✅ **Cave Maze Overhaul**: Redesigned cave interiors with structured mazes and wide 2-tile corridors to prevent movement issues in tight spaces.
 - ✅ Player movement and collision detection (starts in walkable area)
 - ✅ Command menu system
 - ✅ Dialogue and script system (English test script)
@@ -254,6 +257,7 @@ draponquest/
 - ✅ Real-time audio status display on main screen
 - ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies (B4: 493.88 Hz, G4: 392.00 Hz, A4: 440.00 Hz, C5: 523.25 Hz, A#4: 466.16 Hz, D#5: 622.25 Hz, D5: 587.33 Hz, G#4: 415.30 Hz, F5: 698.46 Hz)
 - ✅ **Complete audio integration**: All generated sound files (`victory_music.wav`, `game_over.wav`, `title.wav`) are now properly loaded and played at the correct game events
+- ✅ **Minimap System**: Dynamic minimap that toggles with 'M', featuring global/local switching and automatic hiding in battles and caves.
 
 ## 🎨 Graphics and Assets
 
@@ -305,10 +309,13 @@ The audio system features authentic Final Fantasy-style sound design with **exac
 - **Dramatic Sound Effects**: Impactful sound design like FF games with precise timing
 
 ### Audio Controls
-- **M Key**: Toggle background music on/off
-- **T Key**: Toggle sound effects on/off
+- **U Key**: Toggle background music on/off
+- **S Key**: Toggle sound effects on/off
 - **[ Key**: Decrease volume (both music and sound)
 - **] Key**: Increase volume (both music and sound)
+
+### Minimap Controls
+- **M Key**: Toggle minimap on/off (Hidden in battles and caves)
 
 ### Audio Status Display
 The main game screen shows real-time audio status in the top-right corner:
@@ -497,8 +504,12 @@ The in-game script at the bottom of the screen explains:
 - How to save/load your game
 
 ### Audio Instructions
-- **M Key**: Toggle background music on/off
-- **T Key**: Toggle sound effects on/off
+- **U Key**: Toggle background music on/off
+- **S Key**: Toggle sound effects on/off
 - **[ Key**: Decrease volume
 - **] Key**: Increase volume
+
+### Minimap Instructions
+- **M Key**: Toggle minimap on/off
+- Minimap is automatically hidden during battles and in caves.
 - Audio status is displayed in the top-right corner of the game screen 

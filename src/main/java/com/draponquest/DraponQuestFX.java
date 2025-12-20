@@ -10,6 +10,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import java.io.*;
 import java.nio.file.*;
 
@@ -71,10 +72,11 @@ public class DraponQuestFX extends Application {
     private int currentPlace = PLACE_FIELD;
     private int currentCommand = COM_TALK;
     private int flip = 0;
+    private boolean showMinimap = true;
 
     // Map variables
-    private int fieldMapEndWidth = 16;
-    private int fieldMapEndHeight = 40;
+    private int fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
+    private int fieldMapEndHeight = 48; // 48 + 8 = 56 (Tantegel Y)
     private int savedFieldMapX = 0;
     private int savedFieldMapY = 0;
 
@@ -229,6 +231,14 @@ public class DraponQuestFX extends Application {
 
         if (event.getCode() == KeyCode.I) {
             System.out.println(inventory.toString());
+        }
+
+        if (event.getCode() == KeyCode.M) {
+            showMinimap = !showMinimap;
+        }
+
+        if (event.getCode() == KeyCode.U) {
+            toggleMusic();
         }
 
         if (event.getCode() == KeyCode.P) {
@@ -438,7 +448,7 @@ public class DraponQuestFX extends Application {
      */
     private void renderGame() {
         // Clear canvas
-        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 
         // Render based on game state
@@ -465,7 +475,7 @@ public class DraponQuestFX extends Application {
      * Renders the title screen.
      */
     private void renderTitleScreen() {
-        gc.setFill(javafx.scene.paint.Color.LIME);
+        gc.setFill(Color.LIME);
         gc.setFont(javafx.scene.text.Font.font("Arial", 32));
 
         gc.fillText("DRAPON QUEST", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.3);
@@ -473,12 +483,12 @@ public class DraponQuestFX extends Application {
 
         // Audio controls help
         gc.setFont(javafx.scene.text.Font.font("Arial", 16));
-        gc.setFill(javafx.scene.paint.Color.WHITE);
-        gc.fillText("Audio Controls:", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.7);
-        gc.fillText("M: Toggle Music  S: Toggle Sound", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.75);
-        gc.fillText("[ ]: Volume Control", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.8);
+        gc.setFill(Color.WHITE);
+        gc.fillText("Controls:", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.7);
+        gc.fillText("U: Toggle Music  S: Toggle Sound", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.75);
+        gc.fillText("M: Toggle Minimap [ ]: Volume Control", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.8);
 
-        gc.setFill(javafx.scene.paint.Color.LIME);
+        gc.setFill(Color.LIME);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.85);
         gc.fillText("yahayuta", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.9);
@@ -496,6 +506,11 @@ public class DraponQuestFX extends Application {
 
         // Render UI elements
         renderUI();
+
+        // Render minimap if enabled and not in battle or cave
+        if (showMinimap && currentMode != MODE_BATTLE && currentPlace != PLACE_CAVE) {
+            renderMinimap();
+        }
     }
 
     /**
@@ -563,49 +578,49 @@ public class DraponQuestFX extends Application {
                 } else {
                     switch (tile) {
                         case 0:
-                            gc.setFill(javafx.scene.paint.Color.DEEPSKYBLUE);
+                            gc.setFill(Color.DEEPSKYBLUE);
                             break;
                         case 1:
-                            gc.setFill(javafx.scene.paint.Color.GOLD);
+                            gc.setFill(Color.GOLD);
                             break;
                         case 2:
-                            gc.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            gc.setFill(Color.LIGHTGRAY);
                             break;
                         case 3:
-                            gc.setFill(javafx.scene.paint.Color.FORESTGREEN);
+                            gc.setFill(Color.FORESTGREEN);
                             break;
                         case fieldMapData.TILE_SHOP:
-                            gc.setFill(javafx.scene.paint.Color.BROWN);
+                            gc.setFill(Color.BROWN);
                             break; // Shop
                         case fieldMapData.TILE_PLAINS:
-                            gc.setFill(javafx.scene.paint.Color.LIMEGREEN);
+                            gc.setFill(Color.LIMEGREEN);
                             break; // Plains
                         case fieldMapData.TILE_MOUNTAIN:
-                            gc.setFill(javafx.scene.paint.Color.DARKGRAY);
+                            gc.setFill(Color.DARKGRAY);
                             break; // Mountain
                         case fieldMapData.TILE_TOWN:
-                            gc.setFill(javafx.scene.paint.Color.ORANGE);
+                            gc.setFill(Color.ORANGE);
                             break; // Town
                         case fieldMapData.TILE_CASTLE:
-                            gc.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                            gc.setFill(Color.LIGHTGRAY);
                             break; // Castle
                         case fieldMapData.TILE_BRIDGE:
-                            gc.setFill(javafx.scene.paint.Color.SADDLEBROWN);
+                            gc.setFill(Color.SADDLEBROWN);
                             break; // Bridge
                         case fieldMapData.TILE_SWAMP:
-                            gc.setFill(javafx.scene.paint.Color.DARKGREEN);
+                            gc.setFill(Color.DARKGREEN);
                             break; // Swamp
                         case fieldMapData.TILE_WALL:
-                            gc.setFill(javafx.scene.paint.Color.DARKSLATEGRAY);
+                            gc.setFill(Color.DARKSLATEGRAY);
                             break; // Wall
                         case fieldMapData.TILE_FLOOR:
-                            gc.setFill(javafx.scene.paint.Color.rgb(200, 180, 150));
+                            gc.setFill(Color.rgb(200, 180, 150));
                             break; // Floor
                         case fieldMapData.TILE_CAVE:
-                            gc.setFill(javafx.scene.paint.Color.BLACK);
+                            gc.setFill(Color.BLACK);
                             break; // Cave
                         default:
-                            gc.setFill(javafx.scene.paint.Color.BLACK);
+                            gc.setFill(Color.BLACK);
                             break;
                     }
                     gc.fillRect(j * 32, i * 32, 32, 32);
@@ -620,7 +635,7 @@ public class DraponQuestFX extends Application {
         }
 
         // Display HP and score on map
-        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFill(Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 20));
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
         gc.fillText("Level: " + playerLevel, 10, 60);
@@ -630,11 +645,11 @@ public class DraponQuestFX extends Application {
 
         // Display audio status
         gc.setFont(javafx.scene.text.Font.font("Arial", 14));
-        gc.setFill(audioManager.isMusicEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
+        gc.setFill(audioManager.isMusicEnabled() ? Color.LIME : Color.RED);
         gc.fillText("Music: " + (audioManager.isMusicEnabled() ? "ON" : "OFF"), 10, 180);
-        gc.setFill(audioManager.isSoundEnabled() ? javafx.scene.paint.Color.LIME : javafx.scene.paint.Color.RED);
+        gc.setFill(audioManager.isSoundEnabled() ? Color.LIME : Color.RED);
         gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 200);
-        gc.setFill(javafx.scene.paint.Color.YELLOW);
+        gc.setFill(Color.YELLOW);
         gc.fillText("Vol: " + (int) (audioManager.getMusicVolume() * 100) + "%", 10, 220);
     }
 
@@ -653,9 +668,9 @@ public class DraponQuestFX extends Application {
         // Display battle reward message
         if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for
                                                                                                           // 3 seconds
-            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.setFill(Color.YELLOW);
             gc.fillRect(0, DISP_HEIGHT / 2 - 24, DISP_WIDTH, 48);
-            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 28));
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
             gc.fillText(battleRewardMessage, DISP_WIDTH / 2, DISP_HEIGHT / 2 + 8);
@@ -663,9 +678,9 @@ public class DraponQuestFX extends Application {
         }
         if (levelUpMessage != null) {
             if (System.currentTimeMillis() - levelUpMessageTime < 2000) {
-                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.setFill(Color.YELLOW);
                 gc.fillRect(0, 0, DISP_WIDTH, 48);
-                gc.setFill(javafx.scene.paint.Color.BLACK);
+                gc.setFill(Color.BLACK);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 24));
                 gc.fillText(levelUpMessage, 16, 32);
             } else {
@@ -675,9 +690,9 @@ public class DraponQuestFX extends Application {
         // Dialogue box in GAME_OPEN and MODE_MOVE
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE) {
             // Draw dialogue box (scaled up)
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.fillRect(0, DISP_HEIGHT - 96, DISP_WIDTH, 96);
-            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("MS Gothic", 16));
 
             // Initialize script lines if needed
@@ -711,7 +726,7 @@ public class DraponQuestFX extends Application {
         // Command menu in GAME_OPEN and MODE_COM
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_COM) {
             // Draw menu background (scaled up)
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.fillRect(0, DISP_HEIGHT / 2, 192, 192);
             gc.setFont(javafx.scene.text.Font.font("Arial", 32));
             String[] commands = {
@@ -724,28 +739,28 @@ public class DraponQuestFX extends Application {
             for (int i = 0; i < commands.length; i++) {
                 int y = DISP_HEIGHT / 2 + 16 + i * 36;
                 if (currentCommand == i + 1) {
-                    gc.setFill(javafx.scene.paint.Color.LIME);
+                    gc.setFill(Color.LIME);
                     gc.fillRect(0, y - 24, 192, 36);
-                    gc.setFill(javafx.scene.paint.Color.BLACK);
+                    gc.setFill(Color.BLACK);
                 } else {
-                    gc.setFill(javafx.scene.paint.Color.BLACK);
+                    gc.setFill(Color.BLACK);
                 }
                 gc.fillText(commands[i], 16, y);
             }
         }
         // Command action message (scaled up)
         if (currentGameStatus == GAME_OPEN && commandMessage != null) {
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.fillRect(0, DISP_HEIGHT - 64, DISP_WIDTH, 64);
-            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 28));
             gc.fillText(commandMessage, 32, DISP_HEIGHT - 24);
         }
         // Battle screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_BATTLE) {
-            gc.setFill(javafx.scene.paint.Color.rgb(32, 32, 64, 0.85));
+            gc.setFill(Color.rgb(32, 32, 64, 0.85));
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
             gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH / 2, 60);
@@ -753,48 +768,48 @@ public class DraponQuestFX extends Application {
             if (battleManager.getCurrentMonster() != null && battleManager.getCurrentMonster().image != null
                     && !battleManager.getCurrentMonster().image.isError()) {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.setFill(Color.YELLOW);
                 gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH / 2, 120);
                 // Draw monster image centered
                 gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH - 128) / 2, 130, 128, 128);
             } else {
-                gc.setFill(javafx.scene.paint.Color.DARKRED);
+                gc.setFill(Color.DARKRED);
                 gc.fillRect((DISP_WIDTH - 128) / 2, 130, 128, 128);
-                gc.setFill(javafx.scene.paint.Color.WHITE);
+                gc.setFill(Color.WHITE);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
                 gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH / 2, 190);
             }
             // Draw HP bars, each on its own line, centered
             gc.setFont(javafx.scene.text.Font.font("Arial", 26));
-            gc.setFill(javafx.scene.paint.Color.LIME);
+            gc.setFill(Color.LIME);
             String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: "
                     + playerAttack + " | DEF: " + playerDefense;
             gc.fillText(playerHpStr, DISP_WIDTH / 2, 290);
-            gc.setFill(javafx.scene.paint.Color.RED);
+            gc.setFill(Color.RED);
             String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp")
                     + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
                     + battleManager.getCurrentMonster().defense;
             gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
             // Draw battle message
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 20));
             gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH / 2, DISP_HEIGHT - 80);
             // Draw action options
-            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.setFill(Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH / 2, DISP_HEIGHT - 30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         if (currentMode == MODE_SHOP) {
-            gc.setFill(javafx.scene.paint.Color.rgb(32, 64, 32, 0.85));
+            gc.setFill(Color.rgb(32, 64, 32, 0.85));
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
             gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
             gc.fillText("Welcome to the Shop!", DISP_WIDTH / 2, 60);
 
             gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.setFill(Color.YELLOW);
             gc.fillText("Items for sale:", DISP_WIDTH / 2, 120);
 
             java.util.List<Item> items = shop.getItems();
@@ -805,12 +820,12 @@ public class DraponQuestFX extends Application {
             }
 
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.fillText("Press 'B' to buy a Potion.", DISP_WIDTH / 2, DISP_HEIGHT - 80);
             gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
 
             if (shopMessage != null) {
-                gc.setFill(javafx.scene.paint.Color.YELLOW);
+                gc.setFill(Color.YELLOW);
                 gc.fillText(shopMessage, DISP_WIDTH / 2, DISP_HEIGHT - 120);
                 if (System.currentTimeMillis() - shopMessageTime > 2000) {
                     shopMessage = null;
@@ -822,32 +837,32 @@ public class DraponQuestFX extends Application {
         }
         // Event screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_EVENT) {
-            gc.setFill(javafx.scene.paint.Color.rgb(64, 32, 32, 0.85));
+            gc.setFill(Color.rgb(64, 32, 32, 0.85));
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-            gc.setFill(javafx.scene.paint.Color.WHITE);
+            gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("Arial", 40));
             gc.fillText("EVENT! (ESC to exit)", 64, DISP_HEIGHT / 2);
         }
         // Save/load message (scaled up)
         if (saveMessage != null && System.currentTimeMillis() - saveMessageTime < 2000) {
-            gc.setFill(javafx.scene.paint.Color.YELLOW);
+            gc.setFill(Color.YELLOW);
             gc.fillRect(0, 0, DISP_WIDTH, 48);
-            gc.setFill(javafx.scene.paint.Color.BLACK);
+            gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(saveMessage, 16, 32);
         }
     }
 
     private void renderStatusScreen() {
-        gc.setFill(javafx.scene.paint.Color.rgb(32, 32, 32, 0.85));
+        gc.setFill(Color.rgb(32, 32, 32, 0.85));
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFill(Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 40));
         gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
         gc.fillText("Status", DISP_WIDTH / 2, 60);
 
         gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFill(Color.WHITE);
         gc.fillText("Level: " + playerLevel, DISP_WIDTH / 2, 120);
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, DISP_WIDTH / 2, 160);
         gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, DISP_WIDTH / 2, 200);
@@ -875,16 +890,104 @@ public class DraponQuestFX extends Application {
      * Renders the game over screen.
      */
     private void renderGameOverScreen() {
-        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-        gc.setFill(javafx.scene.paint.Color.RED);
+        gc.setFill(Color.RED);
         gc.setFont(javafx.scene.text.Font.font("Arial", 48));
         gc.fillText(LocalizationManager.getText("game_over"), DISP_WIDTH * 0.25, DISP_HEIGHT * 0.4);
-        gc.setFill(javafx.scene.paint.Color.WHITE);
+        gc.setFill(Color.WHITE);
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
         gc.fillText(LocalizationManager.getText("press_enter_restart"), DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
         gc.fillText(LocalizationManager.getText("total_score") + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
         gc.fillText(LocalizationManager.getText("battles_won") + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
+    }
+
+    /**
+     * Renders a small minimap overlay.
+     */
+    private void renderMinimap() {
+        int x = DISP_WIDTH - 138;
+        int y = 10;
+        int size = 128;
+
+        // Draw border and background
+        gc.setFill(Color.rgb(0, 0, 0, 0.7));
+        gc.fillRect(x - 2, y - 2, size + 4, size + 4);
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(1);
+        gc.strokeRect(x - 1, y - 1, size + 2, size + 2);
+
+        if (currentPlace == PLACE_FIELD) {
+            // Field map is 128x128, render at 1:1 scale
+            for (int r = 0; r < 128; r++) {
+                for (int c = 0; c < 128; c++) {
+                    int tile = fieldMapData.mapDataReturnField(r, c);
+                    gc.getPixelWriter().setColor(x + c, y + r, getMinimapTileColor(tile));
+                }
+            }
+            // Draw player position
+            int playerRow = fieldMapEndHeight + 8;
+            int playerCol = fieldMapEndWidth + 8;
+            gc.setFill(Color.WHITE);
+            gc.fillRect(x + playerCol - 1, y + playerRow - 1, 3, 3);
+        } else {
+            // Town/Cave is 16x16, render at 8:1 scale (128x128)
+            for (int r = 0; r < 16; r++) {
+                for (int c = 0; c < 16; c++) {
+                    int tile;
+                    if (currentPlace == PLACE_BLDNG) {
+                        tile = fieldMapData.mapDataReturnTown(r, c);
+                    } else {
+                        tile = fieldMapData.mapDataReturnCave(r, c);
+                    }
+                    gc.setFill(getMinimapTileColor(tile));
+                    gc.fillRect(x + c * 8, y + r * 8, 8, 8);
+                }
+            }
+            // Draw player position
+            int playerRow = fieldMapEndHeight + 8;
+            int playerCol = fieldMapEndWidth + 8;
+            gc.setFill(Color.WHITE);
+            gc.fillRect(x + playerCol * 8, y + playerRow * 8, 8, 8);
+        }
+    }
+
+    /**
+     * Gets a simplified color for the minimap tiles.
+     */
+    private javafx.scene.paint.Color getMinimapTileColor(int tile) {
+        switch (tile) {
+            case fieldMapData.TILE_SEA:
+                return Color.DEEPSKYBLUE;
+            case fieldMapData.TILE_SAND:
+                return Color.GOLD;
+            case fieldMapData.TILE_STEPPE:
+                return Color.LIGHTGRAY;
+            case fieldMapData.TILE_FOREST:
+                return Color.FORESTGREEN;
+            case fieldMapData.TILE_SHOP:
+                return Color.BROWN;
+            case fieldMapData.TILE_PLAINS:
+                return Color.LIMEGREEN;
+            case fieldMapData.TILE_MOUNTAIN:
+                return Color.DARKGRAY;
+            case fieldMapData.TILE_TOWN:
+                return Color.ORANGE;
+            case fieldMapData.TILE_CASTLE:
+                return Color.LIGHTGRAY;
+            case fieldMapData.TILE_BRIDGE:
+                return Color.SADDLEBROWN;
+            case fieldMapData.TILE_SWAMP:
+                return Color.PURPLE;
+            case fieldMapData.TILE_WALL:
+                return Color.DARKSLATEGRAY;
+            case fieldMapData.TILE_FLOOR:
+                return Color.rgb(200, 180, 150);
+            case fieldMapData.TILE_CAVE:
+                return Color.BLACK;
+            default:
+                return Color.BLACK;
+        }
     }
 
     /**
@@ -1131,8 +1234,8 @@ public class DraponQuestFX extends Application {
             if (currentPlace == PLACE_FIELD) {
                 if (fieldMapEndHeight < 0)
                     fieldMapEndHeight = 0;
-                if (fieldMapEndHeight > fieldMapData.getMapLength() - 16)
-                    fieldMapEndHeight = fieldMapData.getMapLength() - 16;
+                if (fieldMapEndHeight > fieldMapData.FIELD_MAP_WIDTH - 16)
+                    fieldMapEndHeight = fieldMapData.FIELD_MAP_WIDTH - 16;
                 if (fieldMapEndWidth < 0)
                     fieldMapEndWidth = 0;
                 if (fieldMapEndWidth > fieldMapData.FIELD_MAP_WIDTH - 16)
