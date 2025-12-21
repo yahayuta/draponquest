@@ -13,7 +13,7 @@ public class draponQuestMain extends IApplication {
   }
 
   /*************************************************************************/
-  //  Canvas Class
+  // Canvas Class
   /*************************************************************************/
   class canvas extends Canvas implements Runnable {
     // Constant definitions
@@ -75,9 +75,9 @@ public class draponQuestMain extends IApplication {
     Image imgsStp = null;
     Image imgFrst = null;
     // Media Image
-    MediaImage miMe1 = null; 
-    MediaImage miMe2 = null; 
-    MediaImage miSea = null; 
+    MediaImage miMe1 = null;
+    MediaImage miMe2 = null;
+    MediaImage miSea = null;
     MediaImage miSnd = null;
     MediaImage miStp = null;
     MediaImage miFrst = null;
@@ -106,10 +106,22 @@ public class draponQuestMain extends IApplication {
     int scriptLine = 0;
     int scriptNum = 0;
     int scriptheight = 0;
+    // Player Status
+    String playerName = "Drapon";
+    int playerLevel = 1;
+    int playerHP = 20;
+    int playerMaxHP = 20;
+    int playerMP = 0;
+    int playerMaxMP = 0;
+    int playerGold = 0;
+    int playerExp = 0;
+    // Command cursor
+    int commandCursorX = 0;
+    int commandCursorY = 0;
 
     /*************************************************************************/
-    //  Constructor
-    //  Variable initialization and image data acquisition
+    // Constructor
+    // Variable initialization and image data acquisition
     /*************************************************************************/
     public canvas() {
       // Script buffer initialization
@@ -127,12 +139,24 @@ public class draponQuestMain extends IApplication {
       thDraponQuest = new Thread(this);
       thDraponQuest.start();
     }
-    
+
     /*************************************************************************/
-    //  Function to get events
+    // Window Drawing Utility
     /*************************************************************************/
-    public void processEvent(int type,int param) {
-      if(type == Display.KEY_PRESSED_EVENT) {
+    public void drawWindow(Graphics g, int x, int y, int w, int h) {
+      g.setColor(Graphics.getColorOfName(Graphics.BLACK));
+      g.fillRect(x, y, w, h);
+      g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+      // Basic NES border (single white block border)
+      g.drawRect(x, y, w, h);
+      g.drawRect(x + 2, y + 2, w - 4, h - 4);
+    }
+
+    /*************************************************************************/
+    // Function to get events
+    /*************************************************************************/
+    public void processEvent(int type, int param) {
+      if (type == Display.KEY_PRESSED_EVENT) {
         // Check for double press
         if (isHit) {
           // Ignore double press
@@ -169,9 +193,9 @@ public class draponQuestMain extends IApplication {
         }
       }
     }
-    
+
     /*************************************************************************/
-    //  Drawing function
+    // Drawing function
     /*************************************************************************/
     public void paint(Graphics g) {
       switch (currentGameStatus) {
@@ -182,10 +206,10 @@ public class draponQuestMain extends IApplication {
           g.setColor(Graphics.getColorOfName(Graphics.BLACK));
           g.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           g.setColor(Graphics.getColorOfName(Graphics.LIME));
-          g.drawString("DRAPON QUEST", ((int)DISP_WIDTH * 30 / 100), ((int)DISP_HEIGHT * 30 / 100));
-          g.drawString("PRESS ENTER", ((int)DISP_WIDTH * 30 / 100), ((int)DISP_HEIGHT * 50 / 100));
-          g.drawString("(c)2005", ((int)DISP_WIDTH * 35 / 100), ((int)DISP_HEIGHT * 80 / 100));
-          g.drawString("Yakkun", ((int)DISP_WIDTH * 35 / 100), ((int)DISP_HEIGHT * 90 / 100));
+          g.drawString("DRAPON QUEST", ((int) DISP_WIDTH * 30 / 100), ((int) DISP_HEIGHT * 30 / 100));
+          g.drawString("PRESS ENTER", ((int) DISP_WIDTH * 30 / 100), ((int) DISP_HEIGHT * 50 / 100));
+          g.drawString("(c)2005", ((int) DISP_WIDTH * 35 / 100), ((int) DISP_HEIGHT * 80 / 100));
+          g.drawString("Yakkun", ((int) DISP_WIDTH * 35 / 100), ((int) DISP_HEIGHT * 90 / 100));
           g.unlock(true);
           break;
         // Game status (open)
@@ -198,16 +222,16 @@ public class draponQuestMain extends IApplication {
             // Place (field)
             case PLACE_FIELD:
               // Map drawing
-              for(int i = 0; i < 8; i++){
-                for(int ii = 0; ii < 16; ii++){
+              for (int i = 0; i < 8; i++) {
+                for (int ii = 0; ii < 16; ii++) {
                   g.drawImage(imgFieldMap[i + fieldMapEndHeight][ii + fieldMapEndWidth], mapX, mapY);
-                  mapX+=16;
-                  if(mapX == DISP_WIDTH){
+                  mapX += 16;
+                  if (mapX == DISP_WIDTH) {
                     mapX = 0;
                   }
                 }
-                mapY+=16;
-                if(mapY == DISP_HEIGHT / 2){
+                mapY += 16;
+                if (mapY == DISP_HEIGHT / 2) {
                   mapY = 0;
                 }
               }
@@ -228,80 +252,96 @@ public class draponQuestMain extends IApplication {
               System.out.println("paint():ERROR UNEXPECTED VALUE:currentPlace = " + currentPlace);
               break;
           }
+
+          // --- NES DQ1 Status Window (Top-Left) ---
+          if (currentMode == MODE_MOVE || currentMode == MODE_COM || currentMode == MODE_BATTLE) {
+            drawWindow(g, 8, 8, 80, 80);
+            g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+            g.drawString(playerName, 14, 22);
+            g.drawString("LV " + playerLevel, 14, 34);
+            g.drawString("HP " + playerHP, 14, 46);
+            g.drawString("MP " + playerMP, 14, 58);
+            g.drawString("G  " + playerGold, 14, 70);
+            g.drawString("E  " + playerExp, 14, 82);
+          }
+
           g.setColor(Graphics.getColorOfName(Graphics.BLACK));
           g.fillRect(0, DISP_HEIGHT / 2, DISP_WIDTH, DISP_HEIGHT / 2);
           switch (currentMode) {
             // Mode (move)
             case MODE_MOVE:
               g.setColor(Graphics.getColorOfName(Graphics.LIME));
-              g.drawString("Move", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
-// Script processing test_START
+              g.drawString("Move", ((int) DISP_WIDTH * 1 / 100), ((int) DISP_HEIGHT * 55 / 100));
+              // Script processing test_START
               currentChar = scriptData.returnTestScript(scriptID, scriptNum);
-              System.out.println("paint():currentChar = " + currentChar);
-              
               if ("@".equals(currentChar)) {
                 scriptLine++;
               } else if ("E".equals(currentChar)) {
-                System.out.println("paint():script end");
                 scriptLine = 0;
                 scriptheight = 0;
               } else {
                 scriptBuffer[scriptLine].append(currentChar);
               }
               for (int i0 = 0; i0 <= scriptLine; i0++) {
-                g.drawString(scriptBuffer[i0].toString(), ((int)DISP_WIDTH * 21 / 100), ((int)DISP_HEIGHT * (55 + scriptheight) / 100));
-                scriptheight=+5;
+                g.drawString(scriptBuffer[i0].toString(), ((int) DISP_WIDTH * 21 / 100),
+                    ((int) DISP_HEIGHT * (55 + scriptheight) / 100));
+                scriptheight = +5;
               }
               scriptheight = 0;
               if (scriptNum < scriptData.returnTestScriptLength(scriptID) - 1) {
                 scriptNum++;
               } else {
-                System.out.println("paint():scriptNum = 0");
                 scriptNum = 0;
               }
-// Script processing test_END
+              // Script processing test_END
               break;
+
             // Mode (command)
             case MODE_COM:
-              g.setColor(Graphics.getColorOfName(Graphics.LIME));
-              g.drawString("Command", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 55 / 100));
-              switch (currentCommand) {
-                // Command (talk)
-                case COM_TALK:
-                  g.drawString("Talk", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
-                  break;
-                // Command (check)
-                case COM_CHK:
-                  g.drawString("Check", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
-                  break;
-                // Command (magic)
-                case COM_MGK:
-                  g.drawString("Magic", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
-                  break;
-                // Command (item)
-                case COM_ITEM:
-                  g.drawString("Item", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
-                  break;
-                // Command (status)
-                case COM_STUS:
-                  g.drawString("Status", ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 60 / 100));
-                  break;
-                default:
-                  System.out.println("paint():ERROR UNEXPECTED VALUE:currentCommand = " + currentCommand);
-                  break;
-              }
+              drawWindow(g, (int) (DISP_WIDTH * 0.4), (int) (DISP_HEIGHT * 0.1), 120, 100);
+              g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+              // Column 1
+              g.drawString("TALK", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.22));
+              g.drawString("STATUS", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.34));
+              g.drawString("STAIRS", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.46));
+              g.drawString("SEARCH", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.58));
+              // Column 2
+              g.drawString("SPELL", (int) (DISP_WIDTH * 0.7), (int) (DISP_HEIGHT * 0.22));
+              g.drawString("ITEM", (int) (DISP_WIDTH * 0.7), (int) (DISP_HEIGHT * 0.34));
+              g.drawString("DOOR", (int) (DISP_WIDTH * 0.7), (int) (DISP_HEIGHT * 0.46));
+              g.drawString("TAKE", (int) (DISP_WIDTH * 0.7), (int) (DISP_HEIGHT * 0.58));
+
+              // Menu Cursor (indicator)
+              int curX = (int) (DISP_WIDTH * (0.42 + (commandCursorX * 0.25)));
+              int curY = (int) (DISP_HEIGHT * (0.22 + (commandCursorY * 0.12)));
+              g.drawString(">", curX, curY);
               break;
+
+            // Mode (battle)
+            case MODE_BATTLE:
+              // Enemy display in the center
+              drawWindow(g, (int) (DISP_WIDTH * 0.1), (int) (DISP_HEIGHT * 0.1), (int) (DISP_WIDTH * 0.8),
+                  (int) (DISP_HEIGHT * 0.4));
+              g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+              g.drawString("SLIME APPEARS!", (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.25));
+
+              // Battle Commands Window
+              drawWindow(g, (int) (DISP_WIDTH * 0.4), (int) (DISP_HEIGHT * 0.55), 120, 60);
+              g.drawString("FIGHT", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.65));
+              g.drawString("RUN", (int) (DISP_WIDTH * 0.45), (int) (DISP_HEIGHT * 0.75));
+              g.drawString("SPELL", (int) (DISP_WIDTH * 0.72), (int) (DISP_HEIGHT * 0.65));
+              g.drawString("ITEM", (int) (DISP_WIDTH * 0.72), (int) (DISP_HEIGHT * 0.75));
+
+              // Battle Cursor
+              int bcurX = (int) (DISP_WIDTH * (0.42 + (commandCursorX * 0.27)));
+              int bcurY = (int) (DISP_HEIGHT * (0.65 + (commandCursorY * 0.10)));
+              g.drawString(">", bcurX, bcurY);
+              break;
+
             default:
               System.out.println("paint():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
               break;
           }
-          // Menu drawing
-          g.setColor(Graphics.getColorOfName(Graphics.WHITE));
-          g.fillRect(0, ((int)DISP_HEIGHT * 50 / 100), ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 50 / 100));
-          g.fillRect(((int)DISP_WIDTH * 20 / 100), ((int)DISP_HEIGHT * 50 / 100), ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 50 / 100));
-          g.fillRect(((int)DISP_WIDTH * 99 / 100), ((int)DISP_HEIGHT * 50 / 100), ((int)DISP_WIDTH * 1 / 100), ((int)DISP_HEIGHT * 50 / 100));
-          g.fillRect(0, ((int)DISP_HEIGHT * 50 / 100), DISP_WIDTH, ((int)DISP_HEIGHT * 1 / 100));
-          g.fillRect(0, ((int)DISP_HEIGHT * 99 / 100), DISP_WIDTH, ((int)DISP_HEIGHT * 1 / 100));
           g.unlock(true);
           break;
         // Game status (wait)
@@ -311,7 +351,7 @@ public class draponQuestMain extends IApplication {
           g.setColor(Graphics.getColorOfName(Graphics.BLACK));
           g.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
           g.setColor(Graphics.getColorOfName(Graphics.LIME));
-          g.drawString("Loading Data", ((int)DISP_WIDTH * 30 / 100), ((int)DISP_HEIGHT * 50 / 100));
+          g.drawString("Loading Data", ((int) DISP_WIDTH * 30 / 100), ((int) DISP_HEIGHT * 50 / 100));
           // Read data
           readData();
           g.unlock(true);
@@ -323,10 +363,10 @@ public class draponQuestMain extends IApplication {
     }
 
     /*************************************************************************/
-    //  Thread function
+    // Thread function
     /*************************************************************************/
     public void run() {
-      while(true) {
+      while (true) {
         try {
           // Prevent double press
           isHit = true;
@@ -347,9 +387,9 @@ public class draponQuestMain extends IApplication {
       // Redraw
       repaint();
     }
-  
+
     // Field map movement function
-    public void moveFieldMap(int direction) {      
+    public void moveFieldMap(int direction) {
       switch (direction) {
         case Display.KEY_UP:
           fieldMapEndHeight--;
@@ -380,7 +420,7 @@ public class draponQuestMain extends IApplication {
           break;
       }
     }
-    
+
     // Check game status
     public void chkGameStatus() {
       switch (currentGameStatus) {
@@ -407,10 +447,10 @@ public class draponQuestMain extends IApplication {
                   System.out.println("chkGameStatus():ERROR UNEXPECTED VALUE:flip = " + flip);
                   break;
               }
-            break;
-          default:
-            System.out.println("chkGameStatus():ERROR UNEXPECTED VALUE:currentPlace = " + currentPlace);
-            break;
+              break;
+            default:
+              System.out.println("chkGameStatus():ERROR UNEXPECTED VALUE:currentPlace = " + currentPlace);
+              break;
           }
           break;
         default:
@@ -593,25 +633,36 @@ public class draponQuestMain extends IApplication {
 
     // Command select function
     public void selectCommand(int keyName) {
-      if(currentMode == MODE_COM){
+      if (currentMode == MODE_COM || currentMode == MODE_BATTLE) {
         switch (keyName) {
           case Display.KEY_UP:
-            currentCommand--;
-            if (currentCommand < COM_TALK) {
-              currentCommand = COM_STUS;
+            commandCursorY--;
+            if (commandCursorY < 0) {
+              commandCursorY = (currentMode == MODE_COM) ? 3 : 1;
             }
             break;
           case Display.KEY_DOWN:
-            currentCommand++;
-            if (currentCommand > COM_STUS) {
-              currentCommand = COM_TALK;
+            commandCursorY++;
+            if (commandCursorY > ((currentMode == MODE_COM) ? 3 : 1)) {
+              commandCursorY = 0;
             }
             break;
+          case Display.KEY_LEFT:
+            commandCursorX--;
+            if (commandCursorX < 0)
+              commandCursorX = 1;
+            break;
+          case Display.KEY_RIGHT:
+            commandCursorX++;
+            if (commandCursorX > 1)
+              commandCursorX = 0;
+            break;
           case Display.KEY_SOFT2:
-            currentCommand = COM_TALK;
+            commandCursorX = 0;
+            commandCursorY = 0;
             break;
           default:
-            System.out.println("selectCommand():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
+            System.out.println("selectCommand():ERROR UNEXPECTED VALUE:keyName = " + keyName);
             break;
         }
       }
@@ -629,18 +680,18 @@ public class draponQuestMain extends IApplication {
           miSnd = MediaManager.getImage("resource:///images/snd.gif");
           miStp = MediaManager.getImage("resource:///images/stp.gif");
           miFrst = MediaManager.getImage("resource:///images/wd.gif");
-          
-          try{
+
+          try {
             miMe1.use();
             miMe2.use();
             miSea.use();
             miSnd.use();
             miStp.use();
             miFrst.use();
-          }catch(Throwable th){
+          } catch (Throwable th) {
             System.out.println("canvas():SYSTEM ERROR: " + th.toString());
           }
-    
+
           // Image object initialization
           imgMe1 = miMe1.getImage();
           imgMe2 = miMe2.getImage();
@@ -652,8 +703,8 @@ public class draponQuestMain extends IApplication {
           // For map
           imgFieldMap = new Image[fieldMapData.getMapLength()][fieldMapData.FIELD_MAP_WIDTH];
           // Map data storage
-          for(int i = 0; i < fieldMapData.getMapLength(); i++){
-            for(int ii = 0; ii < fieldMapData.FIELD_MAP_WIDTH; ii++){
+          for (int i = 0; i < fieldMapData.getMapLength(); i++) {
+            for (int ii = 0; ii < fieldMapData.FIELD_MAP_WIDTH; ii++) {
               switch (fieldMapData.mapDataReturnField(i, ii)) {
                 case 0:
                   imgFieldMap[i][ii] = imgSea;
@@ -668,14 +719,17 @@ public class draponQuestMain extends IApplication {
                   imgFieldMap[i][ii] = imgFrst;
                   break;
                 default:
-                  System.out.println("readData():ERROR UNEXPECTED VALUE:fieldMapData.mapDataReturnField(i, ii) = " + fieldMapData.mapDataReturnField(i, ii));
+                  System.out.println("readData():ERROR UNEXPECTED VALUE:fieldMapData.mapDataReturnField(i, ii) = "
+                      + fieldMapData.mapDataReturnField(i, ii));
                   break;
               }
             }
           }
           // Soft key 2 setting clear
-          // The string literal "CLEAR" in setSoftLabel is an external API call and should not be translated here.
-          // setSoftLabel(SOFT_KEY_2, "CLEAR"); // Commented out as setSoftLabel is not defined and likely part of old DoJa API
+          // The string literal "CLEAR" in setSoftLabel is an external API call and should
+          // not be translated here.
+          // setSoftLabel(SOFT_KEY_2, "CLEAR"); // Commented out as setSoftLabel is not
+          // defined and likely part of old DoJa API
           currentGameStatus = GAME_OPEN;
           break;
         default:
