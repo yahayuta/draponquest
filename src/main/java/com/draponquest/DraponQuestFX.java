@@ -138,6 +138,15 @@ public class DraponQuestFX extends Application {
     public String battleRewardMessage = null;
     public long battleRewardMessageTime = 0;
 
+    // NES-style Message fields
+    private String currentFullMessage = "";
+    private StringBuilder currentVisibleMessage = new StringBuilder();
+    private int messageCharIndex = 0;
+    private boolean isWaitingForInput = false;
+    private int typewriterTick = 0;
+    private static final int TYPEWRITER_SPEED = 1; // Ticks per character
+    private Runnable messageCallback = null;
+
     private int score = 0;
     public int battlesWon = 0; // Track number of battles won
 
@@ -193,13 +202,18 @@ public class DraponQuestFX extends Application {
     }
 
     private void handleKeyPressed(KeyEvent event) {
-        // Always allow ENTER or SPACE to work for game state transitions (e.g.,
-        // restarting from Game Over)
-        if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
-            hitKeySelect();
-            return; // Consume the event so other handlers don't process it
+        // Message box intercept - MUST prioritize dismissal
+        if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.A) {
+                hitKeySelect();
+            } else {
+                System.out.println("Input BLOCKED by active message: " + event.getCode());
+            }
+            return; // Block ALL other inputs until message is dismissed
         }
 
+        // Common transitions - allow ENTER/SPACE if no message (delegated to
+        // inputHandler)
         if (currentMode == MODE_BATTLE) {
             battleManager.handleBattleInput(event.getCode());
         } else if (currentMode == MODE_SHOP) {
@@ -420,10 +434,35 @@ public class DraponQuestFX extends Application {
             System.out.println("Save message cleared");
             saveMessage = null;
         }
-        if (levelUpMessage != null && System.currentTimeMillis() - levelUpMessageTime > 2000) {
-            System.out.println("Level up message cleared");
-            levelUpMessage = null;
+
+        // NES-style Typewriter logic
+        if (currentFullMessage != null && !currentFullMessage.isEmpty() && !isWaitingForInput) {
+            if (typewriterTick > 0) {
+                typewriterTick--;
+            } else {
+                // Reveal up to 10 characters per tick for near-instant display
+                for (int i = 0; i < 10; i++) {
+                    if (messageCharIndex < currentFullMessage.length() && !isWaitingForInput) {
+                        char nextChar = currentFullMessage.charAt(messageCharIndex);
+                        if (nextChar == 'E') {
+                            isWaitingForInput = true;
+                            messageCharIndex++; // Increment to point past E
+                        } else if (nextChar == '@' || nextChar == 'H') {
+                            isWaitingForInput = true;
+                            messageCharIndex++;
+                        } else {
+                            currentVisibleMessage.append(nextChar);
+                            messageCharIndex++;
+                        }
+                    }
+                }
+                if (messageCharIndex >= currentFullMessage.length()) {
+                    isWaitingForInput = true;
+                }
+                typewriterTick = TYPEWRITER_SPEED;
+            }
         }
+
         switch (currentGameStatus) {
             case GAME_TITLE:
                 // Title screen logic
@@ -665,64 +704,6 @@ public class DraponQuestFX extends Application {
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
-        // Display battle reward message
-        if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for
-                                                                                                          // 3 seconds
-            gc.setFill(Color.YELLOW);
-            gc.fillRect(0, DISP_HEIGHT / 2 - 24, DISP_WIDTH, 48);
-            gc.setFill(Color.BLACK);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText(battleRewardMessage, DISP_WIDTH / 2, DISP_HEIGHT / 2 + 8);
-            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset alignment
-        }
-        if (levelUpMessage != null) {
-            if (System.currentTimeMillis() - levelUpMessageTime < 2000) {
-                gc.setFill(Color.YELLOW);
-                gc.fillRect(0, 0, DISP_WIDTH, 48);
-                gc.setFill(Color.BLACK);
-                gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-                gc.fillText(levelUpMessage, 16, 32);
-            } else {
-                levelUpMessage = null;
-            }
-        }
-        // Dialogue box in GAME_OPEN and MODE_MOVE
-        if (currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE) {
-            // Draw dialogue box (scaled up)
-            gc.setFill(Color.WHITE);
-            gc.fillRect(0, DISP_HEIGHT - 96, DISP_WIDTH, 96);
-            gc.setFill(Color.BLACK);
-            gc.setFont(javafx.scene.text.Font.font("MS Gothic", 16));
-
-            // Initialize script lines if needed
-            if (scriptLines == null) {
-                String rawScript = scriptData.returnTestScript(scriptID, 0);
-                scriptLines = java.util.Arrays.stream(rawScript.split("@"))
-                        .map(String::trim)
-                        .map(line -> line.replaceAll("(H|E|HE)$", "").trim())
-                        .filter(line -> !line.isEmpty())
-                        .toArray(String[]::new);
-                scriptLineIndex = 0;
-                scriptAdvanceTick = 0;
-            }
-            // Draw up to 3 lines at a time
-            for (int i = 0; i < 3; i++) {
-                int idx = scriptLineIndex + i;
-                if (scriptLines != null && idx < scriptLines.length) {
-                    gc.fillText(scriptLines[idx], 32, DISP_HEIGHT - 64 + i * 32);
-                }
-            }
-            // Advance to next set of lines every 30 ticks (about 1 second)
-            scriptAdvanceTick++;
-            if (scriptAdvanceTick > 30) {
-                scriptLineIndex += 3;
-                if (scriptLineIndex >= scriptLines.length) {
-                    scriptLineIndex = 0;
-                }
-                scriptAdvanceTick = 0;
-            }
-        }
         // Command menu in GAME_OPEN and MODE_COM
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_COM) {
             // Draw menu background (scaled up)
@@ -779,25 +760,23 @@ public class DraponQuestFX extends Application {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
                 gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH / 2, 190);
             }
-            // Draw HP bars, each on its own line, centered
-            gc.setFont(javafx.scene.text.Font.font("Arial", 26));
+            // Draw HP bars, moved up to avoid message box overlap
+            gc.setFont(javafx.scene.text.Font.font("Arial", 22));
             gc.setFill(Color.LIME);
             String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: "
                     + playerAttack + " | DEF: " + playerDefense;
-            gc.fillText(playerHpStr, DISP_WIDTH / 2, 290);
+            gc.fillText(playerHpStr, DISP_WIDTH / 2, 270);
+
             gc.setFill(Color.RED);
             String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp")
                     + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
                     + battleManager.getCurrentMonster().defense;
-            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
-            // Draw battle message
-            gc.setFill(Color.WHITE);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-            gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH / 2, DISP_HEIGHT - 80);
-            // Draw action options
+            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 305);
+
+            // Draw action options (A: Attack D: Defend R: Run)
             gc.setFill(Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH / 2, DISP_HEIGHT - 30);
+            gc.fillText("A: Attack   D: Defend   R: Run", DISP_WIDTH / 2, DISP_HEIGHT - 30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         if (currentMode == MODE_SHOP) {
@@ -850,6 +829,33 @@ public class DraponQuestFX extends Application {
             gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(saveMessage, 16, 32);
+        }
+
+        // Unified NES-style Dialogue box (moved to end to ensure it overlays
+        // everything)
+        if (currentGameStatus == GAME_OPEN && currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            // Draw NES-style dialogue box
+            gc.setFill(Color.BLACK);
+            gc.fillRect(10, DISP_HEIGHT - 160, DISP_WIDTH - 20, 150);
+            gc.setStroke(Color.WHITE);
+            gc.setLineWidth(4);
+            gc.strokeRect(10, DISP_HEIGHT - 160, DISP_WIDTH - 20, 150);
+            gc.setLineWidth(2);
+            gc.strokeRect(15, DISP_HEIGHT - 155, DISP_WIDTH - 30, 140);
+
+            gc.setFill(Color.WHITE);
+            gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
+
+            String visibleText = currentVisibleMessage.toString();
+            String[] lines = visibleText.split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                gc.fillText(lines[i], 30, DISP_HEIGHT - 120 + i * 36);
+            }
+
+            // Blinking cursor if waiting
+            if (isWaitingForInput && (System.currentTimeMillis() / 500) % 2 == 0) {
+                gc.fillText("▼", DISP_WIDTH - 50, DISP_HEIGHT - 30);
+            }
         }
     }
 
@@ -995,6 +1001,46 @@ public class DraponQuestFX extends Application {
      */
     public void hitKeySelect() {
         System.out.println("hitKeySelect called - currentGameStatus: " + currentGameStatus);
+
+        // Handle NES-style message box input first
+        if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            if (!isWaitingForInput) {
+                // Skip typewriter effect
+                while (messageCharIndex < currentFullMessage.length()) {
+                    char c = currentFullMessage.charAt(messageCharIndex);
+                    if (c == 'E' || c == '@' || c == 'H') {
+                        // Don't skip past markers, just let updateGame handle them next frame or now
+                        break;
+                    }
+                    currentVisibleMessage.append(c);
+                    messageCharIndex++;
+                }
+                isWaitingForInput = true;
+                return;
+            } else {
+                // Continue to next page or close
+                if (messageCharIndex < currentFullMessage.length()) {
+                    char lastMarker = currentFullMessage.charAt(messageCharIndex - 1);
+                    if (lastMarker == '@' || lastMarker == 'H') {
+                        currentVisibleMessage.setLength(0);
+                        isWaitingForInput = false;
+                        return;
+                    }
+                }
+                // Close message
+                currentFullMessage = "";
+                currentVisibleMessage.setLength(0);
+                messageCharIndex = 0;
+                isWaitingForInput = false;
+                if (messageCallback != null) {
+                    Runnable callback = messageCallback;
+                    messageCallback = null;
+                    callback.run();
+                }
+                return;
+            }
+        }
+
         if (currentGameStatus == GAME_OVER) {
             System.out.println("Restarting game...");
             // Restart game
@@ -1018,6 +1064,9 @@ public class DraponQuestFX extends Application {
             currentGameStatus = GAME_OPEN;
             // Play field music
             audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            // NES-style message test
+            displayMessage(
+                    "Welcome to the\nworld of Drapon Quest!@The King awaits you\nin the castle.H@Be careful out\nthere!E");
         } else if (currentMode == MODE_MOVE) {
             System.out.println("Opening command menu");
             currentMode = MODE_COM;
@@ -1127,6 +1176,25 @@ public class DraponQuestFX extends Application {
             }
         }
         // TODO: Implement soft key 2 functionality for other modes if needed
+    }
+
+    /**
+     * Triggers a NES-style message box.
+     */
+    public void displayMessage(String msg) {
+        displayMessage(msg, null);
+    }
+
+    /**
+     * Triggers a NES-style message box with a callback.
+     */
+    public void displayMessage(String msg, Runnable callback) {
+        currentFullMessage = msg;
+        currentVisibleMessage.setLength(0);
+        messageCharIndex = 0;
+        isWaitingForInput = false;
+        typewriterTick = 0;
+        messageCallback = callback;
     }
 
     /**
@@ -1327,9 +1395,6 @@ public class DraponQuestFX extends Application {
         }
     }
 
-    private String levelUpMessage = null;
-    private long levelUpMessageTime = 0;
-
     public void levelUp() {
         playerLevel++;
         xpToNextLevel = (int) (xpToNextLevel * 1.5);
@@ -1337,8 +1402,11 @@ public class DraponQuestFX extends Application {
         playerHP = maxPlayerHP;
         playerAttack += 2;
         playerDefense += 1;
-        levelUpMessage = "You have reached level " + playerLevel + "!";
-        levelUpMessageTime = System.currentTimeMillis();
+
+        String msg = "You have reached level " + playerLevel + "!@" +
+                "Max HP increased by 10!\n" +
+                "Attack +2, Defense +1E";
+        displayMessage(msg);
     }
 
     /**

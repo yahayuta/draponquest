@@ -21,11 +21,11 @@ DraponQuest now supports both English and Japanese for all major game text, menu
 
 ---
 
-# Features
-- Classic field and battle gameplay
-- Authentic chiptune sound and music
+- **NES-style Message System**: Retro typewriter reveal with ultra-fast speed (10 chars/tick) and multi-page support.
+- **Sequential Battle Logic**: Precise turn-based combat where monster actions and results are gated by message dismissal.
+- **Improved Battle UI**: Raised HP bars and on-screen command prompts for better visibility.
+- **Enhanced Level-Up**: Integrated attribute-increase messages into the unified dialogue box.
 - Save/load system
-- ...
 
 # Controls
 - Arrow keys: Move
@@ -72,9 +72,10 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Multiple Monsters**: Encounter various monsters with unique stats and appearances. (Monster parameters have been adjusted to be weaker for a more forgiving experience.)
 - **Balanced Combat**: Reduced monster attack values for fair gameplay
 - **Battle Win Counter**: Track and display the number of battles won
-- **Modern UI**: Clean, centered battle interface with proper spacing
-- **Audio System**: Complete authentic Final Fantasy-style sound effects and background music system
-- **Audio Controls**: Toggle music/sound, volume control, and real-time audio status display
+- **NES-style Message System**: A unified dialogue box with retro typewriter reveal and multi-page support. Includes special markers for page breaks (`@`), pauses (`H`), and end-of-message (`E`).
+- **Ultra-Fast Narrative**: Text reveals at lightning speed (10 characters per tick), maintaining the retro aesthetic while ensuring modern responsiveness.
+- **Sequential Battle Logic**: Turn-based combat events are sequentially ordered using callbacks, ensuring player actions, monster attacks, and victory/defeat messages are never skipped.
+- **Enhanced Level-Up**: Property increases (Level, HP, Attack, Defense) are clearly displayed in sequential message pages upon victory.
 - **Minimap System**: A real-time 128x128 pixel minimap in the top-right corner. It provides a global world view on the field and automatically switches to a detailed local view in towns. (Automatically hidden during battles and in caves for a clean experience.)
 
 ## 🚀 Quick Start
@@ -134,13 +135,14 @@ mvn javafx:run
 
 ## 🎯 Game Controls
 
-| Key | Action |
-|-----|--------|
-| **Arrow Keys** | Move player / Navigate menus |
-| **Enter** | Select / Confirm |
+| **Arrow Keys / WASD** | Move player / Navigate menus |
+| **A** | **Attack** in battle / **Dismiss** message |
+| **Enter / Space** | Select / Confirm / Dismiss message |
+| **D** | **Defend** in battle |
+| **R** | **Run** (try to escape) |
 | **F5** | Save game |
 | **F9** | Load game |
-| **ESC** | Cancel / Back (in battle, only after win/lose) |
+| **ESC** | Cancel / Back / Exit status or shop |
 | **U** | Toggle background music on/off |
 | **S** | Toggle sound effects on/off |
 | **[** | Decrease volume |
@@ -375,10 +377,11 @@ The game features a turn-based battle system with the following mechanics:
 - Each monster has unique appearance and stats
 
 ### Battle Mechanics
+- **Sequential Logic**: Each action (Player Attack -> Monster Attack -> Victory) is gated by a message. You must dismiss the message (A/Space/Enter) to proceed to the next turn.
 - **Player HP**: Persists between battles, only resets on game over
 - **Turn-based combat**: Player and monster take turns
-- **Actions**: Attack (deals 3-6 damage), Defend (reduces incoming damage), Run (try to escape)
-- **Victory**: Defeat the monster to continue exploring
+- **Actions**: Attack (deals 3-6 damage), Defend (reduces incoming damage by 50%), Run (try to escape)
+- **Victory**: Defeat the monster to gain XP and Gold. If you level up, a detailed summary will be displayed.
 - **Defeat**: Game over screen with your total score and restart option
 
 ### Score System
@@ -388,7 +391,7 @@ The game features a turn-based battle system with the following mechanics:
 - **Game Over screen** shows your total score and final battle count
 
 ### Battle Controls
-- **A**: Attack
+- **A**: Attack (and dismiss message)
 - **D**: Defend
 - **R**: Run (try to escape)
 - **ESC**: Only exits after battle is complete (win or lose)
