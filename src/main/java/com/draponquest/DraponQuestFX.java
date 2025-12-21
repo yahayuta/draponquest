@@ -204,10 +204,13 @@ public class DraponQuestFX extends Application {
     private void handleKeyPressed(KeyEvent event) {
         // Always allow ENTER, SPACE, or A to work for message box dismissal
         if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            System.out.println("Input intercepted by message: " + event.getCode());
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.A) {
                 hitKeySelect();
                 return;
             }
+            // Other keys are ignored while message is active
+            return;
         }
 
         if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
@@ -445,12 +448,13 @@ public class DraponQuestFX extends Application {
             if (typewriterTick > 0) {
                 typewriterTick--;
             } else {
-                // Reveal up to 6 characters per tick for faster display
-                for (int i = 0; i < 6; i++) {
+                // Reveal up to 10 characters per tick for near-instant display
+                for (int i = 0; i < 10; i++) {
                     if (messageCharIndex < currentFullMessage.length() && !isWaitingForInput) {
                         char nextChar = currentFullMessage.charAt(messageCharIndex);
                         if (nextChar == 'E') {
                             isWaitingForInput = true;
+                            messageCharIndex++; // Increment to point past E
                         } else if (nextChar == '@' || nextChar == 'H') {
                             isWaitingForInput = true;
                             messageCharIndex++;
@@ -761,23 +765,23 @@ public class DraponQuestFX extends Application {
                 gc.setFont(javafx.scene.text.Font.font("Arial", 18));
                 gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH / 2, 190);
             }
-            // Draw HP bars, each on its own line, centered
-            gc.setFont(javafx.scene.text.Font.font("Arial", 26));
+            // Draw HP bars, moved up to avoid message box overlap
+            gc.setFont(javafx.scene.text.Font.font("Arial", 22));
             gc.setFill(Color.LIME);
             String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: "
                     + playerAttack + " | DEF: " + playerDefense;
-            gc.fillText(playerHpStr, DISP_WIDTH / 2, 290);
+            gc.fillText(playerHpStr, DISP_WIDTH / 2, 270);
+
             gc.setFill(Color.RED);
             String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp")
                     + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
                     + battleManager.getCurrentMonster().defense;
-            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
-            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
+            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 305);
 
-            // Draw action options
+            // Draw action options (A: Attack D: Defend R: Run)
             gc.setFill(Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText(LocalizationManager.getText("battle_actions"), DISP_WIDTH / 2, DISP_HEIGHT - 30);
+            gc.fillText("A: Attack   D: Defend   R: Run", DISP_WIDTH / 2, DISP_HEIGHT - 30);
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         if (currentMode == MODE_SHOP) {
@@ -1022,7 +1026,7 @@ public class DraponQuestFX extends Application {
                 // Continue to next page or close
                 if (messageCharIndex < currentFullMessage.length()) {
                     char lastMarker = currentFullMessage.charAt(messageCharIndex - 1);
-                    if (lastMarker != 'E') {
+                    if (lastMarker == '@' || lastMarker == 'H') {
                         currentVisibleMessage.setLength(0);
                         isWaitingForInput = false;
                         return;
