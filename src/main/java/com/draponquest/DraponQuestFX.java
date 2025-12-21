@@ -202,22 +202,18 @@ public class DraponQuestFX extends Application {
     }
 
     private void handleKeyPressed(KeyEvent event) {
-        // Always allow ENTER, SPACE, or A to work for message box dismissal
+        // Message box intercept - MUST prioritize dismissal
         if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
-            System.out.println("Input intercepted by message: " + event.getCode());
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.A) {
                 hitKeySelect();
-                return;
+            } else {
+                System.out.println("Input BLOCKED by active message: " + event.getCode());
             }
-            // Other keys are ignored while message is active
-            return;
+            return; // Block ALL other inputs until message is dismissed
         }
 
-        if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
-            hitKeySelect();
-            return;
-        }
-
+        // Common transitions - allow ENTER/SPACE if no message (delegated to
+        // inputHandler)
         if (currentMode == MODE_BATTLE) {
             battleManager.handleBattleInput(event.getCode());
         } else if (currentMode == MODE_SHOP) {
@@ -459,6 +455,9 @@ public class DraponQuestFX extends Application {
                             messageCharIndex++;
                         }
                     }
+                }
+                if (messageCharIndex >= currentFullMessage.length()) {
+                    isWaitingForInput = true;
                 }
                 typewriterTick = TYPEWRITER_SPEED;
             }
