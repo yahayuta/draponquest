@@ -145,6 +145,7 @@ public class DraponQuestFX extends Application {
     private boolean isWaitingForInput = false;
     private int typewriterTick = 0;
     private static final int TYPEWRITER_SPEED = 1; // Ticks per character
+    private Runnable messageCallback = null;
 
     private int score = 0;
     public int battlesWon = 0; // Track number of battles won
@@ -698,31 +699,10 @@ public class DraponQuestFX extends Application {
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
-        // Display battle reward message
-        if (battleRewardMessage != null && System.currentTimeMillis() - battleRewardMessageTime < 3000) { // Display for
-                                                                                                          // 3 seconds
-            gc.setFill(Color.YELLOW);
-            gc.fillRect(0, DISP_HEIGHT / 2 - 24, DISP_WIDTH, 48);
-            gc.setFill(Color.BLACK);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText(battleRewardMessage, DISP_WIDTH / 2, DISP_HEIGHT / 2 + 8);
-            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset alignment
-        }
-        if (levelUpMessage != null) {
-            if (System.currentTimeMillis() - levelUpMessageTime < 2000) {
-                gc.setFill(Color.YELLOW);
-                gc.fillRect(0, 0, DISP_WIDTH, 48);
-                gc.setFill(Color.BLACK);
-                gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-                gc.fillText(levelUpMessage, 16, 32);
-            } else {
-                levelUpMessage = null;
-            }
-        }
-        // Dialogue box in GAME_OPEN and MODE_MOVE
-        if (currentGameStatus == GAME_OPEN && currentMode == MODE_MOVE && currentFullMessage != null
-                && !currentFullMessage.isEmpty()) {
+        // Unified NES-style Dialogue box
+        if (currentGameStatus == GAME_OPEN && currentFullMessage != null && !currentFullMessage.isEmpty())
+
+        {
             // Draw NES-style dialogue box
             gc.setFill(Color.BLACK);
             gc.fillRect(10, DISP_HEIGHT - 160, DISP_WIDTH - 20, 150);
@@ -736,7 +716,7 @@ public class DraponQuestFX extends Application {
             gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
 
             String visibleText = currentVisibleMessage.toString();
-            String[] lines = visibleText.split("\n"); // We might need a better word-wrap or manual split
+            String[] lines = visibleText.split("\n");
             for (int i = 0; i < lines.length; i++) {
                 gc.fillText(lines[i], 30, DISP_HEIGHT - 120 + i * 36);
             }
@@ -813,10 +793,8 @@ public class DraponQuestFX extends Application {
                     + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
                     + battleManager.getCurrentMonster().defense;
             gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
-            // Draw battle message
-            gc.setFill(Color.WHITE);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-            gc.fillText(battleManager.getBattleMessage(), DISP_WIDTH / 2, DISP_HEIGHT - 80);
+            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 330);
+
             // Draw action options
             gc.setFill(Color.YELLOW);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
@@ -1049,6 +1027,11 @@ public class DraponQuestFX extends Application {
                 currentVisibleMessage.setLength(0);
                 messageCharIndex = 0;
                 isWaitingForInput = false;
+                if (messageCallback != null) {
+                    Runnable callback = messageCallback;
+                    messageCallback = null;
+                    callback.run();
+                }
                 return;
             }
         }
@@ -1194,11 +1177,19 @@ public class DraponQuestFX extends Application {
      * Triggers a NES-style message box.
      */
     public void displayMessage(String msg) {
+        displayMessage(msg, null);
+    }
+
+    /**
+     * Triggers a NES-style message box with a callback.
+     */
+    public void displayMessage(String msg, Runnable callback) {
         currentFullMessage = msg;
         currentVisibleMessage.setLength(0);
         messageCharIndex = 0;
         isWaitingForInput = false;
         typewriterTick = 0;
+        messageCallback = callback;
     }
 
     /**
