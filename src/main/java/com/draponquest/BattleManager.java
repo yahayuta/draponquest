@@ -50,95 +50,114 @@ public class BattleManager {
                 case A:
                     int damage = Math.max(1, game.playerAttack - currentMonster.defense);
                     monsterHP -= damage;
-                    game.displayMessage(LocalizationManager.getText("battle_you_deal") + damage
-                            + LocalizationManager.getText("battle_damage") + "E");
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
-                    playerTurn = false;
-                    // Play attack sound
                     game.audioManager.playSound(AudioManager.SOUND_ATTACK);
-                    break;
-                case D:
-                    game.displayMessage(LocalizationManager.getText("battle_you_defend") + "E");
-                    System.out.println("Player defends");
+
+                    String attackMsg = LocalizationManager.getText("battle_you_deal") + damage
+                            + LocalizationManager.getText("battle_damage") + "E";
+
+                    game.displayMessage(attackMsg, () -> {
+                        if (monsterHP <= 0) {
+                            checkVictory();
+                        } else {
+                            monsterTurn();
+                        }
+                    });
                     playerTurn = false;
-                    isDefending = true;
-                    // Play defend sound
-                    game.audioManager.playSound(AudioManager.SOUND_DEFEND);
                     break;
+
+                case D:
+                    System.out.println("Player defends");
+                    game.audioManager.playSound(AudioManager.SOUND_DEFEND);
+                    isDefending = true;
+
+                    game.displayMessage(LocalizationManager.getText("battle_you_defend") + "E", () -> {
+                        monsterTurn();
+                    });
+                    playerTurn = false;
+                    break;
+
                 case R:
                     // Try to escape: 50% chance
                     if (Math.random() < 0.5) {
+                        System.out.println("Player escaped from battle");
                         game.displayMessage(LocalizationManager.getText("battle_escaped") + "E", () -> {
                             game.currentMode = DraponQuestFX.MODE_MOVE;
                             game.audioManager.playSound(AudioManager.SOUND_ESCAPE);
                             game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
                         });
-                        System.out.println("Player escaped from battle");
-                        // We'll let the user click through the message before returning to MOVE mode
-                        // So we don't change mode here immediately
                         return;
                     } else {
-                        game.displayMessage(LocalizationManager.getText("battle_escape_failed") + "E");
                         System.out.println("Player failed to escape");
-                        playerTurn = false;
-                        // Play escape failed sound
                         game.audioManager.playSound(AudioManager.SOUND_DEFEAT);
+                        game.displayMessage(LocalizationManager.getText("battle_escape_failed") + "E", () -> {
+                            monsterTurn();
+                        });
+                        playerTurn = false;
                     }
                     break;
             }
         }
+    }
 
-        // Monster's turn
-        if (!playerTurn) {
-            int monsterDamage = Math.max(1, currentMonster.attack - game.playerDefense);
-            if (isDefending) {
-                monsterDamage = (int) (monsterDamage * 0.5); // Reduce damage by 50% if defending
-                isDefending = false;
-            }
-            game.playerHP -= monsterDamage;
-            game.displayMessage(currentMonster.name + LocalizationManager.getText("battle_monster_deals")
-                    + monsterDamage + LocalizationManager.getText("battle_damage") + "E");
-            System.out.println("Monster attacks: playerHP=" + game.playerHP);
-            playerTurn = true;
+    private void monsterTurn() {
+        if (monsterHP <= 0)
+            return;
 
-            // Check for game over after monster attack
+        int monsterDamage = Math.max(1, currentMonster.attack - game.playerDefense);
+        if (isDefending) {
+            monsterDamage = (int) (monsterDamage * 0.5); // Reduce damage by 50% if defending
+            isDefending = false;
+        }
+        game.playerHP -= monsterDamage;
+        System.out.println("Monster attacks: playerHP=" + game.playerHP);
+
+        String monsterMsg = currentMonster.name + LocalizationManager.getText("battle_monster_deals")
+                + monsterDamage + LocalizationManager.getText("battle_damage") + "E";
+
+        game.displayMessage(monsterMsg, () -> {
             if (game.playerHP <= 0) {
-                game.playerHP = 0;
-                game.displayMessage("You were defeated!E");
-                game.currentGameStatus = 4; // GAME_OVER
-                System.out.println("Player defeated. GAME_OVER");
-                // Play defeat sound and game over music
-                game.audioManager.playSound(AudioManager.SOUND_DEFEAT);
-                game.audioManager.playSound(AudioManager.SOUND_GAME_OVER);
-                return; // Exit battle immediately
+                checkDefeat();
+            } else {
+                playerTurn = true;
             }
-        }
+        });
+    }
 
-        // Check for battle victory (only if player is still alive)
-        if (game.playerHP > 0 && monsterHP <= 0) {
-            monsterHP = 0;
-            game.battlesWon++;
-            game.playerXP += currentMonster.xpValue;
-            game.playerGold += currentMonster.goldValue;
+    private void checkVictory() {
+        monsterHP = 0;
+        game.battlesWon++;
+        game.playerXP += currentMonster.xpValue;
+        game.playerGold += currentMonster.goldValue;
 
-            // NES-style victory message
-            String winMsg = currentMonster.name + " is defeated!@" +
-                    LocalizationManager.getText("battle_gained") + " " + currentMonster.xpValue + " XP\n" +
-                    "and " + currentMonster.goldValue + " gold!E";
-            game.displayMessage(winMsg, () -> {
-                if (game.playerXP >= game.xpToNextLevel) {
-                    game.levelUp();
-                }
-                game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
-                game.currentMode = DraponQuestFX.MODE_MOVE;
-            });
+        // NES-style victory message
+        String winMsg = currentMonster.name + " is defeated!@" +
+                LocalizationManager.getText("battle_gained") + " " + currentMonster.xpValue + " XP\n" +
+                "and " + currentMonster.goldValue + " gold!E";
 
-            System.out.println("Monster defeated. Player wins. Total battles won: " + game.battlesWon);
+        game.displayMessage(winMsg, () -> {
+            if (game.playerXP >= game.xpToNextLevel) {
+                game.levelUp();
+            }
+            game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            game.currentMode = DraponQuestFX.MODE_MOVE;
+        });
 
-            // Play victory sound and music
-            game.audioManager.playSound(AudioManager.SOUND_VICTORY);
-            game.audioManager.playMusic(AudioManager.MUSIC_VICTORY);
-        }
+        System.out.println("Monster defeated. Player wins. Total battles won: " + game.battlesWon);
+
+        // Play victory sound and music
+        game.audioManager.playSound(AudioManager.SOUND_VICTORY);
+        game.audioManager.playMusic(AudioManager.MUSIC_VICTORY);
+    }
+
+    private void checkDefeat() {
+        game.playerHP = 0;
+        game.displayMessage("You were defeated!E");
+        game.currentGameStatus = 4; // GAME_OVER
+        System.out.println("Player defeated. GAME_OVER");
+        // Play defeat sound and game over music
+        game.audioManager.playSound(AudioManager.SOUND_DEFEAT);
+        game.audioManager.playSound(AudioManager.SOUND_GAME_OVER);
     }
 
     public String getBattleMessage() {

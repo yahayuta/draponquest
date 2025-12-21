@@ -202,11 +202,17 @@ public class DraponQuestFX extends Application {
     }
 
     private void handleKeyPressed(KeyEvent event) {
-        // Always allow ENTER or SPACE to work for game state transitions (e.g.,
-        // restarting from Game Over)
+        // Always allow ENTER, SPACE, or A to work for message box dismissal
+        if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.A) {
+                hitKeySelect();
+                return;
+            }
+        }
+
         if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
             hitKeySelect();
-            return; // Consume the event so other handlers don't process it
+            return;
         }
 
         if (currentMode == MODE_BATTLE) {
@@ -439,8 +445,8 @@ public class DraponQuestFX extends Application {
             if (typewriterTick > 0) {
                 typewriterTick--;
             } else {
-                // Reveal up to 3 characters per tick for faster display
-                for (int i = 0; i < 3; i++) {
+                // Reveal up to 6 characters per tick for faster display
+                for (int i = 0; i < 6; i++) {
                     if (messageCharIndex < currentFullMessage.length() && !isWaitingForInput) {
                         char nextChar = currentFullMessage.charAt(messageCharIndex);
                         if (nextChar == 'E') {
