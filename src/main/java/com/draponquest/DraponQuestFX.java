@@ -438,10 +438,6 @@ public class DraponQuestFX extends Application {
             System.out.println("Save message cleared");
             saveMessage = null;
         }
-        if (levelUpMessage != null && System.currentTimeMillis() - levelUpMessageTime > 2000) {
-            System.out.println("Level up message cleared");
-            levelUpMessage = null;
-        }
 
         // NES-style Typewriter logic
         if (currentFullMessage != null && !currentFullMessage.isEmpty() && !isWaitingForInput) {
@@ -1400,9 +1396,6 @@ public class DraponQuestFX extends Application {
         }
     }
 
-    private String levelUpMessage = null;
-    private long levelUpMessageTime = 0;
-
     public void levelUp() {
         playerLevel++;
         xpToNextLevel = (int) (xpToNextLevel * 1.5);
@@ -1410,8 +1403,11 @@ public class DraponQuestFX extends Application {
         playerHP = maxPlayerHP;
         playerAttack += 2;
         playerDefense += 1;
-        levelUpMessage = "You have reached level " + playerLevel + "!";
-        levelUpMessageTime = System.currentTimeMillis();
+
+        String msg = "You have reached level " + playerLevel + "!@" +
+                "Max HP increased by 10!\n" +
+                "Attack +2, Defense +1E";
+        displayMessage(msg);
     }
 
     /**
