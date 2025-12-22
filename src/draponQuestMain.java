@@ -39,6 +39,8 @@ public class draponQuestMain extends IApplication {
     final int MODE_BATTLE = 2;
     // Mode (event)
     final int MODE_EVENT = 3;
+    // Mode (status)
+    final int MODE_STATUS = 4;
     // Place (field)
     final int PLACE_FIELD = 0;
     // Place (building)
@@ -115,6 +117,14 @@ public class draponQuestMain extends IApplication {
     int playerMaxMP = 0;
     int playerGold = 0;
     int playerExp = 0;
+    // Detailed Stats
+    int playerStr = 4;
+    int playerAgi = 4;
+    int playerAtk = 4;
+    int playerDef = 4;
+    String playerWeapon = "None";
+    String playerArmor = "None";
+    String playerShield = "None";
     // Command cursor
     int commandCursorX = 0;
     int commandCursorY = 0;
@@ -338,6 +348,30 @@ public class draponQuestMain extends IApplication {
               g.drawString(">", bcurX, bcurY);
               break;
 
+            // Mode (status)
+            case MODE_STATUS:
+              drawWindow(g, (int) (DISP_WIDTH * 0.1), (int) (DISP_HEIGHT * 0.1), (int) (DISP_WIDTH * 0.8),
+                  (int) (DISP_HEIGHT * 0.8));
+              g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+              g.drawString(playerName, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.20));
+              g.drawString("LV " + playerLevel, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.20));
+
+              g.drawString("HP " + playerHP + "/" + playerMaxHP, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.30));
+              g.drawString("MP " + playerMP + "/" + playerMaxMP, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.30));
+
+              g.drawString("STR: " + playerStr, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.40));
+              g.drawString("AGI: " + playerAgi, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.40));
+              g.drawString("ATK: " + playerAtk, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.48));
+              g.drawString("DEF: " + playerDef, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.48));
+
+              g.drawString("WEP: " + playerWeapon, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.60));
+              g.drawString("ARM: " + playerArmor, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.68));
+              g.drawString("SHLD:" + playerShield, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.76));
+
+              g.drawString("EXP: " + playerExp, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.86));
+              g.drawString("GOLD:" + playerGold, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.86));
+              break;
+
             default:
               System.out.println("paint():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
               break;
@@ -475,6 +509,10 @@ public class draponQuestMain extends IApplication {
               break;
             // Mode (command)
             case MODE_COM:
+              // Command (status) is at X=0, Y=1
+              if (commandCursorX == 0 && commandCursorY == 1) {
+                currentMode = MODE_STATUS;
+              }
               break;
             default:
               System.out.println("hitKeySelect():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
@@ -619,6 +657,10 @@ public class draponQuestMain extends IApplication {
             case MODE_COM:
               selectCommand(Display.KEY_SOFT2);
               currentMode = MODE_MOVE;
+              break;
+            // Mode (status)
+            case MODE_STATUS:
+              currentMode = MODE_COM;
               break;
             default:
               System.out.println("hitSoft2():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
