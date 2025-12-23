@@ -323,84 +323,85 @@ public class DraponQuestFX extends Application {
 
         // Load player images for animation
         try {
-            playerImage1 = new Image(getClass().getResourceAsStream("/images/me1.gif"));
+            playerImage1 = new Image(getClass().getResourceAsStream("/images/me1.png"));
         } catch (Exception e) {
             playerImage1 = null;
         }
         try {
-            playerImage2 = new Image(getClass().getResourceAsStream("/images/me2.gif"));
+            playerImage2 = new Image(getClass().getResourceAsStream("/images/me2.png"));
         } catch (Exception e) {
             playerImage2 = null;
         }
 
         // Load tile images
         try {
-            seaImage = new Image(getClass().getResourceAsStream("/images/sea.gif"));
+            seaImage = new Image(getClass().getResourceAsStream("/images/sea.png"));
         } catch (Exception e) {
             seaImage = null;
         }
         try {
-            sandImage = new Image(getClass().getResourceAsStream("/images/snd.gif"));
+            sandImage = new Image(getClass().getResourceAsStream("/images/snd.png"));
         } catch (Exception e) {
             sandImage = null;
         }
         try {
-            steppeImage = new Image(getClass().getResourceAsStream("/images/stp.gif"));
+            steppeImage = new Image(getClass().getResourceAsStream("/images/stp.png"));
         } catch (Exception e) {
             steppeImage = null;
         }
         try {
-            forestImage = new Image(getClass().getResourceAsStream("/images/wd.gif"));
+            forestImage = new Image(getClass().getResourceAsStream("/images/wd.png"));
         } catch (Exception e) {
             forestImage = null;
         }
         try {
-            shopImage = new Image(getClass().getResourceAsStream("/images/shop.gif"));
+            shopImage = new Image(getClass().getResourceAsStream("/images/shop.png"));
         } catch (Exception e) {
             shopImage = null;
         }
         try {
-            plainsImage = new Image(getClass().getResourceAsStream("/images/plains.gif"));
+            plainsImage = new Image(getClass().getResourceAsStream("/images/plains.png"));
         } catch (Exception e) {
             plainsImage = null;
         }
         try {
-            mountainImage = new Image(getClass().getResourceAsStream("/images/mountain.gif"));
+            mountainImage = new Image(getClass().getResourceAsStream("/images/mountain.png"));
         } catch (Exception e) {
             mountainImage = null;
         }
         try {
-            townImage = new Image(getClass().getResourceAsStream("/images/town.gif"));
+            townImage = new Image(getClass().getResourceAsStream("/images/town.png"));
         } catch (Exception e) {
             townImage = null;
         }
         try {
-            castleImage = new Image(getClass().getResourceAsStream("/images/castle.gif"));
+            castleImage = new Image(getClass().getResourceAsStream("/images/castle.png"));
         } catch (Exception e) {
             castleImage = null;
         }
         try {
-            bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.gif"));
+            bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.png"));
         } catch (Exception e) {
             bridgeImage = null;
         }
         try {
-            swampImage = new Image(getClass().getResourceAsStream("/images/swamp.gif"));
+            swampImage = new Image(getClass().getResourceAsStream("/images/swamp.png"));
         } catch (Exception e) {
             swampImage = null;
         }
         try {
-            wallImage = new Image(getClass().getResourceAsStream("/images/wall.gif"));
+            wallImage = new Image(getClass().getResourceAsStream("/images/wall.png"));
         } catch (Exception e) {
+            // wall.png might not exist yet, keeping fallback or try png
             wallImage = null;
         }
         try {
-            floorImage = new Image(getClass().getResourceAsStream("/images/floor.gif"));
+            floorImage = new Image(getClass().getResourceAsStream("/images/floor.png"));
         } catch (Exception e) {
             floorImage = null;
         }
         try {
-            caveImage = new Image(getClass().getResourceAsStream("/images/cave.gif"));
+            caveImage = new Image(getClass().getResourceAsStream("/images/cave.png"));
         } catch (Exception e) {
             caveImage = null;
         }
@@ -432,17 +433,17 @@ public class DraponQuestFX extends Application {
 
         // Load NPC images
         try {
-            soldierImage = new Image(getClass().getResourceAsStream("/images/soldier1.gif"));
+            soldierImage = new Image(getClass().getResourceAsStream("/images/soldier1.png"));
         } catch (Exception e) {
             soldierImage = playerImage1;
         }
         try {
-            merchantImage = new Image(getClass().getResourceAsStream("/images/merchant1.gif"));
+            merchantImage = new Image(getClass().getResourceAsStream("/images/merchant1.png"));
         } catch (Exception e) {
             merchantImage = playerImage1;
         }
         try {
-            kingImage = new Image(getClass().getResourceAsStream("/images/king1.gif"));
+            kingImage = new Image(getClass().getResourceAsStream("/images/king1.png"));
         } catch (Exception e) {
             kingImage = playerImage1;
         }
