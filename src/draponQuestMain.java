@@ -41,6 +41,8 @@ public class draponQuestMain extends IApplication {
     final int MODE_EVENT = 3;
     // Mode (status)
     final int MODE_STATUS = 4;
+    // Mode (talk)
+    final int MODE_TALK = 5;
     // Place (field)
     final int PLACE_FIELD = 0;
     // Place (building)
@@ -76,6 +78,9 @@ public class draponQuestMain extends IApplication {
     Image imgSnd = null;
     Image imgsStp = null;
     Image imgFrst = null;
+    Image imgSoldier = null;
+    Image imgMerchant = null;
+    Image imgKing = null;
     // Media Image
     MediaImage miMe1 = null;
     MediaImage miMe2 = null;
@@ -129,6 +134,31 @@ public class draponQuestMain extends IApplication {
     int commandCursorX = 0;
     int commandCursorY = 0;
 
+    // NPC Management
+    NPC[] npcs = new NPC[10];
+
+    // NPC Class
+    class NPC {
+      public int id;
+      public int x, y; // World coordinates
+      public int type; // 0=Soldier, 1=Merchant, etc.
+      public int direction; // 0=Up, 1=Down, 2=Left, 3=Right
+      public int scriptID;
+      public int placeID; // 0=Field, 1=Bldng, etc.
+      public boolean visible;
+
+      public NPC(int id, int x, int y, int type, int dir, int script, int place) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.direction = dir;
+        this.scriptID = script;
+        this.placeID = place;
+        this.visible = true;
+      }
+    }
+
     /*************************************************************************/
     // Constructor
     // Variable initialization and image data acquisition
@@ -145,6 +175,8 @@ public class draponQuestMain extends IApplication {
       scriptBuffer[7] = new StringBuffer();
       scriptBuffer[8] = new StringBuffer();
       scriptBuffer[9] = new StringBuffer();
+      // Initialize NPCs
+      initNPCs();
       // Thread initialization
       thDraponQuest = new Thread(this);
       thDraponQuest.start();
@@ -231,6 +263,8 @@ public class draponQuestMain extends IApplication {
           switch (currentPlace) {
             // Place (field)
             case PLACE_FIELD:
+            // Place (building)
+            case PLACE_BLDNG:
               // Map drawing
               for (int i = 0; i < 8; i++) {
                 for (int ii = 0; ii < 16; ii++) {
@@ -245,6 +279,30 @@ public class draponQuestMain extends IApplication {
                   mapY = 0;
                 }
               }
+
+              // Draw NPCs if in current place
+              for (int i = 0; i < npcs.length; i++) {
+                if (npcs[i] != null && npcs[i].placeID == currentPlace) {
+                  // Correct logic: find offset from top-left tile
+                  int tileX = npcs[i].x - fieldMapEndWidth;
+                  int tileY = npcs[i].y - fieldMapEndHeight;
+
+                  if (tileX >= 0 && tileX < 16 && tileY >= 0 && tileY < 8) {
+                    // Draw NPC sprite based on type
+                    Image sprite = imgMe1;
+                    switch(npcs[i].type) {
+                       case 0: sprite = imgSoldier; break;
+                       case 1: sprite = imgMerchant; break;
+                       case 2: sprite = imgKing; break;
+                       case 4: sprite = imgMerchant; break;
+                    }
+                    if (sprite != null) {
+                        g.drawImage(sprite, tileX * 16, tileY * 16);
+                    }
+                  }
+                }
+              }
+
               // Animation flip
               switch (flip) {
                 case 0:
@@ -372,6 +430,17 @@ public class draponQuestMain extends IApplication {
               g.drawString("GOLD:" + playerGold, (int) (DISP_WIDTH * 0.55), (int) (DISP_HEIGHT * 0.86));
               break;
 
+            // Mode (talk)
+            case MODE_TALK:
+              // Draw window at bottom
+              drawWindow(g, (int) (DISP_WIDTH * 0.1), (int) (DISP_HEIGHT * 0.6), (int) (DISP_WIDTH * 0.8), (int) (DISP_HEIGHT * 0.3));
+              g.setColor(Graphics.getColorOfName(Graphics.WHITE));
+              
+              // Draw text
+              String fullText = scriptData.getScript(scriptID);
+              g.drawString(fullText, (int) (DISP_WIDTH * 0.15), (int) (DISP_HEIGHT * 0.7));
+              break;
+
             default:
               System.out.println("paint():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
               break;
@@ -394,6 +463,19 @@ public class draponQuestMain extends IApplication {
           System.out.println("paint():ERROR UNEXPECTED VALUE:currentGameStatus = " + currentGameStatus);
           break;
       }
+    }
+
+    // Initialize NPCs
+    public void initNPCs() {
+      // Field: Soldier(0) at (10, 10), Merchant(1) at (12, 12)
+      npcs[0] = new NPC(0, 10, 10, 0, 1, 0, PLACE_FIELD);
+      npcs[1] = new NPC(1, 12, 12, 1, 1, 0, PLACE_FIELD);
+      
+      // Building (Town/Castle): King(2) at (10, 10), Soldier(0) at (10, 12), Merchant(1) at (9, 9)
+      // Assuming castle map coordinates.
+      npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King
+      npcs[3] = new NPC(3, 10, 12, 0, 1, 0, PLACE_BLDNG); // Soldier
+      npcs[4] = new NPC(4, 9, 9, 1, 1, 0, PLACE_BLDNG); // Merchant
     }
 
     /*************************************************************************/
@@ -513,7 +595,19 @@ public class draponQuestMain extends IApplication {
               if (commandCursorX == 0 && commandCursorY == 1) {
                 currentMode = MODE_STATUS;
               }
+              // Command (talk) is at X=0, Y=0
+              else if (commandCursorX == 0 && commandCursorY == 0) {
+                checkTalk();
+              }
               break;
+            // Mode (talk)
+            case MODE_TALK:
+              // Advance text or close window
+              // For now, just close it
+              currentMode = MODE_MOVE;
+              break;
+            // Mode (status)
+            case MODE_STATUS:
             default:
               System.out.println("hitKeySelect():ERROR UNEXPECTED VALUE:currentMode = " + currentMode);
               break;
@@ -709,75 +803,138 @@ public class draponQuestMain extends IApplication {
         }
       }
     }
+  }
 
-    // Read data
-    public void readData() {
-      switch (currentPlace) {
-        // Place (field)
-        case PLACE_FIELD:
-          // Load image
-          miMe1 = MediaManager.getImage("resource:///images/me1.gif");
-          miMe2 = MediaManager.getImage("resource:///images/me2.gif");
-          miSea = MediaManager.getImage("resource:///images/sea.gif");
-          miSnd = MediaManager.getImage("resource:///images/snd.gif");
-          miStp = MediaManager.getImage("resource:///images/stp.gif");
-          miFrst = MediaManager.getImage("resource:///images/wd.gif");
+  // Check Talk Logic
+  public void checkTalk() {
+    int targetX = fieldMapEndWidth + 8; // Player is at center (8,7 roughly relative to screen top-left in tiles?)
+    int targetY = fieldMapEndHeight + 7;
 
-          try {
-            miMe1.use();
-            miMe2.use();
-            miSea.use();
-            miSnd.use();
-            miStp.use();
-            miFrst.use();
-          } catch (Throwable th) {
-            System.out.println("canvas():SYSTEM ERROR: " + th.toString());
-          }
+    // Adjust based on player direction (using flip as proxy for now, need proper
+    // direction)
+    // Since we don't track player direction variable explicitly in the provided
+    // code snippet (other than flip for animation),
+    // let's assume simple proximity check or add direction tracking.
+    // Wait, 'moveFieldMap' just changes scrolling. The player is always center.
+    // We need to know which way the player last moved.
 
-          // Image object initialization
-          imgMe1 = miMe1.getImage();
-          imgMe2 = miMe2.getImage();
-          imgSea = miSea.getImage();
-          imgSnd = miSnd.getImage();
-          imgsStp = miStp.getImage();
-          imgFrst = miFrst.getImage();
+    // For this iteration, let's just check all adjacent tiles for an NPC
+    // Refined: We should add 'playerDirection' to canvas class.
+    // For now, let's just iterate all NPCs and see if any are adjacent to the
+    // center tile.
 
-          // For map
-          imgFieldMap = new Image[fieldMapData.getMapLength()][fieldMapData.FIELD_MAP_WIDTH];
-          // Map data storage
-          for (int i = 0; i < fieldMapData.getMapLength(); i++) {
-            for (int ii = 0; ii < fieldMapData.FIELD_MAP_WIDTH; ii++) {
-              switch (fieldMapData.mapDataReturnField(i, ii)) {
-                case 0:
-                  imgFieldMap[i][ii] = imgSea;
-                  break;
-                case 1:
-                  imgFieldMap[i][ii] = imgSnd;
-                  break;
-                case 2:
-                  imgFieldMap[i][ii] = imgsStp;
-                  break;
-                case 3:
-                  imgFieldMap[i][ii] = imgFrst;
-                  break;
-                default:
-                  System.out.println("readData():ERROR UNEXPECTED VALUE:fieldMapData.mapDataReturnField(i, ii) = "
-                      + fieldMapData.mapDataReturnField(i, ii));
-                  break;
-              }
-            }
-          }
-          // Soft key 2 setting clear
-          // The string literal "CLEAR" in setSoftLabel is an external API call and should
-          // not be translated here.
-          // setSoftLabel(SOFT_KEY_2, "CLEAR"); // Commented out as setSoftLabel is not
-          // defined and likely part of old DoJa API
-          currentGameStatus = GAME_OPEN;
-          break;
-        default:
-          System.out.println("readData():ERROR UNEXPECTED VALUE:currentPlace = " + currentPlace);
-          break;
+    int playerTileX = fieldMapEndWidth + 8; // Center X (approx)
+    int playerTileY = fieldMapEndHeight + 7; // Center Y (approx)
+
+    for (int i = 0; i < npcs.length; i++) {
+      if (npcs[i] != null && npcs[i].placeID == currentPlace) {
+        int dx = Math.abs(npcs[i].x - playerTileX);
+        int dy = Math.abs(npcs[i].y - playerTileY);
+        if (dx + dy <= 1) { // Adjacent or on top
+          // Found NPC
+          currentMode = MODE_TALK;
+          // Set script (for now hardcoded test)
+          scriptID = npcs[i].scriptID;
+          scriptNum = 0;
+          return;
+        }
       }
     }
+
+    // No NPC found
+    currentMode = MODE_MOVE;
   }
-}
+
+  // Read data
+  public void readData() {
+    switch (currentPlace) {
+      // Place (field)
+      case PLACE_FIELD:
+        // Load image
+        miMe1 = MediaManager.getImage("resource:///images/me1.gif");
+        miMe2 = MediaManager.getImage("resource:///images/me2.gif");
+        miSea = MediaManager.getImage("resource:///images/sea.gif");
+        miSnd = MediaManager.getImage("resource:///images/snd.gif");
+        miStp = MediaManager.getImage("resource:///images/stp.gif");
+        miFrst = MediaManager.getImage("resource:///images/wd.gif");
+
+        try {
+          miMe1.use();
+          miMe2.use();
+          miSea.use();
+          miSnd.use();
+          miStp.use();
+          miFrst.use();
+        } catch (Throwable th) {
+          System.out.println("canvas():SYSTEM ERROR: " + th.toString());
+        }
+
+        // Image object initialization
+        imgMe1 = miMe1.getImage();
+        imgMe2 = miMe2.getImage();
+        imgSea = miSea.getImage();
+        imgSnd = miSnd.getImage();
+        imgsStp = miStp.getImage();
+        imgFrst = miFrst.getImage();
+
+        // Load NPC images (Soldier, Merchant, King)
+        // Note: Using me1.gif as placeholder if specific files are missing, but code assumes they exist.
+        // We copied them in the previous step.
+        try {
+          MediaImage miSoldier = MediaManager.getImage("resource:///images/soldier1.gif");
+          MediaImage miMerchant = MediaManager.getImage("resource:///images/merchant1.gif");
+          MediaImage miKing = MediaManager.getImage("resource:///images/king1.gif");
+          
+          miSoldier.use();
+          miMerchant.use();
+          miKing.use();
+          
+          imgSoldier = miSoldier.getImage();
+          imgMerchant = miMerchant.getImage();
+          imgKing = miKing.getImage();
+        } catch (Throwable th) {
+           System.out.println("readData():NPC IMAGE ERROR: " + th.toString());
+           // Fallback to me1 if error
+           imgSoldier = imgMe1;
+           imgMerchant = imgMe1;
+           imgKing = imgMe1;
+        }
+
+        // For map
+        imgFieldMap = new Image[fieldMapData.getMapLength()][fieldMapData.FIELD_MAP_WIDTH];
+        // Map data storage
+        for (int i = 0; i < fieldMapData.getMapLength(); i++) {
+          for (int ii = 0; ii < fieldMapData.FIELD_MAP_WIDTH; ii++) {
+            switch (fieldMapData.mapDataReturnField(i, ii)) {
+              case 0:
+                imgFieldMap[i][ii] = imgSea;
+                break;
+              case 1:
+                imgFieldMap[i][ii] = imgSnd;
+                break;
+              case 2:
+                imgFieldMap[i][ii] = imgsStp;
+                break;
+              case 3:
+                imgFieldMap[i][ii] = imgFrst;
+                break;
+              default:
+                System.out.println("readData():ERROR UNEXPECTED VALUE:fieldMapData.mapDataReturnField(i, ii) = "
+                    + fieldMapData.mapDataReturnField(i, ii));
+                break;
+            }
+          }
+        }
+        // Soft key 2 setting clear
+        // The string literal "CLEAR" in setSoftLabel is an external API call and should
+        // not be translated here.
+        // setSoftLabel(SOFT_KEY_2, "CLEAR"); // Commented out as setSoftLabel is not
+        // defined and likely part of old DoJa API
+        currentGameStatus = GAME_OPEN;
+        break;
+      default:
+        System.out.println("readData():ERROR UNEXPECTED VALUE:currentPlace = " + currentPlace);
+        break;
+    }
+  }
+}}

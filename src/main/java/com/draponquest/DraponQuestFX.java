@@ -72,6 +72,7 @@ public class DraponQuestFX extends Application {
     private int currentPlace = PLACE_FIELD;
     private int currentCommand = COM_TALK;
     private int flip = 0;
+    private int playerDirection = 1; // 0=Up, 1=Down, 2=Left, 3=Right
     private boolean showMinimap = true;
 
     // Map variables
@@ -158,6 +159,36 @@ public class DraponQuestFX extends Application {
     private Shop shop;
     public BattleManager battleManager;
 
+    // NPC System
+    private NPC[] npcs = new NPC[10];
+    private Image soldierImage;
+    private Image merchantImage;
+    private Image kingImage;
+
+    /**
+     * NPC Inner Class
+     */
+    class NPC {
+        public int id;
+        public int x, y; // World coordinates
+        public int type; // 0=Soldier, 1=Merchant, 2=King, etc.
+        public int direction; // 0=Down, 1=Left, 2=Right, 3=Up
+        public int scriptID;
+        public int placeID; // 0=Field, 1=Bldng, etc.
+        public boolean visible;
+
+        public NPC(int id, int x, int y, int type, int dir, int script, int place) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            this.type = type;
+            this.direction = dir;
+            this.scriptID = script;
+            this.placeID = place;
+            this.visible = true;
+        }
+    }
+
     /**
      * Initializes the game and sets up the JavaFX UI.
      * 
@@ -171,7 +202,10 @@ public class DraponQuestFX extends Application {
         inventory = new Inventory();
         inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
         shop = new Shop();
+        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
+        shop = new Shop();
         battleManager = new BattleManager(this);
+        initNPCs();
 
         // Create JavaFX UI
         gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
@@ -395,6 +429,23 @@ public class DraponQuestFX extends Application {
         } catch (Exception e) {
             monster5Image = null;
         }
+
+        // Load NPC images
+        try {
+            soldierImage = new Image(getClass().getResourceAsStream("/images/soldier1.gif"));
+        } catch (Exception e) {
+            soldierImage = playerImage1;
+        }
+        try {
+            merchantImage = new Image(getClass().getResourceAsStream("/images/merchant1.gif"));
+        } catch (Exception e) {
+            merchantImage = playerImage1;
+        }
+        try {
+            kingImage = new Image(getClass().getResourceAsStream("/images/king1.gif"));
+        } catch (Exception e) {
+            kingImage = playerImage1;
+        }
         // Initialize monsters array
         monsters = new Monster[] {
                 new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10),
@@ -403,6 +454,21 @@ public class DraponQuestFX extends Application {
                 new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25),
                 new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40)
         };
+    }
+
+    /**
+     * Initialize NPCs
+     */
+    private void initNPCs() {
+        // Field: Soldier(0) at (10, 10), Merchant(1) at (12, 12)
+        npcs[0] = new NPC(0, 10, 10, 0, 1, 0, PLACE_FIELD);
+        npcs[1] = new NPC(1, 12, 12, 1, 1, 0, PLACE_FIELD);
+
+        // Building (Town/Castle): King(2) at (10, 10), Soldier(0) at (10, 12),
+        // Merchant(1) at (9, 9)
+        npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King
+        npcs[3] = new NPC(3, 10, 12, 0, 1, 0, PLACE_BLDNG); // Soldier
+        npcs[4] = new NPC(4, 9, 9, 1, 1, 0, PLACE_BLDNG); // Merchant
     }
 
     /**
@@ -667,8 +733,42 @@ public class DraponQuestFX extends Application {
             }
         }
 
+        // Draw NPCs
+        for (
+
+                int i = 0; i < npcs.length; i++) {
+            if (npcs[i] != null && npcs[i].placeID == currentPlace) {
+                // Correct logic: find offset from top-left tile
+                int tileX = npcs[i].x - fieldMapEndWidth;
+                int tileY = npcs[i].y - fieldMapEndHeight;
+
+                if (tileX >= 0 && tileX < 16 && tileY >= 0 && tileY < 16) {
+                    // Draw NPC sprite based on type
+                    Image sprite = playerImage1;
+                    switch (npcs[i].type) {
+                        case 0:
+                            sprite = (soldierImage != null) ? soldierImage : playerImage1;
+                            break;
+                        case 1:
+                            sprite = (merchantImage != null) ? merchantImage : playerImage1;
+                            break;
+                        case 2:
+                            sprite = (kingImage != null) ? kingImage : playerImage1;
+                            break;
+                        case 4:
+                            sprite = (merchantImage != null) ? merchantImage : playerImage1;
+                            break;
+                    }
+                    if (sprite != null) {
+                        gc.drawImage(sprite, tileX * 32, tileY * 32, 32, 32);
+                    }
+                }
+            }
+        }
+
         // Draw player sprite (scaled up)
-        Image currentPlayerImage = (flip == 0) ? playerImage1 : playerImage2;
+        Image currentPlayerImage = (flip == 0) ? playerImage1
+                : playerImage2;
         if (currentPlayerImage != null && !currentPlayerImage.isError()) {
             gc.drawImage(currentPlayerImage, 8 * 32, 8 * 32, 32, 32);
         }
@@ -1226,6 +1326,7 @@ public class DraponQuestFX extends Application {
      */
     private void moveFieldMap(int direction) {
         System.out.println("moveFieldMap called - direction: " + direction);
+        this.playerDirection = direction;
         // 0: Up, 1: Down, 2: Left, 3: Right
         int newRow = fieldMapEndHeight;
         int newCol = fieldMapEndWidth;
@@ -1410,6 +1511,69 @@ public class DraponQuestFX extends Application {
     }
 
     /**
+     * Checks if there is an NPC to talk to.
+     */
+    /**
+     * Checks if there is an NPC to talk to in the direction the player is facing.
+     */
+    private void checkTalk() {
+        int playerRow = fieldMapEndHeight + 8;
+        int playerCol = fieldMapEndWidth + 8;
+
+        // Target coordinates based on player direction
+        int targetRow = playerRow;
+        int targetCol = playerCol;
+
+        switch (playerDirection) {
+            case 0:
+                targetRow--;
+                break; // Up
+            case 1:
+                targetRow++;
+                break; // Down
+            case 2:
+                targetCol--;
+                break; // Left
+            case 3:
+                targetCol++;
+                break; // Right
+        }
+
+        boolean found = false;
+
+        for (int i = 0; i < npcs.length; i++) {
+            if (npcs[i] != null && npcs[i].placeID == currentPlace) {
+                // Check if NPC is at target coordinates
+                if (npcs[i].x == targetCol && npcs[i].y == targetRow) {
+                    found = true;
+                    // Simple dialogue based on type
+                    String msg = "";
+                    switch (npcs[i].type) {
+                        case 0:
+                            msg = LocalizationManager.getText("npc_soldier");
+                            break;
+                        case 1:
+                            msg = LocalizationManager.getText("npc_merchant");
+                            break;
+                        case 2:
+                            msg = LocalizationManager.getText("npc_king");
+                            break;
+                        default:
+                            msg = LocalizationManager.getText("npc_default");
+                            break;
+                    }
+                    displayMessage(msg);
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            displayMessage("There is no one there.E");
+        }
+    }
+
+    /**
      * Handles command menu selection logic.
      */
     private void handleCommandSelection() {
@@ -1418,12 +1582,19 @@ public class DraponQuestFX extends Application {
         int playerCol = fieldMapEndWidth + 8;
         int tile = fieldMapData.mapDataReturnField(playerRow, playerCol);
 
-        if (currentCommand == COM_TALK && tile == 4) {
-            currentMode = MODE_SHOP;
-            shopMessage = "Welcome to the shop! What would you like to buy?";
-            shopMessageTime = System.currentTimeMillis();
-            return;
+        if (currentCommand == COM_TALK) {
+            if (tile == 4) { // Shop tile
+                currentMode = MODE_SHOP;
+                shopMessage = "Welcome to the shop! What would you like to buy?";
+                shopMessageTime = System.currentTimeMillis();
+                return;
+            } else {
+                checkTalk();
+                currentMode = MODE_MOVE;
+                return;
+            }
         }
+
         // Show message for selected command or switch to battle/event
         String[] commands = { "TALK", "CHECK", "MAGIC", "ITEM", "STATUS" };
         if (currentCommand == COM_MGK) {

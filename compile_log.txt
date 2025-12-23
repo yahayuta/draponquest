@@ -1,0 +1,3 @@
+Compiling DraponQuest JavaFX...
+Compilation failed
+‘±s‚·‚é‚É‚Í‰½‚©ƒL[‚ğ‰Ÿ‚µ‚Ä‚­‚¾‚³‚¢ . . . 
