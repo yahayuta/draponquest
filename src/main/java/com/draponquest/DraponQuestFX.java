@@ -246,6 +246,13 @@ public class DraponQuestFX extends Application {
             return; // Block ALL other inputs until message is dismissed
         }
 
+        if (currentGameStatus == GAME_OVER) {
+            if (event.getCode() == KeyCode.ENTER) {
+                hitKeySelect();
+            }
+            return;
+        }
+
         // Common transitions - allow ENTER/SPACE if no message (delegated to
         // inputHandler)
         if (currentMode == MODE_BATTLE) {
