@@ -617,6 +617,60 @@ public class DraponQuestFX extends Application {
                 // Game over logic
                 break;
         }
+        
+        // Update NPCs if not in battle or a menu
+        if (currentMode == MODE_MOVE) {
+            updateNPCs();
+        }
+    }
+
+    /**
+     * Updates NPC positions to make them walk around randomly.
+     */
+    private void updateNPCs() {
+        // Chance for an NPC to move, e.g., 2% per tick
+        final double moveChance = 0.02;
+
+        for (NPC npc : npcs) {
+            // Only move NPCs that exist, are in the current area, and are not stationary types (like the King, type 2)
+            if (npc != null && npc.placeID == currentPlace && npc.type != 2 && random.nextDouble() < moveChance) {
+                
+                int direction = random.nextInt(4); // 0=Up, 1=Down, 2=Left, 3=Right
+                
+                int targetX = npc.x;
+                int targetY = npc.y;
+
+                switch (direction) {
+                    case 0: targetY--; break; // Up
+                    case 1: targetY++; break; // Down
+                    case 2: targetX--; break; // Left
+                    case 3: targetX++; break; // Right
+                }
+
+                // --- Collision Detection ---
+                // 1. Check for map boundaries and walkable tiles
+                if (!isWalkable(targetY, targetX)) {
+                    continue; // Skip move if target is a wall or out of bounds
+                }
+
+                // 2. Check for collision with other NPCs
+                if (isNpcAt(targetX, targetY, currentPlace)) {
+                    continue; // Skip move if another NPC is there
+                }
+
+                // 3. Check for collision with the player
+                int playerX = fieldMapEndWidth + 8;
+                int playerY = fieldMapEndHeight + 8;
+                if (targetX == playerX && targetY == playerY) {
+                    continue; // Skip move if player is there
+                }
+
+                // If all checks pass, move the NPC
+                npc.x = targetX;
+                npc.y = targetY;
+                npc.direction = direction; // Update direction so sprite can face correctly
+            }
+        }
     }
 
     /**
