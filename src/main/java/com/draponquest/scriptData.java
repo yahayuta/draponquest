@@ -5,6 +5,22 @@ package com.draponquest;
  * Now supports multi-language localization.
  */
 public class scriptData {
+    // Scripts for NPCs
+    private static final String scripts[] = {
+        "Welcome to Alefgard!", // ID 0
+        "This is a test.", // ID 1
+        "The king is troubled. A foul presence has settled over the land.", // ID 2
+        "Have you seen the princess? She was taken by a fearsome dragon!" // ID 3
+    };
+
+    // Get script by ID
+    public static String getScript(int id) {
+        if (id >= 0 && id < scripts.length) {
+            return scripts[id];
+        }
+        return "...";
+    }
+
     /**
      * Game instructions script that explains how to play.
      * Uses LocalizationManager for multi-language support.

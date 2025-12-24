@@ -475,8 +475,8 @@ public class DraponQuestFX extends Application {
         // Building (Town/Castle): King(2) at (10, 10), Soldier(0) at (10, 12),
         // Merchant(1) at (9, 9)
         npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King
-        npcs[3] = new NPC(3, 10, 12, 0, 1, 0, PLACE_BLDNG); // Soldier
-        npcs[4] = new NPC(4, 9, 9, 1, 1, 0, PLACE_BLDNG); // Merchant
+        npcs[3] = new NPC(3, 10, 12, 0, 1, 2, PLACE_BLDNG); // Soldier with new script
+        npcs[4] = new NPC(4, 9, 9, 1, 1, 3, PLACE_BLDNG); // Merchant with new script
     }
 
     /**
@@ -1554,22 +1554,8 @@ public class DraponQuestFX extends Application {
                 // Check if NPC is at target coordinates
                 if (npcs[i].x == targetCol && npcs[i].y == targetRow) {
                     found = true;
-                    // Simple dialogue based on type
-                    String msg = "";
-                    switch (npcs[i].type) {
-                        case 0:
-                            msg = LocalizationManager.getText("npc_soldier");
-                            break;
-                        case 1:
-                            msg = LocalizationManager.getText("npc_merchant");
-                            break;
-                        case 2:
-                            msg = LocalizationManager.getText("npc_king");
-                            break;
-                        default:
-                            msg = LocalizationManager.getText("npc_default");
-                            break;
-                    }
+                    // Use the NPC's assigned scriptID to get the correct dialogue
+                    String msg = scriptData.getScript(npcs[i].scriptID) + "E";
                     displayMessage(msg);
                     break;
                 }
