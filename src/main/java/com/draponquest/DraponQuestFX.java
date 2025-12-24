@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import java.io.*;
 import java.nio.file.*;
+import java.util.Random; // Import Random class
 
 // Audio system
 import com.draponquest.AudioManager;
@@ -32,6 +33,8 @@ public class DraponQuestFX extends Application {
     private static final int DISP_WIDTH = 512;
     private static final int DISP_HEIGHT = 512;
     private static final int WAIT_MSEC = 100;
+
+    private Random random = new Random(); // Initialize Random
 
     // Game status constants
     private static final int GAME_TITLE = 0;
@@ -468,15 +471,75 @@ public class DraponQuestFX extends Application {
      * Initialize NPCs
      */
     private void initNPCs() {
-        // Field: Soldier(0) at (10, 10), Merchant(1) at (12, 12)
+        // Field NPCs (example - currently fixed positions)
         npcs[0] = new NPC(0, 10, 10, 0, 1, 0, PLACE_FIELD);
-        npcs[1] = new NPC(1, 12, 12, 1, 1, 0, PLACE_FIELD);
+        npcs[1] = new NPC(1, 12, 12, 1, 1, 1, PLACE_FIELD); // Script ID 1 for merchant on field
 
-        // Building (Town/Castle): King(2) at (10, 10), Soldier(0) at (10, 12),
-        // Merchant(1) at (9, 9)
-        npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King
-        npcs[3] = new NPC(3, 10, 12, 0, 1, 2, PLACE_BLDNG); // Soldier with new script
-        npcs[4] = new NPC(4, 9, 9, 1, 1, 3, PLACE_BLDNG); // Merchant with new script
+        // Building (Town/Castle) NPCs
+        // King is fixed at 10,10 in building
+        npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King with Script ID 0 (Welcome)
+
+        // Soldier and Merchant will have random walkable positions in the building
+        int[] soldierPos = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[3] = new NPC(3, soldierPos[0], soldierPos[1], 0, random.nextInt(4), 2, PLACE_BLDNG); // Soldier with Script ID 2
+
+        int[] merchantPos = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[4] = new NPC(4, merchantPos[0], merchantPos[1], 1, random.nextInt(4), 3, PLACE_BLDNG); // Merchant with Script ID 3
+    }
+
+    /**
+     * Generates random walkable coordinates for NPCs within a given place.
+     * This ensures NPCs don't spawn on walls or in the sea.
+     * @param placeID The place (e.g., PLACE_BLDNG, PLACE_CAVE).
+     * @return An int array {x, y} of walkable coordinates.
+     */
+    private int[] generateRandomWalkableCoord(int placeID) {
+        int x, y;
+        int mapWidth = 0;
+        int mapHeight = 0;
+        int minX = 0, minY = 0;
+
+        // Determine bounds based on placeID
+        if (placeID == PLACE_BLDNG || placeID == PLACE_CAVE) {
+            mapWidth = 16;
+            mapHeight = 16;
+            minX = 1; // Avoid walls on edges
+            minY = 1; // Avoid walls on edges
+        } else { // PLACE_FIELD
+            mapWidth = fieldMapData.FIELD_MAP_WIDTH;
+            mapHeight = fieldMapData.FIELD_MAP_WIDTH;
+            minX = 0;
+            minY = 0;
+        }
+
+        while (true) {
+            x = random.nextInt(mapWidth - minX * 2) + minX;
+            y = random.nextInt(mapHeight - minY * 2) + minY;
+
+            int tile;
+            if (placeID == PLACE_BLDNG) {
+                tile = fieldMapData.mapDataReturnTown(y, x);
+            } else if (placeID == PLACE_CAVE) {
+                tile = fieldMapData.mapDataReturnCave(y, x);
+            } else {
+                tile = fieldMapData.mapDataReturnField(y, x);
+            }
+
+            // Check if the tile is walkable and not the player's initial spawn point (for building)
+            if (isWalkable(y, x) && !(placeID == PLACE_BLDNG && x == 8 && y == 15)) { // Player spawns at (8,15) relative in building
+                // Ensure no other NPC is already at this position
+                boolean collision = false;
+                for (NPC npc : npcs) {
+                    if (npc != null && npc.placeID == placeID && npc.x == x && npc.y == y) {
+                        collision = true;
+                        break;
+                    }
+                }
+                if (!collision) {
+                    return new int[]{x, y};
+                }
+            }
+        }
     }
 
     /**
@@ -1328,6 +1391,22 @@ public class DraponQuestFX extends Application {
     }
 
     /**
+     * Checks if an NPC is at the specified map coordinates within the current place.
+     * @param targetX The X coordinate to check.
+     * @param targetY The Y coordinate to check.
+     * @param targetPlaceId The ID of the place (e.g., PLACE_BLDNG, PLACE_FIELD) to check within.
+     * @return True if an NPC is at the coordinates, false otherwise.
+     */
+    private boolean isNpcAt(int targetX, int targetY, int targetPlaceId) {
+        for (NPC npc : npcs) {
+            if (npc != null && npc.placeID == targetPlaceId && npc.x == targetX && npc.y == targetY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Moves the player on the map and triggers random encounters.
      * 
      * @param direction 0=up, 1=down, 2=left, 3=right
@@ -1355,6 +1434,13 @@ public class DraponQuestFX extends Application {
         int playerRow = newRow + 8;
         int playerCol = newCol + 8;
         System.out.println("Attempting move to: row=" + playerRow + ", col=" + playerCol);
+
+        // Check for NPC collision before attempting to move
+        if (isNpcAt(playerCol, playerRow, currentPlace)) {
+            System.out.println("Move blocked: NPC at target location.");
+            audioManager.playSound(AudioManager.SOUND_MOVE); // Play a 'bump' sound or similar
+            return; // Block movement
+        }
 
         // EXIT LOGIC FOR TOWN/CAVE (New)
         if (currentPlace != PLACE_FIELD) {
