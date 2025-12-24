@@ -628,12 +628,12 @@ public class DraponQuestFX extends Application {
      * Updates NPC positions to make them walk around randomly.
      */
     private void updateNPCs() {
-        // Chance for an NPC to move, e.g., 50% per tick
-        final double moveChance = 0.5;
+        // Chance for an NPC to move, e.g., 10% per tick
+        final double moveChance = 0.1;
 
         for (NPC npc : npcs) {
-            // Only move NPCs that exist, are in the current area, and are not stationary types (like the King, type 2)
-            if (npc != null && npc.placeID == currentPlace && npc.type != 2 && random.nextDouble() < moveChance) {
+            // Only move NPCs that exist, are in the current area
+            if (npc != null && npc.placeID == currentPlace && random.nextDouble() < moveChance) {
                 
                 int direction = random.nextInt(4); // 0=Up, 1=Down, 2=Left, 3=Right
                 
