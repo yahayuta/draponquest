@@ -1614,37 +1614,32 @@ public class DraponQuestFX extends Application {
         int playerRow = fieldMapEndHeight + 8;
         int playerCol = fieldMapEndWidth + 8;
 
-        // Target coordinates based on player direction
-        int targetRow = playerRow;
-        int targetCol = playerCol;
-
-        switch (playerDirection) {
-            case 0:
-                targetRow--;
-                break; // Up
-            case 1:
-                targetRow++;
-                break; // Down
-            case 2:
-                targetCol--;
-                break; // Left
-            case 3:
-                targetCol++;
-                break; // Right
-        }
+        // Define relative coordinates for the four adjacent tiles
+        int[] dr = {-1, 1, 0, 0}; // delta row (up, down, same, same)
+        int[] dc = {0, 0, -1, 1}; // delta col (same, same, left, right)
 
         boolean found = false;
 
-        for (int i = 0; i < npcs.length; i++) {
-            if (npcs[i] != null && npcs[i].placeID == currentPlace) {
-                // Check if NPC is at target coordinates
-                if (npcs[i].x == targetCol && npcs[i].y == targetRow) {
-                    found = true;
-                    // Use the NPC's assigned scriptID to get the correct dialogue
-                    String msg = scriptData.getScript(npcs[i].scriptID) + "E";
-                    displayMessage(msg);
-                    break;
+        for (int i = 0; i < dr.length; i++) {
+            int targetRow = playerRow + dr[i];
+            int targetCol = playerCol + dc[i];
+
+            for (int j = 0; j < npcs.length; j++) {
+                if (npcs[j] != null && npcs[j].placeID == currentPlace) {
+                    // Check if NPC is at target coordinates
+                    if (npcs[j].x == targetCol && npcs[j].y == targetRow) {
+                        found = true;
+                        // Use the NPC's assigned scriptID to get the correct dialogue
+                        String msg = scriptData.getScript(npcs[j].scriptID) + "E";
+                        displayMessage(msg);
+                        // Optional: make NPC face player
+                        // npcs[j].direction = (i + 2) % 4; // Make NPC face the player (approx)
+                        break; // Found an NPC, stop checking other NPCs and directions
+                    }
                 }
+            }
+            if (found) {
+                break; // Found an NPC, stop checking other directions
             }
         }
 
