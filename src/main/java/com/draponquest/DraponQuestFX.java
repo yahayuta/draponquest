@@ -475,11 +475,10 @@ public class DraponQuestFX extends Application {
         npcs[0] = new NPC(0, 10, 10, 0, 1, 0, PLACE_FIELD);
         npcs[1] = new NPC(1, 12, 12, 1, 1, 1, PLACE_FIELD); // Script ID 1 for merchant on field
 
-        // Building (Town/Castle) NPCs
-        // King is fixed at 10,10 in building
-        npcs[2] = new NPC(2, 10, 10, 2, 1, 0, PLACE_BLDNG); // King with Script ID 0 (Welcome)
+        // King, Soldier, and Merchant will have random walkable positions in the building
+        int[] kingPos = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[2] = new NPC(2, kingPos[0], kingPos[1], 2, random.nextInt(4), 0, PLACE_BLDNG); // King with Script ID 0
 
-        // Soldier and Merchant will have random walkable positions in the building
         int[] soldierPos = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[3] = new NPC(3, soldierPos[0], soldierPos[1], 0, random.nextInt(4), 2, PLACE_BLDNG); // Soldier with Script ID 2
 
@@ -705,23 +704,52 @@ public class DraponQuestFX extends Application {
      * Renders the title screen.
      */
     private void renderTitleScreen() {
-        gc.setFill(Color.LIME);
-        gc.setFont(javafx.scene.text.Font.font("Arial", 32));
+        // Create a gradient background
+        javafx.scene.paint.LinearGradient gradient = new javafx.scene.paint.LinearGradient(
+            0, 0, 0, DISP_HEIGHT, false,
+            javafx.scene.paint.CycleMethod.NO_CYCLE,
+            new javafx.scene.paint.Stop(0, Color.rgb(0, 0, 20)),
+            new javafx.scene.paint.Stop(1, Color.rgb(0, 0, 80))
+        );
+        gc.setFill(gradient);
+        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 
-        gc.fillText("DRAPON QUEST", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.3);
-        gc.fillText("PRESS ENTER", DISP_WIDTH * 0.3, DISP_HEIGHT * 0.5);
+        // Draw a monster image
+        if (monster5Image != null && !monster5Image.isError()) {
+            gc.setGlobalAlpha(0.7);
+            double monsterX = (DISP_WIDTH - monster5Image.getWidth()) / 2;
+            double monsterY = DISP_HEIGHT * 0.2;
+            gc.drawImage(monster5Image, monsterX, monsterY);
+            gc.setGlobalAlpha(1.0);
+        }
 
-        // Audio controls help
+        // Title with shadow
+        String title = "DRAPON QUEST";
+        gc.setFont(javafx.scene.text.Font.font("Garamond", javafx.scene.text.FontWeight.BOLD, 64));
+        
+        // Shadow
+        gc.setFill(Color.BLACK);
+        gc.fillText(title, DISP_WIDTH * 0.1 + 3, DISP_HEIGHT * 0.4 + 3);
+        
+        // Main Text
+        gc.setFill(Color.rgb(220, 200, 120));
+        gc.fillText(title, DISP_WIDTH * 0.1, DISP_HEIGHT * 0.4);
+
+        // "Press Enter" text with blink
+        if ((System.currentTimeMillis() / 700) % 2 == 0) {
+            gc.setFont(javafx.scene.text.Font.font("Garamond", 28));
+            gc.setFill(Color.WHITE);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+            gc.fillText("PRESS ENTER", DISP_WIDTH / 2, DISP_HEIGHT * 0.7);
+            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
+        }
+
+        // Copyright info
         gc.setFont(javafx.scene.text.Font.font("Arial", 16));
-        gc.setFill(Color.WHITE);
-        gc.fillText("Controls:", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.7);
-        gc.fillText("U: Toggle Music  S: Toggle Sound", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.75);
-        gc.fillText("M: Toggle Minimap [ ]: Volume Control", DISP_WIDTH * 0.1, DISP_HEIGHT * 0.8);
-
-        gc.setFill(Color.LIME);
-        gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-        gc.fillText("(c)2025", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.85);
-        gc.fillText("yahayuta", DISP_WIDTH * 0.35, DISP_HEIGHT * 0.9);
+        gc.setFill(Color.LIGHTGRAY);
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        gc.fillText("(c)2025 yahayuta", DISP_WIDTH / 2, DISP_HEIGHT * 0.95);
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
     }
 
     /**
