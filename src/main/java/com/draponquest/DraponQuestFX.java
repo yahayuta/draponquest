@@ -704,52 +704,35 @@ public class DraponQuestFX extends Application {
      * Renders the title screen.
      */
     private void renderTitleScreen() {
-        // Create a gradient background
-        javafx.scene.paint.LinearGradient gradient = new javafx.scene.paint.LinearGradient(
-            0, 0, 0, DISP_HEIGHT, false,
-            javafx.scene.paint.CycleMethod.NO_CYCLE,
-            new javafx.scene.paint.Stop(0, Color.rgb(0, 0, 20)),
-            new javafx.scene.paint.Stop(1, Color.rgb(0, 0, 80))
-        );
-        gc.setFill(gradient);
+        // Clear canvas with black
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 
-        // Draw a monster image
-        if (monster5Image != null && !monster5Image.isError()) {
-            gc.setGlobalAlpha(0.7);
-            double monsterX = (DISP_WIDTH - monster5Image.getWidth()) / 2;
-            double monsterY = DISP_HEIGHT * 0.2;
-            gc.drawImage(monster5Image, monsterX, monsterY);
-            gc.setGlobalAlpha(1.0);
-        }
-
-        // Title with shadow
+        // Title text "DRAPON QUEST"
         String title = "DRAPON QUEST";
-        gc.setFont(javafx.scene.text.Font.font("Garamond", javafx.scene.text.FontWeight.BOLD, 64));
+        gc.setFont(javafx.scene.text.Font.font("Garamond", javafx.scene.text.FontWeight.BOLD, 72));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
         
-        // Shadow
+        // Shadow for title
         gc.setFill(Color.BLACK);
-        gc.fillText(title, DISP_WIDTH * 0.1 + 3, DISP_HEIGHT * 0.4 + 3);
+        gc.fillText(title, DISP_WIDTH / 2 + 4, DISP_HEIGHT * 0.35 + 4);
         
-        // Main Text
-        gc.setFill(Color.rgb(220, 200, 120));
-        gc.fillText(title, DISP_WIDTH * 0.1, DISP_HEIGHT * 0.4);
+        // Main title text
+        gc.setFill(Color.rgb(220, 200, 120)); // Gold-like color
+        gc.fillText(title, DISP_WIDTH / 2, DISP_HEIGHT * 0.35);
 
         // "Press Enter" text with blink
         if ((System.currentTimeMillis() / 700) % 2 == 0) {
-            gc.setFont(javafx.scene.text.Font.font("Garamond", 28));
+            gc.setFont(javafx.scene.text.Font.font("Garamond", 32));
             gc.setFill(Color.WHITE);
-            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
             gc.fillText("PRESS ENTER", DISP_WIDTH / 2, DISP_HEIGHT * 0.7);
-            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
         }
 
         // Copyright info
         gc.setFont(javafx.scene.text.Font.font("Arial", 16));
         gc.setFill(Color.LIGHTGRAY);
-        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
         gc.fillText("(c)2025 yahayuta", DISP_WIDTH / 2, DISP_HEIGHT * 0.95);
-        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
+        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
     }
 
     /**
