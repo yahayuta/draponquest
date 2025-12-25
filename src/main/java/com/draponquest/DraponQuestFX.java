@@ -892,35 +892,35 @@ public class DraponQuestFX extends Application {
                             gc.setFill(Color.FORESTGREEN);
                             break;
                         case fieldMapData.TILE_SHOP:
-                            gc.setFill(Color.BROWN);
-                            break; // Shop
+                            gc.setFill(Color.BROWN); // Shop
+                            break;
                         case fieldMapData.TILE_PLAINS:
-                            gc.setFill(Color.LIMEGREEN);
-                            break; // Plains
+                            gc.setFill(Color.LIMEGREEN); // Plains
+                            break;
                         case fieldMapData.TILE_MOUNTAIN:
-                            gc.setFill(Color.DARKGRAY);
-                            break; // Mountain
+                            gc.setFill(Color.DARKGRAY); // Mountain
+                            break;
                         case fieldMapData.TILE_TOWN:
-                            gc.setFill(Color.ORANGE);
-                            break; // Town
+                            gc.setFill(Color.ORANGE); // Town
+                            break;
                         case fieldMapData.TILE_CASTLE:
-                            gc.setFill(Color.LIGHTGRAY);
-                            break; // Castle
+                            gc.setFill(Color.LIGHTGRAY); // Castle
+                            break;
                         case fieldMapData.TILE_BRIDGE:
-                            gc.setFill(Color.SADDLEBROWN);
-                            break; // Bridge
+                            gc.setFill(Color.SADDLEBROWN); // Bridge
+                            break;
                         case fieldMapData.TILE_SWAMP:
-                            gc.setFill(Color.DARKGREEN);
-                            break; // Swamp
+                            gc.setFill(Color.DARKGREEN); // Swamp
+                            break;
                         case fieldMapData.TILE_WALL:
-                            gc.setFill(Color.DARKSLATEGRAY);
-                            break; // Wall
+                            gc.setFill(Color.DARKSLATEGRAY); // Wall
+                            break;
                         case fieldMapData.TILE_FLOOR:
-                            gc.setFill(Color.rgb(200, 180, 150));
-                            break; // Floor
+                            gc.setFill(Color.rgb(200, 180, 150)); // Floor
+                            break;
                         case fieldMapData.TILE_CAVE:
-                            gc.setFill(Color.BLACK);
-                            break; // Cave
+                            gc.setFill(Color.BLACK); // Cave
+                            break;
                         default:
                             gc.setFill(Color.BLACK);
                             break;
