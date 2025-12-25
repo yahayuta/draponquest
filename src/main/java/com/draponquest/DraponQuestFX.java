@@ -193,6 +193,66 @@ public class DraponQuestFX extends Application {
     }
 
     /**
+     * Resets all game state variables to their initial values.
+     */
+    private void resetGameState() {
+        currentGameStatus = GAME_TITLE;
+        currentMode = MODE_MOVE;
+        currentPlace = PLACE_FIELD;
+        currentCommand = COM_TALK;
+        flip = 0;
+        playerDirection = 1; // 0=Up, 1=Down, 2=Left, 3=Right
+        showMinimap = true;
+
+        fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
+        fieldMapEndHeight = 48; // 48 + 8 = 56 (Tantegel Y)
+        savedFieldMapX = 0;
+        savedFieldMapY = 0;
+
+        scriptLines = null;
+        scriptID = 0;
+        scriptLineIndex = 0;
+        scriptAdvanceTick = 0;
+
+        playerHP = 40;
+        maxPlayerHP = 40;
+        playerXP = 0;
+        playerLevel = 1;
+        xpToNextLevel = 10;
+        playerGold = 0;
+        playerAttack = 5;
+        playerDefense = 2;
+        commandMessage = null;
+        commandMessageTime = 0;
+
+        shopMessage = null;
+        shopMessageTime = 0;
+
+        saveMessage = null;
+        saveMessageTime = 0;
+
+        battleRewardMessage = null;
+        battleRewardMessageTime = 0;
+
+        currentFullMessage = "";
+        currentVisibleMessage.setLength(0);
+        messageCharIndex = 0;
+        isWaitingForInput = false;
+        typewriterTick = 0;
+        messageCallback = null;
+
+        score = 0;
+        battlesWon = 0; // Track number of battles won
+
+        // Re-initialize complex objects
+        inventory = new Inventory();
+        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10)); // Add initial potion
+        shop = new Shop();
+        battleManager = new BattleManager(this);
+        initNPCs();
+    }
+
+    /**
      * Initializes the game and sets up the JavaFX UI.
      * 
      * @param primaryStage The main application window.
@@ -202,13 +262,14 @@ public class DraponQuestFX extends Application {
         System.out.println("Game started: Showing title screen");
         // Initialize game components
         initializeGame();
-        inventory = new Inventory();
-        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
-        shop = new Shop();
-        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
-        shop = new Shop();
-        battleManager = new BattleManager(this);
-        initNPCs();
+        resetGameState(); // Call reset to set initial state
+        // inventory = new Inventory(); // These are now in resetGameState()
+        // inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
+        // shop = new Shop();
+        // inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
+        // shop = new Shop();
+        // battleManager = new BattleManager(this);
+        // initNPCs();
 
         // Create JavaFX UI
         gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
@@ -1312,19 +1373,7 @@ public class DraponQuestFX extends Application {
 
         if (currentGameStatus == GAME_OVER) {
             System.out.println("Restarting game...");
-            // Restart game
-            maxPlayerHP = 40;
-            playerHP = maxPlayerHP;
-            playerLevel = 1;
-            playerXP = 0;
-            xpToNextLevel = 10;
-            playerGold = 0;
-            currentGameStatus = GAME_TITLE;
-            currentMode = MODE_MOVE;
-            fieldMapEndHeight = 16;
-            fieldMapEndWidth = 16;
-            score = 0;
-            battlesWon = 0; // Reset battle counter
+            resetGameState(); // Reset all game state
             System.out.println("Game restarted - new status: " + currentGameStatus);
             // Play title music
             audioManager.playMusic(AudioManager.MUSIC_TITLE);
