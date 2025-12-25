@@ -1082,10 +1082,10 @@ public class DraponQuestFX extends Application {
             gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
 
-            String visibleText = currentVisibleMessage.toString();
-            String[] lines = visibleText.split("\n");
+            String wrappedText = wrapText(currentVisibleMessage.toString(), DISP_WIDTH - 60);
+            String[] lines = wrappedText.split("\n");
             for (int i = 0; i < lines.length; i++) {
-                gc.fillText(lines[i], 30, DISP_HEIGHT - 120 + i * 36);
+                gc.fillText(lines[i], 30, DISP_HEIGHT - 120 + i * 28);
             }
 
             // Blinking cursor if waiting
@@ -1095,6 +1095,39 @@ public class DraponQuestFX extends Application {
         }
     }
 
+    private String wrapText(String text, double maxWidth) {
+        StringBuilder wrappedText = new StringBuilder();
+        String[] lines = text.split("\n");
+
+        for (String line : lines) {
+            StringBuilder currentLine = new StringBuilder();
+            String[] words = line.split(" ");
+
+            for (String word : words) {
+                // Create a test line with the new word
+                String testLine = currentLine.length() > 0 ? currentLine + " " + word : word;
+                
+                // Measure the width of the test line
+                javafx.scene.text.Text textNode = new javafx.scene.text.Text(testLine);
+                textNode.setFont(gc.getFont());
+                
+                if (textNode.getLayoutBounds().getWidth() <= maxWidth) {
+                    // If it fits, append the word
+                    if (currentLine.length() > 0) {
+                        currentLine.append(" ");
+                    }
+                    currentLine.append(word);
+                } else {
+                    // If it doesn't fit, start a new line
+                    wrappedText.append(currentLine).append("\n");
+                    currentLine = new StringBuilder(word);
+                }
+            }
+            wrappedText.append(currentLine).append("\n");
+        }
+        return wrappedText.toString().trim();
+    }
+    
     private void renderStatusScreen() {
         gc.setFill(Color.rgb(32, 32, 32, 0.85));
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
