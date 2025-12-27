@@ -185,6 +185,7 @@ public class DraponQuestFX extends Application {
 
     private int score = 0;
     public int battlesWon = 0; // Track number of battles won
+    private String preBattleMusic;
 
     // Audio system
     public AudioManager audioManager;
@@ -1433,8 +1434,8 @@ public class DraponQuestFX extends Application {
             if (playerHP <= 0 || battleManager.getMonsterHP() <= 0) {
                 System.out.println("ESC: Exiting battle mode (battle over)");
                 currentMode = MODE_MOVE;
-                // Return to field music
-                audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                // Return to pre-battle music
+                audioManager.playMusic(getPreBattleMusic());
             } else {
                 System.out.println("ESC: Battle ongoing, not exiting");
             }
@@ -1569,11 +1570,11 @@ public class DraponQuestFX extends Application {
 
                     if (currentTile == fieldMapData.TILE_CAVE) {
                         currentPlace = PLACE_CAVE;
-                        audioManager.playMusic(AudioManager.MUSIC_BATTLE); // Use battle music for caves for now
+                        audioManager.playMusic(AudioManager.MUSIC_CAVE);
                     } else {
                         currentPlace = PLACE_BLDNG;
                         if (currentTile == fieldMapData.TILE_CASTLE) {
-                            audioManager.playMusic(AudioManager.MUSIC_TITLE);
+                            audioManager.playMusic(AudioManager.MUSIC_CASTLE);
                         } else {
                             audioManager.playMusic(AudioManager.MUSIC_TOWN);
                         }
@@ -1695,6 +1696,14 @@ public class DraponQuestFX extends Application {
                 "Max HP increased by 10!\n" +
                 "Attack +2, Defense +1E";
         displayMessage(msg);
+    }
+
+    public String getPreBattleMusic() {
+        return preBattleMusic;
+    }
+
+    public void setPreBattleMusic(String music) {
+        this.preBattleMusic = music;
     }
 
     /**

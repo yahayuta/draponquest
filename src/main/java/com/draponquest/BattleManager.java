@@ -32,6 +32,7 @@ public class BattleManager {
         // NES-style message: Monster appears
         game.displayMessage(currentMonster.name + LocalizationManager.getText("battle_appears") + "E");
 
+        game.setPreBattleMusic(game.audioManager.getCurrentMusicTrack());
         // Play battle start sound and music
         game.audioManager.playSound(AudioManager.SOUND_BATTLE_START);
         game.audioManager.playMusic(AudioManager.MUSIC_BATTLE);
@@ -84,7 +85,7 @@ public class BattleManager {
                         game.displayMessage(LocalizationManager.getText("battle_escaped") + "E", () -> {
                             game.currentMode = DraponQuestFX.MODE_MOVE;
                             game.audioManager.playSound(AudioManager.SOUND_ESCAPE);
-                            game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                            game.audioManager.playMusic(game.getPreBattleMusic());
                         });
                         return;
                     } else {
@@ -139,7 +140,7 @@ public class BattleManager {
             if (game.playerXP >= game.xpToNextLevel) {
                 game.levelUp();
             }
-            game.audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            game.audioManager.playMusic(game.getPreBattleMusic());
             game.currentMode = DraponQuestFX.MODE_MOVE;
         });
 

@@ -35,6 +35,8 @@ public class AudioManager {
     public static final String MUSIC_BATTLE = "battle";
     public static final String MUSIC_VICTORY = "victory_music";
     public static final String MUSIC_TOWN = "town";
+    public static final String MUSIC_CASTLE = "castle";
+    public static final String MUSIC_CAVE = "cave";
 
     // Audio settings
     private double soundVolume = 0.7;
@@ -142,6 +144,8 @@ public class AudioManager {
             loadBackgroundMusicTrack(MUSIC_TITLE, "/sounds/title.wav");
             loadBackgroundMusicTrack(MUSIC_VICTORY, "/sounds/victory_music.wav");
             loadBackgroundMusicTrack(MUSIC_TOWN, "/sounds/bgm_town.wav");
+            loadBackgroundMusicTrack(MUSIC_CASTLE, "/sounds/bgm_castle.wav");
+            loadBackgroundMusicTrack(MUSIC_CAVE, "/sounds/bgm_cave.wav");
 
             System.out.println("Background music loaded: " + backgroundMusic.size() + " tracks");
         } catch (Exception e) {
