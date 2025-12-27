@@ -143,12 +143,11 @@ mvn javafx:run
 | **F5** | Save game |
 | **F9** | Load game |
 | **ESC** | Cancel / Back / Exit status or shop |
-| **U** | Toggle background music on/off |
-| **S** | Toggle sound effects on/off |
+| **M** | Toggle background music on/off |
+| **T** | Toggle sound effects on/off |
 | **[** | Decrease volume |
 | **]** | Increase volume |
 | **L** | Toggle language (English/Japanese) |
-| **M** | Toggle minimap on/off |
 
 ### Game Modes
 
@@ -259,7 +258,8 @@ draponquest/
 - ✅ Real-time audio status display on main screen
 - ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies (B4: 493.88 Hz, G4: 392.00 Hz, A4: 440.00 Hz, C5: 523.25 Hz, A#4: 466.16 Hz, D#5: 622.25 Hz, D5: 587.33 Hz, G#4: 415.30 Hz, F5: 698.46 Hz)
 - ✅ **Complete audio integration**: All generated sound files (`victory_music.wav`, `game_over.wav`, `title.wav`) are now properly loaded and played at the correct game events
-- ✅ **Minimap System**: Dynamic minimap that toggles with 'M', featuring global/local switching and automatic hiding in battles and caves.
+- ✅ **Minimap System**: Dynamic minimap, featuring global/local switching and automatic hiding in battles and caves.
+- ✅ **Stylish Title Screen**: The game title is now presented in a classic, NES-style bordered window for a more polished and retro look.
 
 ## 🎨 Graphics and Assets
 
@@ -311,13 +311,10 @@ The audio system features authentic Final Fantasy-style sound design with **exac
 - **Dramatic Sound Effects**: Impactful sound design like FF games with precise timing
 
 ### Audio Controls
-- **U Key**: Toggle background music on/off
-- **S Key**: Toggle sound effects on/off
-- **[ Key**: Decrease volume (both music and sound)
-- **] Key**: Increase volume (both music and sound)
-
-### Minimap Controls
-- **M Key**: Toggle minimap on/off (Hidden in battles and caves)
+- **M Key**: Toggle background music on/off
+- **T Key**: Toggle sound effects on/off
+- **[ Key**: Decrease volume
+- **] Key**: Increase volume
 
 ### Audio Status Display
 The main game screen shows real-time audio status in the top-right corner:
@@ -507,12 +504,11 @@ The in-game script at the bottom of the screen explains:
 - How to save/load your game
 
 ### Audio Instructions
-- **U Key**: Toggle background music on/off
-- **S Key**: Toggle sound effects on/off
+- **M Key**: Toggle background music on/off
+- **T Key**: Toggle sound effects on/off
 - **[ Key**: Decrease volume
 - **] Key**: Increase volume
 
 ### Minimap Instructions
-- **M Key**: Toggle minimap on/off
 - Minimap is automatically hidden during battles and in caves.
 - Audio status is displayed in the top-right corner of the game screen 

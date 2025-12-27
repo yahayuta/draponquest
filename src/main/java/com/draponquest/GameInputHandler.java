@@ -1,5 +1,6 @@
 package com.draponquest;
 
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -13,11 +14,14 @@ public class GameInputHandler {
     private boolean isHit = false; // Prevents double key presses
     
     /**
-     * Constructs a GameInputHandler for the given game instance.
+     * Constructs a GameInputHandler for the given game instance and scene.
      * @param game The DraponQuestFX game instance.
+     * @param scene The JavaFX Scene to attach input handlers to.
      */
-    public GameInputHandler(DraponQuestFX game) {
+    public GameInputHandler(DraponQuestFX game, Scene scene) {
         this.game = game;
+        scene.setOnKeyPressed(this::handleKeyPressed);
+        scene.setOnKeyReleased(this::handleKeyReleased);
     }
     
     /**

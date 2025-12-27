@@ -13,7 +13,11 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import java.io.*;
 import java.nio.file.*;
-import java.util.Random; // Import Random class
+import java.util.Random;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 // Audio system
 import com.draponquest.AudioManager;
@@ -28,6 +32,34 @@ import com.draponquest.Monster;
  * @author Modern Migration
  */
 public class DraponQuestFX extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Drapon Quest");
+
+        // Initialize JavaFX components
+        gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
+        gc = gameCanvas.getGraphicsContext2D();
+        StackPane root = new StackPane(gameCanvas);
+        Scene scene = new Scene(root);
+
+        // Initialize game logic
+        initializeGame();
+        resetGameState(); // Start with a fresh state
+
+        // Set up input handling
+        inputHandler = new GameInputHandler(this, scene);
+
+        // Start the game loop
+        gameLoop = new GameLoop();
+        gameLoop.start();
+
+        // Audio setup
+        audioManager.playMusic(AudioManager.MUSIC_TITLE);
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
     // Game constants (preserved from original)
     private static final int DISP_WIDTH = 512;
@@ -249,143 +281,14 @@ public class DraponQuestFX extends Application {
         inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10)); // Add initial potion
         shop = new Shop();
         battleManager = new BattleManager(this);
-        initNPCs();
+        initNPCs(); // Re-initialize NPCs with new random positions
     }
 
     /**
-     * Initializes the game and sets up the JavaFX UI.
-     * 
-     * @param primaryStage The main application window.
-     */
-    @Override
-    public void start(Stage primaryStage) {
-        System.out.println("Game started: Showing title screen");
-        // Initialize game components
-        initializeGame();
-        resetGameState(); // Call reset to set initial state
-        // inventory = new Inventory(); // These are now in resetGameState()
-        // inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
-        // shop = new Shop();
-        // inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10));
-        // shop = new Shop();
-        // battleManager = new BattleManager(this);
-        // initNPCs();
-
-        // Create JavaFX UI
-        gameCanvas = new Canvas(DISP_WIDTH, DISP_HEIGHT);
-        gc = gameCanvas.getGraphicsContext2D();
-
-        // Create input handler
-        inputHandler = new GameInputHandler(this);
-
-        // Create game loop
-        gameLoop = new GameLoop();
-
-        // Setup scene
-        StackPane root = new StackPane();
-        root.getChildren().add(gameCanvas);
-
-        Scene scene = new Scene(root, DISP_WIDTH, DISP_HEIGHT);
-        scene.setOnKeyPressed(this::handleKeyPressed);
-        scene.setOnKeyReleased(inputHandler::handleKeyReleased);
-
-        // Setup stage
-        primaryStage.setTitle("DraponQuest JavaFX");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
-
-        // Start game loop
-        gameLoop.start();
-    }
-
-    private void handleKeyPressed(KeyEvent event) {
-        // Message box intercept - MUST prioritize dismissal
-        if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
-            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.A) {
-                hitKeySelect();
-            } else {
-                System.out.println("Input BLOCKED by active message: " + event.getCode());
-            }
-            return; // Block ALL other inputs until message is dismissed
-        }
-
-        if (currentGameStatus == GAME_OVER) {
-            if (event.getCode() == KeyCode.ENTER) {
-                hitKeySelect();
-            }
-            return;
-        }
-
-        // Common transitions - allow ENTER/SPACE if no message (delegated to
-        // inputHandler)
-        if (currentMode == MODE_BATTLE) {
-            battleManager.handleBattleInput(event.getCode());
-        } else if (currentMode == MODE_SHOP) {
-
-            if (event.getCode() == KeyCode.B) {
-                Item potion = shop.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst()
-                        .orElse(null);
-                if (potion != null) {
-                    if (playerGold >= potion.getValue()) {
-                        playerGold -= potion.getValue();
-                        inventory.addItem(potion);
-                        shopMessage = "You bought a potion!";
-                        shopMessageTime = System.currentTimeMillis();
-                    } else {
-                        shopMessage = "You don't have enough gold.";
-                        shopMessageTime = System.currentTimeMillis();
-                    }
-                }
-            } else if (event.getCode() == KeyCode.ESCAPE) {
-                currentMode = MODE_MOVE;
-            }
-        } else if (currentMode == MODE_STATUS) {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                currentMode = MODE_MOVE;
-            }
-        } else {
-            inputHandler.handleKeyPressed(event);
-        }
-
-        if (event.getCode() == KeyCode.I) {
-            System.out.println(inventory.toString());
-        }
-
-        if (event.getCode() == KeyCode.M) {
-            showMinimap = !showMinimap;
-        }
-
-        if (event.getCode() == KeyCode.U) {
-            toggleMusic();
-        }
-
-        if (event.getCode() == KeyCode.P) {
-            Item potion = inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).findFirst()
-                    .orElse(null);
-            if (potion != null) {
-                playerHP += 20;
-                if (playerHP > maxPlayerHP) {
-                    playerHP = maxPlayerHP;
-                }
-                inventory.removeItem(potion);
-                System.out.println("You used a potion and restored 20 HP. You have "
-                        + inventory.getItems().stream().filter(item -> item.getName().equals("Potion")).count()
-                        + " potions left.");
-            } else {
-                System.out.println("You have no potions left.");
-            }
-        }
-    }
-
-    /**
-     * Initializes game components, images, and script buffers.
+     * Initializes the game components that do not change during game resets.
      */
     private void initializeGame() {
         System.out.println("Initializing game components");
-        // Initialize map data
-        fieldMapData.initialize();
-        // No need to initialize scriptBuffer anymore
         // Initialize map data
         fieldMapData.initialize();
 
@@ -769,10 +672,27 @@ public class DraponQuestFX extends Application {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
 
+        // --- Draw Window ---
+        double windowWidth = DISP_WIDTH - 40; // Window with 20px padding
+        double windowHeight = 120;
+        double windowX = 20;
+        double windowY = DISP_HEIGHT * 0.35 - 70; // Center around where text will be
+        
+        gc.setFill(Color.BLACK);
+        gc.fillRect(windowX, windowY, windowWidth, windowHeight);
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(4);
+        gc.strokeRect(windowX, windowY, windowWidth, windowHeight);
+        gc.setLineWidth(2);
+        gc.strokeRect(windowX + 5, windowY + 5, windowWidth - 10, windowHeight - 10);
+
         // Title text "DRAPON QUEST"
         String title = "DRAPON QUEST";
-        gc.setFont(javafx.scene.text.Font.font("Garamond", javafx.scene.text.FontWeight.BOLD, 72));
-        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        
+        // Dynamic font sizing for the title to fit inside the window
+        double titleFontSize = getFittingFontSize(title, Font.font("Garamond", FontWeight.BOLD, 72), windowWidth * 0.9);
+        gc.setFont(Font.font("Garamond", FontWeight.BOLD, titleFontSize));
+        gc.setTextAlign(TextAlignment.CENTER);
         
         // Shadow for title
         gc.setFill(Color.BLACK);
@@ -784,16 +704,16 @@ public class DraponQuestFX extends Application {
 
         // "Press Enter" text with blink
         if ((System.currentTimeMillis() / 700) % 2 == 0) {
-            gc.setFont(javafx.scene.text.Font.font("Garamond", 32));
+            gc.setFont(Font.font("Garamond", 32));
             gc.setFill(Color.WHITE);
             gc.fillText("PRESS ENTER", DISP_WIDTH / 2, DISP_HEIGHT * 0.7);
         }
 
         // Copyright info
-        gc.setFont(javafx.scene.text.Font.font("Arial", 16));
+        gc.setFont(Font.font("Arial", 16));
         gc.setFill(Color.LIGHTGRAY);
         gc.fillText("(c)2025 yahayuta", DISP_WIDTH / 2, DISP_HEIGHT * 0.95);
-        gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
+        gc.setTextAlign(TextAlignment.LEFT); // Reset to default
     }
 
     /**
@@ -1189,6 +1109,32 @@ public class DraponQuestFX extends Application {
         return wrappedText.toString().trim();
     }
     
+    /**
+     * Calculates a font size that makes the given text fit within a maximum width.
+     * @param text The text to measure.
+     * @param initialFont The initial font to use (with desired family and style, but size will be adjusted).
+     * @param maxWidth The maximum allowed width for the text.
+     * @return The adjusted font size.
+     */
+    private double getFittingFontSize(String text, javafx.scene.text.Font initialFont, double maxWidth) {
+        double fontSize = initialFont.getSize();
+        // Create a Text node to measure the width accurately
+        javafx.scene.text.Text tempText = new javafx.scene.text.Text(text);
+        tempText.setFont(initialFont);
+
+        FontWeight weight = FontWeight.NORMAL;
+        if (initialFont.getStyle().toLowerCase().contains("bold")) {
+            weight = FontWeight.BOLD;
+        }
+
+        // Reduce font size until text fits within maxWidth
+        while (tempText.getLayoutBounds().getWidth() > maxWidth && fontSize > 1) {
+            fontSize -= 1;
+            tempText.setFont(javafx.scene.text.Font.font(initialFont.getFamily(), weight, fontSize));
+        }
+        return fontSize;
+    }
+
     private void renderStatusScreen() {
         gc.setFill(Color.rgb(32, 32, 32, 0.85));
         gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
@@ -1235,7 +1181,7 @@ public class DraponQuestFX extends Application {
         gc.setFont(javafx.scene.text.Font.font("Arial", 24));
         gc.fillText(LocalizationManager.getText("press_enter_restart"), DISP_WIDTH * 0.25, DISP_HEIGHT * 0.6);
         gc.fillText(LocalizationManager.getText("total_score") + score, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.7);
-        gc.fillText(LocalizationManager.getText("battles_won") + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
+        gc.fillText("Battles Won: " + battlesWon, DISP_WIDTH * 0.25, DISP_HEIGHT * 0.8);
     }
 
     /**
