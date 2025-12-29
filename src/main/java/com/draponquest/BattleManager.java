@@ -131,10 +131,17 @@ public class BattleManager {
         game.playerXP += currentMonster.xpValue;
         game.playerGold += currentMonster.goldValue;
 
+        // --- Item Drop Logic ---
+        String itemDropMessagePart = "";
+        if (currentMonster.itemDrop != null && Math.random() < currentMonster.dropChance) {
+            game.getInventory().addItem(currentMonster.itemDrop);
+            itemDropMessagePart = "@" + currentMonster.name + " dropped a " + currentMonster.itemDrop.getName() + "!";
+        }
+
         // NES-style victory message
         String winMsg = currentMonster.name + " is defeated!@" +
                 LocalizationManager.getText("battle_gained") + " " + currentMonster.xpValue + " XP\n" +
-                "and " + currentMonster.goldValue + " gold!E";
+                "and " + currentMonster.goldValue + " gold!" + itemDropMessagePart + "E";
 
         game.displayMessage(winMsg, () -> {
             if (game.playerXP >= game.xpToNextLevel) {

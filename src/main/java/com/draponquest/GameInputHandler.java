@@ -48,6 +48,20 @@ public class GameInputHandler {
             game.battleManager.handleBattleInput(event.getCode());
             return;
         }
+
+        // Shop mode input
+        if (game.currentMode == DraponQuestFX.MODE_SHOP) {
+            game.handleShopInput(event.getCode());
+            return;
+        }
+
+        // Inventory mode input
+        if (game.currentMode == DraponQuestFX.MODE_INVENTORY) {
+            game.handleInventoryInput(event.getCode());
+            return;
+        }
+
+
         switch (event.getCode()) {
             case UP:
             case W:

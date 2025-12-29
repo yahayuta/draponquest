@@ -22,6 +22,7 @@ import javafx.scene.text.TextAlignment;
 // Audio system
 import com.draponquest.AudioManager;
 import com.draponquest.Monster;
+import com.draponquest.TreasureChest;
 
 /**
  * DraponQuest JavaFX Application
@@ -82,6 +83,7 @@ public class DraponQuestFX extends Application {
     static final int MODE_EVENT = 3;
     static final int MODE_SHOP = 4;
     static final int MODE_STATUS = 5;
+    static final int MODE_INVENTORY = 6;
 
     // Places
     private static final int PLACE_FIELD = 0;
@@ -109,6 +111,14 @@ public class DraponQuestFX extends Application {
     private int flip = 0;
     private int playerDirection = 1; // 0=Up, 1=Down, 2=Left, 3=Right
     private boolean showMinimap = true;
+
+    // Shop state
+    private int shopMode = 0; // 0: main, 1: buying, 2: selling
+    private int shopCursor = 0;
+
+    // Inventory state
+    private int inventoryCursor = 0;
+
 
     // Map variables
     private int fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
@@ -195,12 +205,18 @@ public class DraponQuestFX extends Application {
     private Shop shop;
     public BattleManager battleManager;
 
+    // Items
+    private Item potion;
+    private Item herb;
+    private Item antidote;
+
     // NPC System
     private NPC[] npcs = new NPC[10];
     private Image soldierImage;
     private Image merchantImage;
     private Image kingImage;
-
+    private TreasureChest[] treasureChests;
+    
     /**
      * NPC Inner Class
      */
@@ -295,6 +311,11 @@ public class DraponQuestFX extends Application {
 
         // Initialize audio system
         audioManager = AudioManager.getInstance();
+
+        // Initialize Items
+        potion = new Item("Potion", "Restores 20 HP", "heal_20", 10);
+        herb = new Item("Herb", "Restores 10 HP", "heal_10", 5);
+        antidote = new Item("Antidote", "Cures poison", "cure_poison", 20);
 
         // Load player images for animation
         try {
@@ -424,11 +445,15 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10),
-                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15),
-                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20),
-                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25),
-                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40)
+                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10, herb, 0.2),
+                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15, herb, 0.3),
+                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20, potion, 0.2),
+                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3),
+                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1)
+        };
+        
+        treasureChests = new TreasureChest[] {
+            new TreasureChest(potion, 13, 2, PLACE_CAVE)
         };
     }
 
@@ -450,7 +475,7 @@ public class DraponQuestFX extends Application {
         int[] merchantPos = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[4] = new NPC(4, merchantPos[0], merchantPos[1], 1, random.nextInt(4), 3, PLACE_BLDNG); // Merchant with Script ID 3
     }
-
+    
     /**
      * Generates random walkable coordinates for NPCs within a given place.
      * This ensures NPCs don't spawn on walls or in the sea.
@@ -795,6 +820,9 @@ public class DraponQuestFX extends Application {
                     case fieldMapData.TILE_CAVE:
                         tileImage = caveImage;
                         break;
+                    case fieldMapData.TILE_CHEST:
+                        // Will be colored below
+                        break;
                 }
                 if (tileImage != null && !tileImage.isError()) {
                     gc.drawImage(tileImage, j * 32, i * 32, 32, 32);
@@ -841,6 +869,9 @@ public class DraponQuestFX extends Application {
                             break;
                         case fieldMapData.TILE_CAVE:
                             gc.setFill(Color.BLACK); // Cave
+                            break;
+                        case fieldMapData.TILE_CHEST:
+                            gc.setFill(Color.GOLD); // Chest
                             break;
                         default:
                             gc.setFill(Color.BLACK);
@@ -998,32 +1029,78 @@ public class DraponQuestFX extends Application {
             gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
         }
         if (currentMode == MODE_SHOP) {
-            gc.setFill(Color.rgb(32, 64, 32, 0.85));
+            // Background
+            gc.setFill(Color.rgb(32, 64, 32, 0.95));
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+            gc.setTextAlign(TextAlignment.CENTER);
+
+            // Title
             gc.setFill(Color.WHITE);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 40));
-            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText("Welcome to the Shop!", DISP_WIDTH / 2, 60);
+            gc.setFont(Font.font("Arial", 40));
+            gc.fillText("Shop", DISP_WIDTH / 2, 60);
 
-            gc.setFont(javafx.scene.text.Font.font("Arial", 28));
-            gc.setFill(Color.YELLOW);
-            gc.fillText("Items for sale:", DISP_WIDTH / 2, 120);
+            if (shopMode == 0) { // Main menu: Buy/Sell
+                gc.setFont(Font.font("Arial", 28));
+                String[] options = {"Buy", "Sell", "Exit"};
+                for (int i = 0; i < options.length; i++) {
+                    if (i == shopCursor) {
+                        gc.setFill(Color.YELLOW);
+                    } else {
+                        gc.setFill(Color.WHITE);
+                    }
+                    gc.fillText(options[i], DISP_WIDTH / 2, 150 + i * 50);
+                }
+            } else if (shopMode == 1) { // Buying
+                gc.setFont(Font.font("Arial", 28));
+                gc.setFill(Color.YELLOW);
+                gc.fillText("Items for sale:", DISP_WIDTH / 2, 120);
+                
+                java.util.List<Item> items = shop.getItemsForSale();
+                for (int i = 0; i < items.size(); i++) {
+                    if (i == shopCursor) {
+                        gc.setFill(Color.YELLOW);
+                    } else {
+                        gc.setFill(Color.WHITE);
+                    }
+                    Item item = items.get(i);
+                    String text = (i + 1) + ". " + item.getName() + " - " + item.getValue() + " gold";
+                    gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
+                }
+                 gc.setFont(Font.font("Arial", 24));
+                 gc.setFill(Color.WHITE);
+                 gc.fillText("Press ESC to go back.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
 
-            java.util.List<Item> items = shop.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                Item item = items.get(i);
-                String text = (i + 1) + ". " + item.getName() + " - " + item.getValue() + " gold";
-                gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
+            } else if (shopMode == 2) { // Selling
+                gc.setFont(Font.font("Arial", 28));
+                gc.setFill(Color.YELLOW);
+                gc.fillText("Your items to sell:", DISP_WIDTH / 2, 120);
+
+                java.util.List<Item> playerItems = getInventory().getItems();
+                if (playerItems.isEmpty()) {
+                    gc.setFill(Color.GRAY);
+                    gc.fillText("You have no items to sell.", DISP_WIDTH / 2, 180);
+                } else {
+                    for (int i = 0; i < playerItems.size(); i++) {
+                        if (i == shopCursor) {
+                            gc.setFill(Color.YELLOW);
+                        } else {
+                            gc.setFill(Color.WHITE);
+                        }
+                        Item item = playerItems.get(i);
+                        String text = (i + 1) + ". " + item.getName() + " (Sell: " + (item.getValue() / 2) + " gold)";
+                        gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
+                    }
+                }
+                gc.setFont(Font.font("Arial", 24));
+                gc.setFill(Color.WHITE);
+                gc.fillText("Press ESC to go back.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
             }
 
-            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.setFill(Color.WHITE);
-            gc.fillText("Press 'B' to buy a Potion.", DISP_WIDTH / 2, DISP_HEIGHT - 80);
-            gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
-
+            // Shop message
             if (shopMessage != null) {
                 gc.setFill(Color.YELLOW);
-                gc.fillText(shopMessage, DISP_WIDTH / 2, DISP_HEIGHT - 120);
+                gc.setFont(Font.font("Arial", 24));
+                gc.fillText(shopMessage, DISP_WIDTH / 2, DISP_HEIGHT - 80);
                 if (System.currentTimeMillis() - shopMessageTime > 2000) {
                     shopMessage = null;
                 }
@@ -1031,6 +1108,9 @@ public class DraponQuestFX extends Application {
         }
         if (currentMode == MODE_STATUS) {
             renderStatusScreen();
+        }
+        if (currentMode == MODE_INVENTORY) {
+            renderInventoryScreen();
         }
         // Event screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_EVENT) {
@@ -1155,6 +1235,40 @@ public class DraponQuestFX extends Application {
         gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
     }
 
+    private void renderInventoryScreen() {
+        // Background
+        gc.setFill(Color.rgb(32, 32, 32, 0.95));
+        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
+        gc.setTextAlign(TextAlignment.CENTER);
+
+        // Title
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", 40));
+        gc.fillText("Inventory", DISP_WIDTH / 2, 60);
+
+        java.util.List<Item> playerItems = getInventory().getItems();
+        if (playerItems.isEmpty()) {
+            gc.setFill(Color.GRAY);
+            gc.setFont(Font.font("Arial", 28));
+            gc.fillText("Your inventory is empty.", DISP_WIDTH / 2, 180);
+        } else {
+            gc.setFont(Font.font("Arial", 28));
+            for (int i = 0; i < playerItems.size(); i++) {
+                if (i == inventoryCursor) {
+                    gc.setFill(Color.YELLOW);
+                } else {
+                    gc.setFill(Color.WHITE);
+                }
+                Item item = playerItems.get(i);
+                String text = (i + 1) + ". " + item.getName();
+                gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
+            }
+        }
+        gc.setFont(Font.font("Arial", 24));
+        gc.setFill(Color.WHITE);
+        gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
+    }
+
     /**
      * Renders the wait screen (not implemented).
      */
@@ -1268,6 +1382,8 @@ public class DraponQuestFX extends Application {
                 return Color.rgb(200, 180, 150);
             case fieldMapData.TILE_CAVE:
                 return Color.BLACK;
+            case fieldMapData.TILE_CHEST:
+                return Color.YELLOW;
             default:
                 return Color.BLACK;
         }
@@ -1277,7 +1393,7 @@ public class DraponQuestFX extends Application {
      * Handles ENTER/SPACE key logic for state transitions and command selection.
      */
     public void hitKeySelect() {
-        System.out.println("hitKeySelect called - currentGameStatus: " + currentGameStatus);
+        System.out.println("hitKeySelect called - currentGameStatus: " + currentGameStatus + ", currentMode: " + currentMode);
 
         // Handle NES-style message box input first
         if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
@@ -1343,6 +1459,10 @@ public class DraponQuestFX extends Application {
             audioManager.playSound(AudioManager.SOUND_MENU_SELECT);
             // Handle command selection
             handleCommandSelection();
+        } else if (currentMode == MODE_SHOP) {
+            handleShopInput(KeyCode.ENTER);
+        } else if (currentMode == MODE_INVENTORY) {
+            handleInventoryInput(KeyCode.ENTER);
         }
     }
 
@@ -1439,6 +1559,10 @@ public class DraponQuestFX extends Application {
             } else {
                 System.out.println("ESC: Battle ongoing, not exiting");
             }
+        } else if (currentMode == MODE_SHOP) {
+            handleShopInput(KeyCode.ESCAPE);
+        } else if (currentMode == MODE_INVENTORY) {
+            handleInventoryInput(KeyCode.ESCAPE);
         }
         // TODO: Implement soft key 2 functionality for other modes if needed
     }
@@ -1557,6 +1681,22 @@ public class DraponQuestFX extends Application {
                 isWalkable(playerRow, playerCol)) {
             fieldMapEndHeight = newRow;
             fieldMapEndWidth = newCol;
+
+            // Check for entering a shop
+            if (currentPlace == PLACE_BLDNG) {
+                int playerX = fieldMapEndWidth + 8;
+                int playerY = fieldMapEndHeight + 8;
+                int tile = fieldMapData.mapDataReturnTown(playerY, playerX);
+                if (tile == fieldMapData.TILE_SHOP) {
+                    currentMode = MODE_SHOP;
+                    shopMode = 0;
+                    shopCursor = 0;
+                    shopMessage = "Welcome!";
+                    shopMessageTime = System.currentTimeMillis();
+                    // Play a sound or music for entering shop
+                    // audioManager.playMusic(AudioManager.MUSIC_TOWN); // or a specific shop theme
+                }
+            }
 
             // Transition logic
             int currentTile;
@@ -1716,38 +1856,76 @@ public class DraponQuestFX extends Application {
         int playerRow = fieldMapEndHeight + 8;
         int playerCol = fieldMapEndWidth + 8;
 
-        // Define relative coordinates for the four adjacent tiles
-        int[] dr = {-1, 1, 0, 0}; // delta row (up, down, same, same)
-        int[] dc = {0, 0, -1, 1}; // delta col (same, same, left, right)
+        int targetRow = playerRow;
+        int targetCol = playerCol;
+
+        switch (playerDirection) {
+            case 0: targetRow--; break; // Up
+            case 1: targetRow++; break; // Down
+            case 2: targetCol--; break; // Left
+            case 3: targetCol++; break; // Right
+        }
 
         boolean found = false;
-
-        for (int i = 0; i < dr.length; i++) {
-            int targetRow = playerRow + dr[i];
-            int targetCol = playerCol + dc[i];
-
-            for (int j = 0; j < npcs.length; j++) {
-                if (npcs[j] != null && npcs[j].placeID == currentPlace) {
-                    // Check if NPC is at target coordinates
-                    if (npcs[j].x == targetCol && npcs[j].y == targetRow) {
-                        found = true;
-                        // Use the NPC's assigned scriptID to get the correct dialogue
-                        String msg = scriptData.getScript(npcs[j].scriptID) + "E";
-                        displayMessage(msg);
-                        // Optional: make NPC face player
-                        // npcs[j].direction = (i + 2) % 4; // Make NPC face the player (approx)
-                        break; // Found an NPC, stop checking other NPCs and directions
-                    }
+        for (int j = 0; j < npcs.length; j++) {
+            if (npcs[j] != null && npcs[j].placeID == currentPlace) {
+                // Check if NPC is at target coordinates
+                if (npcs[j].x == targetCol && npcs[j].y == targetRow) {
+                    found = true;
+                    // Use the NPC's assigned scriptID to get the correct dialogue
+                    String msg = scriptData.getScript(npcs[j].scriptID) + "E";
+                    displayMessage(msg);
+                    // Optional: make NPC face player
+                    // npcs[j].direction = (playerDirection + 1) % 4; // Simplified logic to face player
+                    break; // Found an NPC, stop checking
                 }
-            }
-            if (found) {
-                break; // Found an NPC, stop checking other directions
             }
         }
 
         if (!found) {
             displayMessage("There is no one there.E");
         }
+    }
+
+    private void checkTreasure() {
+        System.out.println("checkTreasure called. Player direction: " + playerDirection + ", currentPlace: " + currentPlace);
+        int playerRow = fieldMapEndHeight + 8;
+        int playerCol = fieldMapEndWidth + 8;
+
+        int targetRow = playerRow;
+        int targetCol = playerCol;
+
+        switch (playerDirection) {
+            case 0: targetRow--; break; // Up
+            case 1: targetRow++; break; // Down
+            case 2: targetCol--; break; // Left
+            case 3: targetCol++; break; // Right
+        }
+        System.out.println("Player at (" + playerCol + ", " + playerRow + "), checking tile at (" + targetCol + ", " + targetRow + ")");
+
+        if (currentPlace == PLACE_CAVE) {
+            int tile = fieldMapData.mapDataReturnCave(targetRow, targetCol);
+            System.out.println("Tile at target is: " + tile);
+            if (tile == fieldMapData.TILE_CHEST) {
+                System.out.println("Found a chest tile!");
+                for (TreasureChest chest : treasureChests) {
+                    if (chest.getPlaceID() == currentPlace && chest.getX() == targetCol && chest.getY() == targetRow) {
+                        System.out.println("Matching chest object found.");
+                        if (!chest.isOpen()) {
+                            Item item = chest.open();
+                            getInventory().addItem(item);
+                            displayMessage("You found a " + item.getName() + "!E");
+                            fieldMapData.setCaveTile(targetRow, targetCol, fieldMapData.TILE_FLOOR);
+                        } else {
+                            displayMessage("The chest is empty.E");
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+        
+        displayMessage("There is nothing to check here.E");
     }
 
     /**
@@ -1760,16 +1938,15 @@ public class DraponQuestFX extends Application {
         int tile = fieldMapData.mapDataReturnField(playerRow, playerCol);
 
         if (currentCommand == COM_TALK) {
-            if (tile == 4) { // Shop tile
-                currentMode = MODE_SHOP;
-                shopMessage = "Welcome to the shop! What would you like to buy?";
-                shopMessageTime = System.currentTimeMillis();
-                return;
-            } else {
-                checkTalk();
-                currentMode = MODE_MOVE;
-                return;
-            }
+            checkTalk();
+            currentMode = MODE_MOVE;
+            return;
+        }
+
+        if (currentCommand == COM_CHK) {
+            checkTreasure();
+            currentMode = MODE_MOVE;
+            return;
         }
 
         // Show message for selected command or switch to battle/event
@@ -1777,6 +1954,10 @@ public class DraponQuestFX extends Application {
         if (currentCommand == COM_MGK) {
             System.out.println("MAGIC selected: starting battle");
             battleManager.startBattle();
+        } else if (currentCommand == COM_ITEM) {
+            System.out.println("ITEM selected: entering inventory mode");
+            currentMode = MODE_INVENTORY;
+            inventoryCursor = 0;
         } else if (currentCommand == COM_STUS) {
             System.out.println("STATUS selected: entering event mode");
             currentMode = MODE_STATUS;
@@ -1785,6 +1966,111 @@ public class DraponQuestFX extends Application {
             commandMessageTime = System.currentTimeMillis();
             currentMode = MODE_MOVE;
             System.out.println("Command message set: " + commandMessage);
+        }
+    }
+
+    public void handleShopInput(KeyCode keyCode) {
+        if (shopMode == 0) { // Main menu
+            if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
+                shopCursor--;
+                if (shopCursor < 0) shopCursor = 2;
+            } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
+                shopCursor++;
+                if (shopCursor > 2) shopCursor = 0;
+            } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
+                if (shopCursor == 0) { // Buy
+                    shopMode = 1;
+                    shopCursor = 0;
+                } else if (shopCursor == 1) { // Sell
+                    shopMode = 2;
+                    shopCursor = 0;
+                } else { // Exit
+                    currentMode = MODE_MOVE;
+                    shopMode = 0;
+                    shopCursor = 0;
+                }
+            } else if (keyCode == KeyCode.ESCAPE) {
+                currentMode = MODE_MOVE;
+                shopMode = 0;
+                shopCursor = 0;
+            }
+        } else if (shopMode == 1) { // Buying
+            java.util.List<Item> items = shop.getItemsForSale();
+            if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
+                shopCursor--;
+                if (shopCursor < 0) shopCursor = items.size() - 1;
+            } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
+                shopCursor++;
+                if (shopCursor >= items.size()) shopCursor = 0;
+            } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
+                if (!items.isEmpty()) {
+                    Item selectedItem = items.get(shopCursor);
+                    shopMessage = shop.buyItem(selectedItem, this);
+                    shopMessageTime = System.currentTimeMillis();
+                }
+            } else if (keyCode == KeyCode.ESCAPE) {
+                shopMode = 0;
+                shopCursor = 0;
+            }
+        } else if (shopMode == 2) { // Selling
+            java.util.List<Item> playerItems = getInventory().getItems();
+            if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
+                shopCursor--;
+                if (shopCursor < 0) shopCursor = playerItems.size() - 1;
+            } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
+                shopCursor++;
+                if (shopCursor >= playerItems.size()) shopCursor = 0;
+            } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
+                if (!playerItems.isEmpty()) {
+                    Item selectedItem = playerItems.get(shopCursor);
+                    shopMessage = shop.sellItem(selectedItem, this);
+                    shopMessageTime = System.currentTimeMillis();
+                    // After selling, cursor might be out of bounds if it was the last item
+                    if (shopCursor >= getInventory().getItems().size() && getInventory().getItems().size() > 0) {
+                        shopCursor = getInventory().getItems().size() - 1;
+                    }
+                }
+            } else if (keyCode == KeyCode.ESCAPE) {
+                shopMode = 0;
+                shopCursor = 0;
+            }
+        }
+    }
+
+    public void handleInventoryInput(KeyCode keyCode) {
+        java.util.List<Item> playerItems = getInventory().getItems();
+        if (playerItems.isEmpty()) {
+            if (keyCode == KeyCode.ESCAPE) {
+                currentMode = MODE_MOVE;
+            }
+            return; // No items to navigate or use
+        }
+
+        if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
+            inventoryCursor--;
+            if (inventoryCursor < 0) {
+                inventoryCursor = playerItems.size() - 1;
+            }
+        } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
+            inventoryCursor++;
+            if (inventoryCursor >= playerItems.size()) {
+                inventoryCursor = 0;
+            }
+        } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
+            Item selectedItem = playerItems.get(inventoryCursor);
+            // "Use" the item - for now, just display a message
+            displayMessage("You used the " + selectedItem.getName() + ".E");
+            // Here you would add the actual effect of the item
+            // For example, healing the player:
+            // if (selectedItem.getEffect().equals("heal_20")) {
+            //     playerHP += 20;
+            //     if (playerHP > maxPlayerHP) playerHP = maxPlayerHP;
+            //     getInventory().removeItem(selectedItem);
+            // }
+            // After using, we can either close the inventory or wait.
+            // For now, let's just show the message and the user can press ESC to close.
+        } else if (keyCode == KeyCode.ESCAPE) {
+            currentMode = MODE_MOVE;
         }
     }
 
@@ -1834,6 +2120,10 @@ public class DraponQuestFX extends Application {
         double newSoundVol = Math.min(1.0, audioManager.getSoundVolume() + 0.1);
         audioManager.setMusicVolume(newMusicVol);
         audioManager.setSoundVolume(newSoundVol);
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     /**

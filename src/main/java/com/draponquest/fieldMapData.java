@@ -32,6 +32,7 @@ public class fieldMapData {
     public static final int TILE_WALL = 11;
     public static final int TILE_FLOOR = 12;
     public static final int TILE_CAVE = 13;
+    public static final int TILE_CHEST = 14;
 
     /**
      * The 2D array representing the town map layout.
@@ -94,6 +95,12 @@ public class fieldMapData {
      */
     public static int getMapLength() {
         return mapDataField.length;
+    }
+
+    public static void setCaveTile(int row, int col, int tile) {
+        if (row >= 0 && row < mapDataCave.length && col >= 0 && col < mapDataCave[0].length) {
+            mapDataCave[row][col] = tile;
+        }
     }
 
     /**
@@ -294,6 +301,10 @@ public class fieldMapData {
             mapDataTown[r][9] = TILE_WALL;
             mapDataTown[r][12] = TILE_WALL;
         }
+        // Add a shop inside a building
+        mapDataTown[6][10] = TILE_SHOP;
+        // Add a door to the shop building
+        mapDataTown[7][10] = TILE_FLOOR;
     }
 
     private static void initializeCave() {
@@ -321,5 +332,7 @@ public class fieldMapData {
                 mapDataCave[r][c] = (ch == 'W') ? TILE_WALL : TILE_FLOOR;
             }
         }
+        // Place a chest
+        mapDataCave[2][13] = TILE_CHEST;
     }
 }
