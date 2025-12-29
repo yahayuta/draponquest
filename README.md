@@ -49,6 +49,16 @@ For more details, see the code and comments in `LocalizationManager.java` and `D
 
 A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This project preserves the original game logic while adapting it to run on modern desktop platforms using JavaFX.
 
+## ✨ Recent Updates
+
+- **Enhanced Menu Control**: The Shop and Inventory menus are now fully controllable.
+  - `ENTER`/`SPACE`: Select items or options within menus.
+  - `ESC`: Exit current menu or navigate back through shop sub-menus.
+  - `Arrow Keys / WASD`: Navigate options and items.
+- **Improved NPC Interaction**: Talking to NPCs now requires the player to be directly facing them, ensuring consistent interaction logic across the game (similar to treasure chest interaction).
+- **Shop Accessibility**: The town shop is now accessible, with a doorway added to its building.
+- **Basic Item Usage**: The Inventory menu now supports basic item "usage" (currently displays a message). Further item effects can be implemented in future updates.
+
 ## 🎮 About DraponQuest
 
 DraponQuest is a classic RPG-style mobile game originally developed for the DoJa platform. This JavaFX version brings the nostalgic gaming experience to modern desktop systems while maintaining the original gameplay mechanics, graphics, and story elements.
@@ -135,19 +145,21 @@ mvn javafx:run
 
 ## 🎯 Game Controls
 
-| **Arrow Keys / WASD** | Move player / Navigate menus |
-| **A** | **Attack** in battle / **Dismiss** message |
-| **Enter / Space** | Select / Confirm / Dismiss message |
-| **D** | **Defend** in battle |
-| **R** | **Run** (try to escape) |
-| **F5** | Save game |
-| **F9** | Load game |
-| **ESC** | Cancel / Back / Exit status or shop |
-| **M** | Toggle background music on/off |
-| **T** | Toggle sound effects on/off |
-| **[** | Decrease volume |
-| **]** | Increase volume |
-| **L** | Toggle language (English/Japanese) |
+| **Key(s)**             | **Action**                                         |
+| :--------------------- | :------------------------------------------------- |
+| **Arrow Keys / WASD**  | Move player / Navigate menus                       |
+| **A**                  | **Attack** in battle / **Dismiss** message         |
+| **Enter / Space**      | Select / Confirm / **Use item** / Dismiss message  |
+| **D**                  | **Defend** in battle                               |
+| **R**                  | **Run** (try to escape)                            |
+| **F5**                 | Save game                                          |
+| **F9**                 | Load game                                          |
+| **ESC**                | Cancel / Back / **Exit current menu/shop**         |
+| **L**                  | Toggle language (English/Japanese)                 |
+| **M**                  | Toggle background music on/off                     |
+| **T**                  | Toggle sound effects on/off                        |
+| **[**                  | Decrease volume                                    |
+| **]**                  | Increase volume                                    |
 
 ### Game Modes
 
@@ -260,6 +272,10 @@ draponquest/
 - ✅ **Complete audio integration**: All generated sound files (`victory_music.wav`, `game_over.wav`, `title.wav`) are now properly loaded and played at the correct game events
 - ✅ **Minimap System**: Dynamic minimap, featuring global/local switching and automatic hiding in battles and caves.
 - ✅ **Stylish Title Screen**: The game title is now presented in a classic, NES-style bordered window for a more polished and retro look.
+- ✅ **Improved Input Handling**: Enhanced responsiveness and control across all menus (Command, Shop, Inventory) with consistent `ENTER`/`SPACE` for selection and `ESC` for exiting/backing.
+- ✅ **Consistent NPC Interaction**: NPCs now require the player to be directly facing them to interact, aligning interaction logic with treasure chests.
+- ✅ **Accessible Town Shop**: A doorway has been added to the town shop, allowing players to enter and interact with the merchant.
+- ✅ **Basic Inventory Item Usage**: Players can now "use" items from their inventory, with initial functionality displaying a message upon use.
 
 ## 🎨 Graphics and Assets
 
