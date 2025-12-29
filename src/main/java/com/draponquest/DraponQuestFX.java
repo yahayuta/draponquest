@@ -1563,6 +1563,9 @@ public class DraponQuestFX extends Application {
             handleShopInput(KeyCode.ESCAPE);
         } else if (currentMode == MODE_INVENTORY) {
             handleInventoryInput(KeyCode.ESCAPE);
+        } else if (currentMode == MODE_STATUS) {
+            System.out.println("ESC: Exiting status mode");
+            currentMode = MODE_MOVE;
         }
         // TODO: Implement soft key 2 functionality for other modes if needed
     }
