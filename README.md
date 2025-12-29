@@ -51,6 +51,10 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
 
 ## ✨ Recent Updates
 
+- **New UI System**:
+  - A persistent status window is now displayed at the top-left, showing the player's Level, HP, and Gold at all times.
+  - The command menu has been restyled and repositioned to the right of the status window, preventing overlap.
+  - The main status screen (accessed from the command menu) has been updated to match the new UI style.
 - **Enhanced Menu Control**: The Shop and Inventory menus are now fully controllable.
   - `ENTER`/`SPACE`: Select items or options within menus.
   - `ESC`: Exit current menu or navigate back through shop sub-menus.
@@ -246,6 +250,7 @@ draponquest/
 
 ### Key Features Implemented
 
+- ✅ **Redesigned UI System**: A new, persistent status window is always on-screen, and the command menu and status screen have been restyled for a more consistent and user-friendly experience.
 - ✅ **Pixel-Accurate 128x128 Alefgard Map**: An exact 1:1 clone of the original NES map, 4x larger than previous versions, featuring precise continent shaping and accurate landmark positioning.
 - ✅ **Cave Maze Overhaul**: Redesigned cave interiors with structured mazes and wide 2-tile corridors to prevent movement issues in tight spaces.
 - ✅ Player movement and collision detection (starts in walkable area)

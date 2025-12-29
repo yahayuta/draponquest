@@ -922,23 +922,7 @@ public class DraponQuestFX extends Application {
             gc.drawImage(currentPlayerImage, 8 * 32, 8 * 32, 32, 32);
         }
 
-        // Display HP and score on map
-        gc.setFill(Color.WHITE);
-        gc.setFont(javafx.scene.text.Font.font("Arial", 20));
-        gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 10, 30);
-        gc.fillText("Level: " + playerLevel, 10, 60);
-        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 10, 90);
-        gc.fillText("Gold: " + playerGold, 10, 120);
-        gc.fillText("Battles Won: " + battlesWon, 10, 150);
-
-        // Display audio status
-        gc.setFont(javafx.scene.text.Font.font("Arial", 14));
-        gc.setFill(audioManager.isMusicEnabled() ? Color.LIME : Color.RED);
-        gc.fillText("Music: " + (audioManager.isMusicEnabled() ? "ON" : "OFF"), 10, 180);
-        gc.setFill(audioManager.isSoundEnabled() ? Color.LIME : Color.RED);
-        gc.fillText("Sound: " + (audioManager.isSoundEnabled() ? "ON" : "OFF"), 10, 200);
-        gc.setFill(Color.YELLOW);
-        gc.fillText("Vol: " + (int) (audioManager.getMusicVolume() * 100) + "%", 10, 220);
+        // Player stats are now rendered in a separate UI window
     }
 
     /**
@@ -953,12 +937,28 @@ public class DraponQuestFX extends Application {
      * Renders UI elements such as dialogue, menus, and battle overlays.
      */
     private void renderUI() {
+        if (currentGameStatus == GAME_OPEN) {
+            renderStatusWindow();
+        }
+
         // Command menu in GAME_OPEN and MODE_COM
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_COM) {
-            // Draw menu background (scaled up)
+            // Draw NES-style menu box
+            int boxX = 210; // Positioned to the right of the status window
+            int boxY = 20;
+            int boxWidth = 200;
+            int boxHeight = 220;
+
+            gc.setFill(Color.BLACK);
+            gc.fillRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setStroke(Color.WHITE);
+            gc.setLineWidth(4);
+            gc.strokeRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setLineWidth(2);
+            gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
+
             gc.setFill(Color.WHITE);
-            gc.fillRect(0, DISP_HEIGHT / 2, 192, 192);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 32));
+            gc.setFont(Font.font("MS Gothic", 28));
             String[] commands = {
                     LocalizationManager.getText("menu_talk"),
                     LocalizationManager.getText("menu_check"),
@@ -967,15 +967,11 @@ public class DraponQuestFX extends Application {
                     LocalizationManager.getText("menu_status")
             };
             for (int i = 0; i < commands.length; i++) {
-                int y = DISP_HEIGHT / 2 + 16 + i * 36;
+                int y = boxY + 40 + i * 36;
                 if (currentCommand == i + 1) {
-                    gc.setFill(Color.LIME);
-                    gc.fillRect(0, y - 24, 192, 36);
-                    gc.setFill(Color.BLACK);
-                } else {
-                    gc.setFill(Color.BLACK);
+                    gc.fillText(">", boxX + 20, y);
                 }
-                gc.fillText(commands[i], 16, y);
+                gc.fillText(commands[i], boxX + 50, y);
             }
         }
         // Command action message (scaled up)
@@ -1216,23 +1212,65 @@ public class DraponQuestFX extends Application {
         return fontSize;
     }
 
+    private void renderStatusWindow() {
+        int boxX = 20;
+        int boxY = 20;
+        int boxWidth = 180;
+        int boxHeight = 120;
+
+        gc.setFill(Color.BLACK);
+        gc.fillRect(boxX, boxY, boxWidth, boxHeight);
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(4);
+        gc.strokeRect(boxX, boxY, boxWidth, boxHeight);
+        gc.setLineWidth(2);
+        gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("MS Gothic", 24));
+        gc.setTextAlign(TextAlignment.LEFT);
+
+        gc.fillText("LV", boxX + 15, boxY + 35);
+        gc.fillText("HP", boxX + 15, boxY + 65);
+        gc.fillText("G", boxX + 15, boxY + 95);
+
+        gc.setTextAlign(TextAlignment.RIGHT);
+        gc.fillText(String.valueOf(playerLevel), boxX + boxWidth - 20, boxY + 35);
+        gc.fillText(String.valueOf(playerHP), boxX + boxWidth - 20, boxY + 65);
+        gc.fillText(String.valueOf(playerGold), boxX + boxWidth - 20, boxY + 95);
+        
+        gc.setTextAlign(TextAlignment.LEFT); // Reset alignment
+    }
+
     private void renderStatusScreen() {
-        gc.setFill(Color.rgb(32, 32, 32, 0.85));
-        gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-        gc.setFill(Color.WHITE);
-        gc.setFont(javafx.scene.text.Font.font("Arial", 40));
-        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-        gc.fillText("Status", DISP_WIDTH / 2, 60);
+        // Draw NES-style dialogue box background
+        gc.setFill(Color.BLACK);
+        gc.fillRect(10, 10, DISP_WIDTH - 20, DISP_HEIGHT - 20);
+        gc.setStroke(Color.WHITE);
+        gc.setLineWidth(4);
+        gc.strokeRect(10, 10, DISP_WIDTH - 20, DISP_HEIGHT - 20);
+        gc.setLineWidth(2);
+        gc.strokeRect(15, 15, DISP_WIDTH - 30, DISP_HEIGHT - 30);
 
-        gc.setFont(javafx.scene.text.Font.font("Arial", 28));
+        gc.setTextAlign(TextAlignment.LEFT);
         gc.setFill(Color.WHITE);
-        gc.fillText("Level: " + playerLevel, DISP_WIDTH / 2, 120);
-        gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, DISP_WIDTH / 2, 160);
-        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, DISP_WIDTH / 2, 200);
-        gc.fillText("Gold: " + playerGold, DISP_WIDTH / 2, 240);
+        gc.setFont(Font.font("MS Gothic", 28));
+        
+        // Title
+        gc.fillText("Status", 40, 60);
 
-        gc.setFont(javafx.scene.text.Font.font("Arial", 24));
+        // Stats
+        gc.fillText("Level: " + playerLevel, 40, 120);
+        gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 40, 160);
+        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 40, 200);
+        gc.fillText("Gold: " + playerGold, 40, 240);
+        gc.fillText("Attack: " + playerAttack, 40, 280);
+        gc.fillText("Defense: " + playerDefense, 40, 320);
+
+        gc.setFont(Font.font("MS Gothic", 24));
+        gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Press ESC to exit.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
+        gc.setTextAlign(TextAlignment.LEFT); // Reset alignment
     }
 
     private void renderInventoryScreen() {
