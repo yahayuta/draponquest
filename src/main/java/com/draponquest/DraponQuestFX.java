@@ -461,10 +461,6 @@ public class DraponQuestFX extends Application {
      * Initialize NPCs
      */
     private void initNPCs() {
-        // Field NPCs (example - currently fixed positions)
-        npcs[0] = new NPC(0, 10, 10, 0, 1, 0, PLACE_FIELD);
-        npcs[1] = new NPC(1, 12, 12, 1, 1, 1, PLACE_FIELD); // Script ID 1 for merchant on field
-
         // King, Soldier, and Merchant will have random walkable positions in the building
         int[] kingPos = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[2] = new NPC(2, kingPos[0], kingPos[1], 2, random.nextInt(4), 0, PLACE_BLDNG); // King with Script ID 0
