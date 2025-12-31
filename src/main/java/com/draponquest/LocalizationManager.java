@@ -4,19 +4,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages multi-language support for DraponQuest
- * Supports English and Japanese text
+ * Manages multi-language support for DraponQuest.
+ * Supports English and Japanese text.
+ *
+ * @author Yakkun (Original concept for localization)
+ * @author Modern Migration
  */
 public class LocalizationManager {
 
     // Language constants
+    /**
+     * Constant for the English language code.
+     */
     public static final String LANG_ENGLISH = "en";
+    /**
+     * Constant for the Japanese language code.
+     */
     public static final String LANG_JAPANESE = "ja";
 
     // Current language
+    /**
+     * Stores the currently active language for localization.
+     */
     private static String currentLanguage = LANG_ENGLISH;
 
     // Text data for different languages
+    /**
+     * A map storing all localized text. The outer map's key is the language code,
+     * and the inner map's key is the text identifier, with the value being the localized string.
+     */
     private static final Map<String, Map<String, String>> textData = new HashMap<>();
 
     static {
@@ -24,7 +40,8 @@ public class LocalizationManager {
     }
 
     /**
-     * Initialize all text data for both languages
+     * Initializes all predefined text data for supported languages (English and Japanese).
+     * This method is called once when the class is loaded.
      */
     private static void initializeTextData() {
         // English text
@@ -179,10 +196,11 @@ public class LocalizationManager {
     }
 
     /**
-     * Get text for the current language
-     * 
-     * @param key The text key
-     * @return The localized text
+     * Retrieves the localized text for a given key in the {@code currentLanguage}.
+     * If the text is not found in the current language, it falls back to English.
+     * If still not found, the key itself is returned.
+     * @param key The key identifier for the desired text string.
+     * @return The localized text string.
      */
     public static String getText(String key) {
         Map<String, String> currentText = textData.get(currentLanguage);
@@ -195,9 +213,9 @@ public class LocalizationManager {
     }
 
     /**
-     * Set the current language
-     * 
-     * @param language The language code (LANG_ENGLISH or LANG_JAPANESE)
+     * Sets the current language for localization.
+     * The language must be one of the defined constants (LANG_ENGLISH or LANG_JAPANESE).
+     * @param language The language code to set (e.g., "en" for English, "ja" for Japanese).
      */
     public static void setLanguage(String language) {
         if (LANG_ENGLISH.equals(language) || LANG_JAPANESE.equals(language)) {
@@ -206,16 +224,15 @@ public class LocalizationManager {
     }
 
     /**
-     * Get the current language
-     * 
-     * @return The current language code
+     * Returns the currently active language code.
+     * @return The language code (e.g., "en" or "ja").
      */
     public static String getCurrentLanguage() {
         return currentLanguage;
     }
 
     /**
-     * Toggle between English and Japanese
+     * Toggles the current language between English and Japanese.
      */
     public static void toggleLanguage() {
         if (LANG_ENGLISH.equals(currentLanguage)) {
@@ -226,9 +243,8 @@ public class LocalizationManager {
     }
 
     /**
-     * Get the display name for the current language
-     * 
-     * @return The language display name
+     * Returns a human-readable name for the currently active language.
+     * @return "English" or "日本語".
      */
     public static String getLanguageDisplayName() {
         return LANG_ENGLISH.equals(currentLanguage) ? "English" : "日本語";

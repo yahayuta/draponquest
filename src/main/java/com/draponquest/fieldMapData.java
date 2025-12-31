@@ -3,6 +3,9 @@ package com.draponquest;
 /**
  * Provides field map data and utility methods for DraponQuest.
  * Handles the map layout and walkability.
+ *
+ * @author Yakkun (Original map data concept)
+ * @author Modern Migration
  */
 public class fieldMapData {
     /**
@@ -11,47 +14,60 @@ public class fieldMapData {
     public static final int FIELD_MAP_WIDTH = 128;
 
     /**
-     * The 2D array representing the map layout.
-     * 0 = sea, 1 = sand, 2 = steppe, 3 = forest, 4 = shop, 5 = plains, 6 =
-     * mountain,
-     * 7 = town, 8 = castle, 9 = bridge, 10 = swamp
+     * The 2D array representing the main overworld map layout.
+     * Each element stores an integer representing a tile type:
+     * 0 = sea, 1 = sand, 2 = steppe, 3 = forest, 4 = shop, 5 = plains, 6 = mountain,
+     * 7 = town, 8 = castle, 9 = bridge, 10 = swamp, 11 = wall, 12 = floor, 13 = cave, 14 = chest.
      */
     private static int[][] mapDataField = new int[FIELD_MAP_WIDTH][FIELD_MAP_WIDTH];
 
+    /** Constant for Sea tile. */
     public static final int TILE_SEA = 0;
+    /** Constant for Sand tile. */
     public static final int TILE_SAND = 1;
+    /** Constant for Steppe tile. */
     public static final int TILE_STEPPE = 2;
+    /** Constant for Forest tile. */
     public static final int TILE_FOREST = 3;
+    /** Constant for Shop tile. */
     public static final int TILE_SHOP = 4;
+    /** Constant for Plains tile. */
     public static final int TILE_PLAINS = 5;
+    /** Constant for Mountain tile. */
     public static final int TILE_MOUNTAIN = 6;
+    /** Constant for Town tile. */
     public static final int TILE_TOWN = 7;
+    /** Constant for Castle tile. */
     public static final int TILE_CASTLE = 8;
+    /** Constant for Bridge tile. */
     public static final int TILE_BRIDGE = 9;
+    /** Constant for Swamp tile. */
     public static final int TILE_SWAMP = 10;
+    /** Constant for Wall tile. */
     public static final int TILE_WALL = 11;
+    /** Constant for Floor tile. */
     public static final int TILE_FLOOR = 12;
+    /** Constant for Cave tile. */
     public static final int TILE_CAVE = 13;
+    /** Constant for Chest tile. */
     public static final int TILE_CHEST = 14;
 
     /**
-     * The 2D array representing the town map layout.
+     * The 2D array representing the town map layout (16x16 tiles).
      */
     private static int[][] mapDataTown = new int[16][16];
 
     /**
-     * The 2D array representing the cave map layout.
+     * The 2D array representing the cave map layout (16x16 tiles).
      */
     private static int[][] mapDataCave = new int[16][16];
 
     /**
-     * Returns the tile value at the specified row and column.
-     * 
-     * @param row The row index.
-     * @param col The column index.
-     * @return The tile value (0=sea, 1=sand, 2=steppe, 3=forest, 4=shop, 5=plains,
-     *         6=mountain,
-     *         7=town, 8=castle, 9=bridge, 10=swamp).
+     * Returns the tile value from the overworld field map at the specified row and column.
+     * If the coordinates are out of bounds, {@link #TILE_SEA} is returned.
+     * @param row The row index of the tile.
+     * @param col The column index of the tile.
+     * @return The integer value representing the tile type.
      */
     public static int mapDataReturnField(int row, int col) {
         if (row < 0 || row >= mapDataField.length || col < 0 || col >= FIELD_MAP_WIDTH) {
@@ -62,10 +78,10 @@ public class fieldMapData {
 
     /**
      * Returns the tile value from the town map at the specified row and column.
-     * 
-     * @param row The row index.
-     * @param col The column index.
-     * @return The tile value.
+     * If the coordinates are out of bounds, {@link #TILE_WALL} is returned.
+     * @param row The row index of the tile.
+     * @param col The column index of the tile.
+     * @return The integer value representing the tile type.
      */
     public static int mapDataReturnTown(int row, int col) {
         if (row < 0 || row >= mapDataTown.length || col < 0 || col >= mapDataTown[0].length) {
@@ -76,10 +92,10 @@ public class fieldMapData {
 
     /**
      * Returns the tile value from the cave map at the specified row and column.
-     * 
-     * @param row The row index.
-     * @param col The column index.
-     * @return The tile value.
+     * If the coordinates are out of bounds, {@link #TILE_WALL} is returned.
+     * @param row The row index of the tile.
+     * @param col The column index of the tile.
+     * @return The integer value representing the tile type.
      */
     public static int mapDataReturnCave(int row, int col) {
         if (row < 0 || row >= mapDataCave.length || col < 0 || col >= mapDataCave[0].length) {
@@ -89,14 +105,19 @@ public class fieldMapData {
     }
 
     /**
-     * Returns the number of rows in the map.
-     * 
-     * @return The length of the map (number of rows).
+     * Returns the number of rows in the main field map.
+     * @return The number of rows in the main field map.
      */
     public static int getMapLength() {
         return mapDataField.length;
     }
 
+    /**
+     * Sets the tile value at the specified row and column in the cave map.
+     * @param row The row index of the tile to set.
+     * @param col The column index of the tile to set.
+     * @param tile The new tile value to set.
+     */
     public static void setCaveTile(int row, int col, int tile) {
         if (row >= 0 && row < mapDataCave.length && col >= 0 && col < mapDataCave[0].length) {
             mapDataCave[row][col] = tile;
@@ -104,9 +125,10 @@ public class fieldMapData {
     }
 
     /**
-     * Initializes the map data with a pixel-accurate NES Dragon Quest 1 Alefgard
-     * layout.
-     * Hand-crafted to match the original game's geography as closely as possible.
+     * Initializes the entire game world map data. This method populates the overworld,
+     * town, and cave maps with their respective tile layouts,
+     * including landmasses, features, landmarks, and specific indoor designs.
+     * The overworld map is designed to resemble the NES Dragon Quest 1 Alefgard layout.
      */
     public static void initialize() {
         // Fill entire map with sea initially
@@ -216,7 +238,12 @@ public class fieldMapData {
     }
 
     /**
-     * Helper to fill an area with land.
+     * Helper method to fill a rectangular area of the {@code mapDataField} with plains tiles.
+     * Used during map initialization to define main landmass contours.
+     * @param r1 The starting row of the area (inclusive).
+     * @param c1 The starting column of the area (inclusive).
+     * @param r2 The ending row of the area (exclusive).
+     * @param c2 The ending column of the area (exclusive).
      */
     private static void fillLand(int r1, int c1, int r2, int c2) {
         for (int r = r1; r < r2; r++) {
@@ -229,7 +256,14 @@ public class fieldMapData {
     }
 
     /**
-     * Helper to fill an area with a feature (randomly distributed).
+     * Helper method to fill a rectangular area of the {@code mapDataField} with a specific tile type.
+     * The feature can be randomly distributed based on frequency, or solidly filled.
+     * @param r1 The starting row of the area (inclusive).
+     * @param c1 The starting column of the area (inclusive).
+     * @param r2 The ending row of the area (exclusive).
+     * @param c2 The ending column of the area (exclusive).
+     * @param type The tile type to fill with (e.g., TILE_MOUNTAIN, TILE_FOREST).
+     * @param frequency Controls the randomness of the fill; 1 for solid fill, higher for sparser.
      */
     private static void fillFeature(int r1, int c1, int r2, int c2, int type, int frequency) {
         for (int r = r1; r < r2; r++) {
@@ -246,7 +280,8 @@ public class fieldMapData {
     }
 
     /**
-     * Helper to generate beaches around land.
+     * Helper method to generate {@link #TILE_SAND} tiles around landmasses next to {@link #TILE_SEA}.
+     * This creates natural-looking beaches after the main land contours are defined.
      */
     private static void generateBeaches() {
         for (int r = 1; r < FIELD_MAP_WIDTH - 1; r++) {
@@ -274,6 +309,10 @@ public class fieldMapData {
         }
     }
 
+    /**
+     * Initializes the layout of a generic town map.
+     * This method sets up walls, floors, and specific features like a shop within the town's 16x16 grid.
+     */
     private static void initializeTown() {
         for (int r = 0; r < 16; r++) {
             for (int c = 0; c < 16; c++) {
@@ -307,6 +346,11 @@ public class fieldMapData {
         mapDataTown[7][10] = TILE_FLOOR;
     }
 
+    /**
+     * Initializes the layout of a generic cave map.
+     * This method sets up walls, floors, and specific features like a treasure chest within the cave's 16x16 grid,
+     * based on a predefined maze pattern.
+     */
     private static void initializeCave() {
         String[] maze = {
                 "WWWWWWWWWWWWWWWW",

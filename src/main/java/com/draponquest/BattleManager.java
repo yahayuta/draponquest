@@ -4,19 +4,50 @@ import javafx.scene.input.KeyCode;
 import com.draponquest.Monster;
 import javafx.application.Platform;
 
+/**
+ * Manages the logic and state for combat encounters in the game.
+ * This includes initiating battles, handling player and monster turns,
+ * calculating damage, and determining battle outcomes.
+ */
 public class BattleManager {
 
+    /**
+     * A reference to the main game instance to access global game state and methods.
+     */
     private DraponQuestFX game;
+    /**
+     * The monster currently engaged in battle.
+     */
     private Monster currentMonster;
+    /**
+     * The current hit points of the {@code currentMonster}.
+     */
     private int monsterHP;
+    /**
+     * Flag indicating if it is currently the player's turn to act in battle.
+     */
     private boolean playerTurn;
+    /**
+     * Flag indicating if the player is currently in a defending state.
+     */
     private boolean isDefending;
+    /**
+     * Stores messages related to the current battle's events.
+     */
     private String battleMessage;
 
+    /**
+     * Constructs a new BattleManager.
+     * @param game The main DraponQuestFX game instance.
+     */
     public BattleManager(DraponQuestFX game) {
         this.game = game;
     }
 
+    /**
+     * Initiates a new battle. A random monster is selected, and battle-specific
+     * game state and music are set up.
+     */
     public void startBattle() {
         System.out.println("Battle started. playerHP=" + game.playerHP);
         game.currentMode = DraponQuestFX.MODE_BATTLE;
@@ -38,6 +69,10 @@ public class BattleManager {
         game.audioManager.playMusic(AudioManager.MUSIC_BATTLE);
     }
 
+    /**
+     * Handles player input during a battle, such as attacking, defending, or attempting to run.
+     * @param keyCode The KeyCode representing the key pressed by the user.
+     */
     public void handleBattleInput(KeyCode keyCode) {
         System.out.println("Battle input: " + keyCode + ", playerTurn=" + playerTurn + ", playerHP=" + game.playerHP
                 + ", monsterHP=" + monsterHP);
@@ -101,6 +136,10 @@ public class BattleManager {
         }
     }
 
+    /**
+     * Executes the monster's turn during battle, calculating and applying damage to the player.
+     * Considers if the player is defending to reduce incoming damage.
+     */
     private void monsterTurn() {
         if (monsterHP <= 0)
             return;
@@ -125,6 +164,10 @@ public class BattleManager {
         });
     }
 
+    /**
+     * Checks if the player has won the battle. If so, updates player stats (XP, gold),
+     * handles item drops, and transitions the game state out of battle.
+     */
     private void checkVictory() {
         monsterHP = 0;
         game.battlesWon++;
@@ -158,6 +201,10 @@ public class BattleManager {
         game.audioManager.playMusic(AudioManager.MUSIC_VICTORY);
     }
 
+    /**
+     * Checks if the player has been defeated in battle. If so, sets player HP to 0
+     * and transitions the game to the GAME_OVER state.
+     */
     private void checkDefeat() {
         game.playerHP = 0;
         game.displayMessage("You were defeated!E");
@@ -168,14 +215,26 @@ public class BattleManager {
         game.audioManager.playSound(AudioManager.SOUND_GAME_OVER);
     }
 
+    /**
+     * Returns the current battle message.
+     * @return A string containing information about recent battle events.
+     */
     public String getBattleMessage() {
         return battleMessage;
     }
 
+    /**
+     * Returns the monster currently fighting in the battle.
+     * @return The current Monster object.
+     */
     public Monster getCurrentMonster() {
         return currentMonster;
     }
 
+    /**
+     * Returns the current hit points of the monster in battle.
+     * @return The current HP of the monster.
+     */
     public int getMonsterHP() {
         return monsterHP;
     }

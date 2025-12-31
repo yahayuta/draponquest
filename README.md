@@ -78,7 +78,7 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Modern Controls**: Keyboard-based navigation adapted for desktop
 - **Cross-Platform**: Runs on Windows, macOS, and Linux
 - **English Test Script & Comments**: All in-game test dialogue and code comments are now in English, improving readability and maintainability.
-- **Javadoc Documentation**: All main Java files are fully documented
+- ✅ **Javadoc Documentation**: All main Java files are fully documented in code (generation failed due to environment setup)
 - **Debug Logging**: Console output for all major game logic (for developers)
 - **Improved Movement**: Player starts in a walkable area; movement logic fixed
 - **Battle System**: HP persists between battles, ESC only exits after battle is over
@@ -122,11 +122,11 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 #### Windows (Recommended)
 ```bash
 # Build and run in one command
-build-and-run.bat
+cmd /c build-and-run.bat
 
 # Or compile and run separately
-compile.bat
-run.bat
+cmd /c compile.bat
+cmd /c run.bat
 ```
 
 #### Manual Compilation
@@ -183,17 +183,17 @@ draponquest/
 │   ├── scriptData.java                  # Legacy DoJa script data (comments translated)
 │   └── main/
 │       ├── java/com/draponquest/
-│       │   ├── AudioManager.java      # Manages game audio (Javadoc documented)
-│       │   ├── BattleManager.java     # Manages battle logic (Javadoc documented)
-│       │   ├── DraponQuestFX.java     # Main JavaFX game application (Javadoc documented)
-│       │   ├── GameInputHandler.java  # Handles user input (Javadoc documented)
-│       │   ├── Inventory.java         # Manages player inventory (Javadoc documented)
-│       │   ├── Item.java              # Represents game items (Javadoc documented)
-│       │   ├── LocalizationManager.java# Handles multi-language support (Javadoc documented)
-│       │   ├── Monster.java           # Represents game monsters (Javadoc documented)
-│       │   ├── Shop.java              # Manages shop interactions (Javadoc documented)
-│       │   └── fieldMapData.java      # Provides main game map data and logic (Javadoc documented)
-│       │   └── scriptData.java        # Provides main game script data and logic (Javadoc documented)
+│       │   ├── AudioManager.java      # Manages game audio
+│       │   ├── BattleManager.java     # Manages battle logic
+│       │   ├── DraponQuestFX.java     # Main JavaFX game application
+│       │   ├── GameInputHandler.java  # Handles user input
+│       │   ├── Inventory.java         # Manages player inventory
+│       │   ├── Item.java              # Represents game items
+│       │   ├── LocalizationManager.java# Handles multi-language support
+│       │   ├── Monster.java           # Represents game monsters
+│       │   ├── Shop.java              # Manages shop interactions
+│       │   └── fieldMapData.java      # Provides main game map data and logic
+│       │   └── scriptData.java        # Provides main game script data and logic
 │       └── resources/
 │           ├── images/                  # Game graphics (GIF sprites)
 │           └── sounds/                  # Game audio files (WAV)
@@ -457,7 +457,12 @@ Key game constants in `DraponQuestFX.java`:
    - Audio system provides detailed logging of sound effects and music playback
    - Use this output to trace and diagnose issues
 
-6. **PowerShell cannot find run.bat**
+6. **Javadoc Generation Fails**
+   - If `javadoc.exe` or `mvn` commands are not found when trying to generate Javadoc documentation, ensure that Java Development Kit (JDK) is correctly installed and its `bin` directory is in your system's PATH.
+   - For Maven, ensure Maven is installed and its `bin` directory is also in your system's PATH.
+   - Alternatively, you can use an IDE like IntelliJ IDEA or Eclipse to generate Javadocs if Maven is not configured.
+
+7. **PowerShell cannot find run.bat**
    - In PowerShell, you must run batch files with `./run.bat` or `.\run.bat` instead of just `run.bat`.
    - Example:
      ```powershell
@@ -468,8 +473,6 @@ Key game constants in `DraponQuestFX.java`:
 ---
 
 Enjoy classic RPG gameplay with modern JavaFX enhancements and a complete retro audio experience!
-
-## 🎯 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 

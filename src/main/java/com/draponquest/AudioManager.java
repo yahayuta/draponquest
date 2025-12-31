@@ -7,54 +7,101 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Audio Manager for DraponQuest JavaFX
- * Handles sound effects and background music using JavaFX MediaPlayer and
- * AudioClip
- * 
+ * Audio Manager for DraponQuest JavaFX.
+ * Handles sound effects and background music using JavaFX MediaPlayer and AudioClip.
+ *
  * @author Modern Migration
+ * @author Yakkun (Original concept for sound management)
  */
 public class AudioManager {
 
     // Audio types
+    /** Sound effect for player movement. */
     public static final String SOUND_MOVE = "move";
+    /** Sound effect for battle initiation. */
     public static final String SOUND_BATTLE_START = "battle_start";
+    /** Sound effect for an attack. */
     public static final String SOUND_ATTACK = "attack";
+    /** Sound effect for defending. */
     public static final String SOUND_DEFEND = "defend";
+    /** Sound effect for escaping from battle. */
     public static final String SOUND_ESCAPE = "escape";
+    /** Sound effect for winning a battle. */
     public static final String SOUND_VICTORY = "victory";
+    /** Sound effect for player defeat. */
     public static final String SOUND_DEFEAT = "defeat";
+    /** Sound effect for selecting a menu item. */
     public static final String SOUND_MENU_SELECT = "menu_select";
+    /** Sound effect for opening a menu. */
     public static final String SOUND_MENU_OPEN = "menu_open";
+    /** Sound effect for saving the game. */
     public static final String SOUND_SAVE = "save";
+    /** Sound effect for loading the game. */
     public static final String SOUND_LOAD = "load";
+    /** Sound effect for game over. */
     public static final String SOUND_GAME_OVER = "game_over";
 
     // Background music tracks
+    /** Background music for the title screen. */
     public static final String MUSIC_TITLE = "title";
+    /** Background music for the overworld field. */
     public static final String MUSIC_FIELD = "field";
+    /** Background music for battle encounters. */
     public static final String MUSIC_BATTLE = "battle";
+    /** Background music for battle victory. */
     public static final String MUSIC_VICTORY = "victory_music";
+    /** Background music for towns. */
     public static final String MUSIC_TOWN = "town";
+    /** Background music for castles. */
     public static final String MUSIC_CASTLE = "castle";
+    /** Background music for caves. */
     public static final String MUSIC_CAVE = "cave";
 
     // Audio settings
+    /**
+     * The current volume level for sound effects (0.0 to 1.0).
+     */
     private double soundVolume = 0.7;
+    /**
+     * The current volume level for background music (0.0 to 1.0).
+     */
     private double musicVolume = 0.5;
+    /**
+     * Flag indicating whether sound effects are currently enabled.
+     */
     private boolean soundEnabled = true;
+    /**
+     * Flag indicating whether background music is currently enabled.
+     */
     private boolean musicEnabled = true;
 
     // Audio storage
+    /**
+     * A map storing loaded sound effect clips, accessible by their names.
+     */
     private Map<String, AudioClip> soundEffects;
+    /**
+     * A map storing loaded background music tracks, accessible by their names.
+     */
     private Map<String, MediaPlayer> backgroundMusic;
+    /**
+     * The MediaPlayer instance for the currently playing background music.
+     */
     private MediaPlayer currentMusic;
+    /**
+     * The name of the currently playing background music track.
+     */
     private String currentMusicTrack;
 
     // Singleton instance
+    /**
+     * The singleton instance of the AudioManager.
+     */
     private static AudioManager instance;
 
     /**
-     * Private constructor for singleton pattern
+     * Private constructor to enforce the singleton pattern.
+     * Initializes the audio maps and loads all audio resources.
      */
     private AudioManager() {
         soundEffects = new HashMap<>();
@@ -63,9 +110,9 @@ public class AudioManager {
     }
 
     /**
-     * Get the singleton instance of AudioManager
-     * 
-     * @return AudioManager instance
+     * Returns the singleton instance of the AudioManager.
+     * If the instance does not exist, it is created.
+     * @return The single instance of AudioManager.
      */
     public static AudioManager getInstance() {
         if (instance == null) {
@@ -75,7 +122,7 @@ public class AudioManager {
     }
 
     /**
-     * Initialize audio system and load audio resources
+     * Initializes the audio system by loading all sound effects and background music tracks.
      */
     private void initializeAudio() {
         System.out.println("Initializing AudioManager...");
@@ -90,7 +137,7 @@ public class AudioManager {
     }
 
     /**
-     * Load all sound effects
+     * Loads all predefined sound effects from their resource paths into the {@code soundEffects} map.
      */
     private void loadSoundEffects() {
         System.out.println("Loading sound effects...");
@@ -117,7 +164,9 @@ public class AudioManager {
     }
 
     /**
-     * Load a single sound effect
+     * Loads a single sound effect from the specified resource path and stores it in the {@code soundEffects} map.
+     * @param name The unique name to associate with this sound effect.
+     * @param resourcePath The path to the sound file within the project resources (e.g., "/sounds/move.wav").
      */
     private void loadSoundEffect(String name, String resourcePath) {
         try {
@@ -131,7 +180,7 @@ public class AudioManager {
     }
 
     /**
-     * Load background music tracks
+     * Loads all predefined background music tracks from their resource paths into the {@code backgroundMusic} map.
      */
     private void loadBackgroundMusic() {
         System.out.println("Loading background music...");
@@ -154,7 +203,10 @@ public class AudioManager {
     }
 
     /**
-     * Load a single background music track
+     * Loads a single background music track from the specified resource path and stores it in the {@code backgroundMusic} map.
+     * The track is configured to loop indefinitely.
+     * @param name The unique name to associate with this music track.
+     * @param resourcePath The path to the music file within the project resources (e.g., "/sounds/bgm_field.wav").
      */
     private void loadBackgroundMusicTrack(String name, String resourcePath) {
         try {
@@ -170,9 +222,9 @@ public class AudioManager {
     }
 
     /**
-     * Play a sound effect
-     * 
-     * @param soundName Name of the sound effect
+     * Plays a sound effect by its registered name.
+     * The sound will only play if sound effects are enabled.
+     * @param soundName The name of the sound effect to play.
      */
     public void playSound(String soundName) {
         if (!soundEnabled)
@@ -189,9 +241,10 @@ public class AudioManager {
     }
 
     /**
-     * Play background music
-     * 
-     * @param musicName Name of the music track
+     * Plays a background music track by its registered name.
+     * Stops any currently playing music before starting the new track.
+     * Music will only play if background music is enabled.
+     * @param musicName The name of the music track to play.
      */
     public void playMusic(String musicName) {
         if (!musicEnabled)
@@ -215,7 +268,7 @@ public class AudioManager {
     }
 
     /**
-     * Stop current background music
+     * Stops the currently playing background music track.
      */
     public void stopMusic() {
         if (currentMusic != null && currentMusic.getStatus() == MediaPlayer.Status.PLAYING) {
@@ -225,9 +278,8 @@ public class AudioManager {
     }
 
     /**
-     * Set sound effects volume (0.0 to 1.0)
-     * 
-     * @param volume Volume level
+     * Sets the volume level for all sound effects. The volume is clamped between 0.0 and 1.0.
+     * @param volume The desired volume level (0.0 to 1.0).
      */
     public void setSoundVolume(double volume) {
         this.soundVolume = Math.max(0.0, Math.min(1.0, volume));
@@ -235,9 +287,9 @@ public class AudioManager {
     }
 
     /**
-     * Set background music volume (0.0 to 1.0)
-     * 
-     * @param volume Volume level
+     * Sets the volume level for background music. The volume is clamped between 0.0 and 1.0.
+     * If music is currently playing, its volume is updated immediately.
+     * @param volume The desired volume level (0.0 to 1.0).
      */
     public void setMusicVolume(double volume) {
         this.musicVolume = Math.max(0.0, Math.min(1.0, volume));
@@ -248,9 +300,8 @@ public class AudioManager {
     }
 
     /**
-     * Enable or disable sound effects
-     * 
-     * @param enabled True to enable, false to disable
+     * Enables or disables sound effects globally.
+     * @param enabled True to enable sound effects, false to disable.
      */
     public void setSoundEnabled(boolean enabled) {
         this.soundEnabled = enabled;
@@ -258,9 +309,9 @@ public class AudioManager {
     }
 
     /**
-     * Enable or disable background music
-     * 
-     * @param enabled True to enable, false to disable
+     * Enables or disables background music globally.
+     * If music is disabled while playing, the current track will be stopped.
+     * @param enabled True to enable background music, false to disable.
      */
     public void setMusicEnabled(boolean enabled) {
         this.musicEnabled = enabled;
@@ -271,52 +322,48 @@ public class AudioManager {
     }
 
     /**
-     * Get current sound volume
-     * 
-     * @return Sound volume (0.0 to 1.0)
+     * Returns the current volume level for sound effects.
+     * @return The sound effects volume (0.0 to 1.0).
      */
     public double getSoundVolume() {
         return soundVolume;
     }
 
     /**
-     * Get current music volume
-     * 
-     * @return Music volume (0.0 to 1.0)
+     * Returns the current volume level for background music.
+     * @return The music volume (0.0 to 1.0).
      */
     public double getMusicVolume() {
         return musicVolume;
     }
 
     /**
-     * Check if sound effects are enabled
-     * 
-     * @return True if enabled, false otherwise
+     * Checks if sound effects are currently enabled.
+     * @return True if sound effects are enabled, false otherwise.
      */
     public boolean isSoundEnabled() {
         return soundEnabled;
     }
 
     /**
-     * Check if background music is enabled
-     * 
-     * @return True if enabled, false otherwise
+     * Checks if background music is currently enabled.
+     * @return True if background music is enabled, false otherwise.
      */
     public boolean isMusicEnabled() {
         return musicEnabled;
     }
 
     /**
-     * Get current music track name
-     * 
-     * @return Current music track name or null if no music is playing
+     * Returns the name of the music track that is currently playing.
+     * @return The name of the current music track, or {@code null} if no music is playing.
      */
     public String getCurrentMusicTrack() {
         return currentMusicTrack;
     }
 
     /**
-     * Clean up audio resources
+     * Cleans up and disposes of all audio resources, stopping any playing media
+     * and clearing internal collections. This should be called when the application is shutting down.
      */
     public void cleanup() {
         System.out.println("Cleaning up AudioManager...");
