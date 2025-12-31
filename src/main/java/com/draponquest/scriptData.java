@@ -10,7 +10,10 @@ public class scriptData {
         "Welcome to Alefgard!", // ID 0
         "This is a test.", // ID 1
         "The king is troubled. A foul presence has settled over the land.", // ID 2
-        "Have you seen the princess? She was taken by a fearsome dragon!" // ID 3
+        "Have you seen the princess? She was taken by a fearsome dragon!", // ID 3
+        "The princess is beautiful, is she not?", // ID 4
+        "I am a humble servant of the king.", // ID 5
+        "There is a secret passage in this castle." // ID 6
     };
 
     // Get script by ID

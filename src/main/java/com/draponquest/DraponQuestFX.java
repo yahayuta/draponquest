@@ -211,7 +211,7 @@ public class DraponQuestFX extends Application {
     private Item antidote;
 
     // NPC System
-    private NPC[] npcs = new NPC[10];
+    private NPC[] npcs = new NPC[13];
     private Image soldierImage;
     private Image merchantImage;
     private Image kingImage;
@@ -470,6 +470,15 @@ public class DraponQuestFX extends Application {
 
         int[] merchantPos = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[4] = new NPC(4, merchantPos[0], merchantPos[1], 1, random.nextInt(4), 3, PLACE_BLDNG); // Merchant with Script ID 3
+
+        int[] soldierPos2 = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[5] = new NPC(5, soldierPos2[0], soldierPos2[1], 0, random.nextInt(4), 4, PLACE_BLDNG);
+
+        int[] merchantPos2 = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[6] = new NPC(6, merchantPos2[0], merchantPos2[1], 1, random.nextInt(4), 5, PLACE_BLDNG);
+
+        int[] soldierPos3 = generateRandomWalkableCoord(PLACE_BLDNG);
+        npcs[7] = new NPC(7, soldierPos3[0], soldierPos3[1], 0, random.nextInt(4), 6, PLACE_BLDNG);
     }
     
     /**
@@ -614,7 +623,7 @@ public class DraponQuestFX extends Application {
      */
     private void updateNPCs() {
         // Chance for an NPC to move, e.g., 10% per tick
-        final double moveChance = 0.1;
+        final double moveChance = 0.02;
 
         for (NPC npc : npcs) {
             // Only move NPCs that exist, are in the current area
