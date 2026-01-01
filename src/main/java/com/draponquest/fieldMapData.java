@@ -57,6 +57,8 @@ public class fieldMapData {
     public static final int TILE_CAVE = 13;
     /** Constant for Chest tile. */
     public static final int TILE_CHEST = 14;
+    /** Constant for House tile. */
+    public static final int TILE_HOUSE = 15;
 
     /**
      * The 2D array representing the town map layout (16x16 tiles).
@@ -321,36 +323,70 @@ public class fieldMapData {
      * This method sets up walls, floors, and specific features like a shop within the town's 16x16 grid.
      */
     private static void initializeTown() {
+        // Clear the map with floor tiles
         for (int r = 0; r < 16; r++) {
             for (int c = 0; c < 16; c++) {
-                if (r == 0 || r == 15 || c == 0 || c == 15) {
-                    if (r == 15 && (c == 7 || c == 8)) {
-                        mapDataTown[r][c] = TILE_FLOOR;
-                    } else {
-                        mapDataTown[r][c] = TILE_WALL;
-                    }
-                } else {
-                    mapDataTown[r][c] = TILE_FLOOR;
+                mapDataTown[r][c] = TILE_FLOOR;
+            }
+        }
+
+        // Outer walls
+        for (int i = 0; i < 16; i++) {
+            mapDataTown[0][i] = TILE_WALL;
+            mapDataTown[15][i] = TILE_WALL;
+            mapDataTown[i][0] = TILE_WALL;
+            mapDataTown[i][15] = TILE_WALL;
+        }
+
+        // Entrance
+        mapDataTown[15][7] = TILE_FLOOR;
+        mapDataTown[15][8] = TILE_FLOOR;
+
+        // --- Buildings ---
+        // Building 1 (Shop)
+        for (int r = 2; r < 6; r++) {
+            for (int c = 2; c < 6; c++) {
+                if (r == 2 || r == 5 || c == 2 || c == 5) {
+                    mapDataTown[r][c] = TILE_WALL;
                 }
             }
         }
-        // Basic town buildings
-        for (int c = 3; c < 13; c++) {
-            if (c < 7 || c > 9)
-                mapDataTown[3][c] = TILE_WALL;
-            if (c < 7 || c > 9)
-                mapDataTown[7][c] = TILE_WALL;
+        mapDataTown[5][3] = TILE_FLOOR; // Door
+        mapDataTown[3][3] = TILE_SHOP;
+
+        // Building 2 (House)
+        for (int r = 2; r < 6; r++) {
+            for (int c = 9; c < 14; c++) {
+                if (r == 2 || r == 5 || c == 9 || c == 13) {
+                    mapDataTown[r][c] = TILE_WALL;
+                }
+            }
         }
-        for (int r = 4; r < 7; r++) {
-            mapDataTown[r][3] = TILE_WALL;
+        mapDataTown[5][11] = TILE_FLOOR; // Door
+        mapDataTown[3][11] = TILE_HOUSE;
+        
+        // Building 3 (L-shaped house)
+        for (int r = 8; r < 14; r++) {
+            mapDataTown[r][2] = TILE_WALL;
             mapDataTown[r][6] = TILE_WALL;
-            mapDataTown[r][9] = TILE_WALL;
-            mapDataTown[r][12] = TILE_WALL;
         }
-        // Add a shop inside a building
-        mapDataTown[6][10] = TILE_SHOP;
-        // Add a door to the shop building
-        mapDataTown[7][10] = TILE_FLOOR;
+        for (int c = 2; c < 7; c++) {
+            mapDataTown[8][c] = TILE_WALL;
+            mapDataTown[13][c] = TILE_WALL;
+        }
+        mapDataTown[13][4] = TILE_FLOOR; // Door
+        mapDataTown[10][4] = TILE_HOUSE;
+
+        // Building 4 (another house)
+        for (int r = 8; r < 12; r++) {
+            for (int c = 9; c < 13; c++) {
+                if (r == 8 || r == 11 || c == 9 || c == 12) {
+                    mapDataTown[r][c] = TILE_WALL;
+                }
+            }
+        }
+        mapDataTown[11][10] = TILE_FLOOR; // Door
+        mapDataTown[9][10] = TILE_HOUSE;
     }
 
     /**

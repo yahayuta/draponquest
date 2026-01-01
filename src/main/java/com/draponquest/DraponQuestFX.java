@@ -349,6 +349,8 @@ public class DraponQuestFX extends Application {
      * Image representing the castle tile.
      */
     private Image castleImage;
+    /** Image representing the house tile. */
+    private Image houseImage;
     /**
      * Image representing the bridge tile.
      */
@@ -757,6 +759,11 @@ public class DraponQuestFX extends Application {
             castleImage = new Image(getClass().getResourceAsStream("/images/castle.png"));
         } catch (Exception e) {
             castleImage = null;
+        }
+        try {
+            houseImage = new Image(getClass().getResourceAsStream("/images/shop.png"));
+        } catch (Exception e) {
+            houseImage = null;
         }
         try {
             bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.png"));
@@ -1204,6 +1211,9 @@ public class DraponQuestFX extends Application {
                         break;
                     case fieldMapData.TILE_CASTLE:
                         tileImage = castleImage;
+                        break;
+                    case fieldMapData.TILE_HOUSE:
+                        tileImage = houseImage;
                         break;
                     case fieldMapData.TILE_BRIDGE:
                         tileImage = bridgeImage;
@@ -1836,6 +1846,8 @@ public class DraponQuestFX extends Application {
                 return Color.ORANGE;
             case fieldMapData.TILE_CASTLE:
                 return Color.LIGHTGRAY;
+            case fieldMapData.TILE_HOUSE:
+                return Color.BROWN;
             case fieldMapData.TILE_BRIDGE:
                 return Color.SADDLEBROWN;
             case fieldMapData.TILE_SWAMP:
