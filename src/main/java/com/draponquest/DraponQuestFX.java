@@ -836,7 +836,7 @@ public class DraponQuestFX extends Application {
         };
         
         treasureChests = new TreasureChest[] {
-            new TreasureChest(potion, 13, 2, PLACE_CAVE)
+            new TreasureChest(potion, fieldMapData.caveChestLocation[1], fieldMapData.caveChestLocation[0], PLACE_CAVE)
         };
     }
 
@@ -2136,18 +2136,20 @@ public class DraponQuestFX extends Application {
             return; // Block movement
         }
 
-        // EXIT LOGIC FOR TOWN/CAVE (New)
+        // EXIT LOGIC FOR TOWN/CAVE
         if (currentPlace != PLACE_FIELD) {
-            int currentPlayerRow = fieldMapEndHeight + 8;
-            int currentPlayerCol = fieldMapEndWidth + 8;
-            // If at the entrance and moving down, exit to overworld
-            if (currentPlayerRow == 15 && direction == 1 && (currentPlayerCol == 7 || currentPlayerCol == 8)) {
+            // Player's new position after move
+            int targetPlayerRow = newRow + 8;
+            int targetPlayerCol = newCol + 8;
+
+            // Check if moving onto the exit tile from inside
+            if (direction == 1 && targetPlayerRow == 15 && (targetPlayerCol == 7 || targetPlayerCol == 8)) {
                 currentPlace = PLACE_FIELD;
                 fieldMapEndWidth = savedFieldMapX;
                 fieldMapEndHeight = savedFieldMapY;
                 audioManager.playMusic(AudioManager.MUSIC_FIELD);
                 audioManager.playSound(AudioManager.SOUND_MOVE);
-                System.out.println("Exited area by stepping DOWN at: " + fieldMapEndHeight + "," + fieldMapEndWidth);
+                System.out.println("Exited area by stepping onto exit tile at: " + (fieldMapEndHeight + 8) + "," + (fieldMapEndWidth + 8));
                 return;
             }
         }

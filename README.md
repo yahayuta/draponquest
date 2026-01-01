@@ -51,6 +51,11 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
 
 ## ✨ Recent Updates
 
+- **Maze and Treasure Fixes**:
+  - Fixed a bug that prevented movement in the cave maze by ensuring the entrance is always connected to the maze paths.
+  - Corrected the exit logic for caves, allowing players to leave by walking onto the entrance tiles.
+  - Fixed an issue where the treasure chest in the cave could not be opened. The chest's in-game location now correctly matches its dynamically generated position on the map.
+
 - **New UI System**:
   - A persistent status window is now displayed at the top-left, showing the player's Level, HP, and Gold at all times.
   - The command menu has been restyled and repositioned to the right of the status window, preventing overlap.

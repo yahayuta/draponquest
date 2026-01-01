@@ -1,5 +1,11 @@
 package com.draponquest;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Stack;
+
 /**
  * Provides field map data and utility methods for DraponQuest.
  * Handles the map layout and walkability.
@@ -61,6 +67,7 @@ public class fieldMapData {
      * The 2D array representing the cave map layout (16x16 tiles).
      */
     private static int[][] mapDataCave = new int[16][16];
+    public static int[] caveChestLocation;
 
     /**
      * Returns the tile value from the overworld field map at the specified row and column.
@@ -347,36 +354,131 @@ public class fieldMapData {
     }
 
     /**
-     * Initializes the layout of a generic cave map.
-     * This method sets up walls, floors, and specific features like a treasure chest within the cave's 16x16 grid,
-     * based on a predefined maze pattern.
+     * Initializes the layout of a generic cave map by generating a random maze.
+     * The maze will have an entrance at the bottom and a treasure chest at a distant dead-end.
      */
     private static void initializeCave() {
-        String[] maze = {
-                "WWWWWWWWWWWWWWWW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFWWWWWWWWWWFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WFFFFFFFFFFFFFFW",
-                "WWWWWWWFFWWWWWWW"
-        };
-        for (int r = 0; r < 16; r++) {
-            for (int c = 0; c < 16; c++) {
-                char ch = maze[r].charAt(c);
-                mapDataCave[r][c] = (ch == 'W') ? TILE_WALL : TILE_FLOOR;
+        mapDataCave = generateRandomMaze(16, 16);
+        // Ensure entrance is clear
+        mapDataCave[15][7] = TILE_FLOOR;
+        mapDataCave[15][8] = TILE_FLOOR;
+
+        // Place a treasure chest at a suitable location (a distant dead-end)
+        placeTreasureChestInCave();
+    }
+
+    /**
+     * Generates a random maze using a recursive backtracking algorithm.
+     *
+     * @param width  The width of the maze.
+     * @param height The height of the maze.
+     * @return A 2D integer array representing the maze with walls and floors.
+     */
+    private static int[][] generateRandomMaze(int width, int height) {
+        int[][] maze = new int[height][width];
+        // Initialize maze with walls
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                maze[r][c] = TILE_WALL;
             }
         }
-        // Place a chest
-        mapDataCave[2][13] = TILE_CHEST;
+
+        Random rand = new Random();
+        Stack<int[]> stack = new Stack<>();
+        int startR = 1; // Start inside the border
+        int startC = 1;
+        maze[startR][startC] = TILE_FLOOR;
+        stack.push(new int[]{startR, startC});
+
+        while (!stack.isEmpty()) {
+            int[] current = stack.peek();
+            int r = current[0];
+            int c = current[1];
+
+            List<int[]> neighbors = new ArrayList<>();
+            // Check neighbors (2 cells away)
+            int[] dr = {-2, 2, 0, 0};
+            int[] dc = {0, 0, -2, 2};
+
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dr[i];
+                int nc = c + dc[i];
+                if (nr > 0 && nr < height - 1 && nc > 0 && nc < width - 1 && maze[nr][nc] == TILE_WALL) {
+                    neighbors.add(new int[]{nr, nc});
+                }
+            }
+
+            if (!neighbors.isEmpty()) {
+                Collections.shuffle(neighbors, rand);
+                int[] next = neighbors.get(0);
+                int nr = next[0];
+                int nc = next[1];
+
+                // Carve path to neighbor
+                maze[nr][nc] = TILE_FLOOR;
+                maze[r + (nr - r) / 2][c + (nc - c) / 2] = TILE_FLOOR;
+                stack.push(next);
+            } else {
+                stack.pop();
+            }
+        }
+
+        // Carve a path down to the exit
+        // This ensures the generated maze is always connected to the bottom entrance
+        int exitC = width / 2;
+        if (maze[height - 3][exitC] == TILE_WALL) {
+             maze[height - 3][exitC] = TILE_FLOOR;
+        }
+        maze[height - 2][exitC -1] = TILE_FLOOR;
+        maze[height - 2][exitC] = TILE_FLOOR;
+
+        return maze;
+    }
+
+    /**
+     * Finds a suitable dead-end in the cave and places a treasure chest there.
+     * The chosen location is the dead-end farthest from the entrance.
+     * @return An int array {row, col} indicating the location of the placed treasure chest,
+     *         or a default {2, 2} if no suitable dead-end is found.
+     */
+    private static void placeTreasureChestInCave() {
+        List<int[]> deadEnds = new ArrayList<>();
+        for (int r = 1; r < 15; r++) {
+            for (int c = 1; c < 15; c++) {
+                if (mapDataCave[r][c] == TILE_FLOOR) {
+                    int floorNeighbors = 0;
+                    if (mapDataCave[r - 1][c] == TILE_FLOOR) floorNeighbors++;
+                    if (mapDataCave[r + 1][c] == TILE_FLOOR) floorNeighbors++;
+                    if (mapDataCave[r][c - 1] == TILE_FLOOR) floorNeighbors++;
+                    if (mapDataCave[r][c + 1] == TILE_FLOOR) floorNeighbors++;
+
+                    if (floorNeighbors == 1) {
+                        deadEnds.add(new int[]{r, c});
+                    }
+                }
+            }
+        }
+
+        int[] bestLocation = {2, 2}; // Default location if no dead-end found
+        double maxDistance = -1;
+        int entranceR = 15; // Assuming entrance is at the bottom center
+        int entranceC = 7;
+
+        if (!deadEnds.isEmpty()) {
+            for (int[] loc : deadEnds) {
+                // Calculate Euclidean distance from entrance
+                double dist = Math.sqrt(Math.pow(loc[0] - entranceR, 2) + Math.pow(loc[1] - entranceC, 2));
+                if (dist > maxDistance) {
+                    maxDistance = dist;
+                    bestLocation = loc;
+                }
+            }
+            mapDataCave[bestLocation[0]][bestLocation[1]] = TILE_CHEST;
+        } else {
+            // If no dead ends, place chest at a default (e.g., near start, but not entrance)
+            mapDataCave[bestLocation[0]][bestLocation[1]] = TILE_CHEST;
+        }
+
+        caveChestLocation = bestLocation;
     }
 }
