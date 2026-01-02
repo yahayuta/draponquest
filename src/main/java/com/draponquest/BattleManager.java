@@ -187,11 +187,16 @@ public class BattleManager {
                 "and " + currentMonster.goldValue + " gold!" + itemDropMessagePart + "E";
 
         game.displayMessage(winMsg, () -> {
+            Runnable afterLevelUp = () -> {
+                game.audioManager.playMusic(game.getPreBattleMusic());
+                game.currentMode = DraponQuestFX.MODE_MOVE;
+            };
+
             if (game.playerXP >= game.xpToNextLevel) {
-                game.levelUp();
+                game.levelUp(afterLevelUp);
+            } else {
+                afterLevelUp.run();
             }
-            game.audioManager.playMusic(game.getPreBattleMusic());
-            game.currentMode = DraponQuestFX.MODE_MOVE;
         });
 
         System.out.println("Monster defeated. Player wins. Total battles won: " + game.battlesWon);

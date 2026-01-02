@@ -125,6 +125,11 @@ def generate_sfx():
     global BEAT_DURATION
     BEAT_DURATION = 60 / 120 # A standard tempo for sfx
 
+    # Heal
+    heal_notes = [('C5', 0.1), ('E5', 0.1), ('G5', 0.1), ('C6', 0.2)]
+    heal_sound = generate_track_from_sequence(heal_notes, 'sine', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.1, release=0.1)
+    save_wav('heal.wav', heal_sound, SAMPLE_RATE)
+
     # Move
     move_sound = np.array([], dtype=np.float32)
     for f in [440, 550, 660, 880]:

@@ -144,6 +144,10 @@ public class DraponQuestFX extends Application {
      * Game mode: Player is viewing their inventory.
      */
     static final int MODE_INVENTORY = 6;
+    /**
+     * Game mode: Player is in an inn.
+     */
+    static final int MODE_INN = 7;
 
     // Places
     /**
@@ -351,6 +355,8 @@ public class DraponQuestFX extends Application {
     private Image castleImage;
     /** Image representing the house tile. */
     private Image houseImage;
+    /** Image representing the inn tile. */
+    private Image innImage;
     /**
      * Image representing the bridge tile.
      */
@@ -766,6 +772,11 @@ public class DraponQuestFX extends Application {
             houseImage = null;
         }
         try {
+            innImage = new Image(getClass().getResourceAsStream("/images/shop.png"));
+        } catch (Exception e) {
+            innImage = null;
+        }
+        try {
             bridgeImage = new Image(getClass().getResourceAsStream("/images/bridge.png"));
         } catch (Exception e) {
             bridgeImage = null;
@@ -1015,6 +1026,15 @@ public class DraponQuestFX extends Application {
         if (currentMode == MODE_MOVE) {
             updateNPCs();
         }
+
+        if (currentMode == MODE_INN) {
+            playerHP = maxPlayerHP;
+            displayMessage("You feel rested and your HP has been restored.E", () -> {
+                currentMode = MODE_MOVE;
+            });
+            audioManager.playSound(AudioManager.SOUND_HEAL);
+            currentMode = MODE_EVENT; // Use event mode to show the message
+        }
     }
 
     /**
@@ -1214,6 +1234,9 @@ public class DraponQuestFX extends Application {
                         break;
                     case fieldMapData.TILE_HOUSE:
                         tileImage = houseImage;
+                        break;
+                    case fieldMapData.TILE_INN:
+                        tileImage = innImage;
                         break;
                     case fieldMapData.TILE_BRIDGE:
                         tileImage = bridgeImage;
@@ -1848,6 +1871,8 @@ public class DraponQuestFX extends Application {
                 return Color.LIGHTGRAY;
             case fieldMapData.TILE_HOUSE:
                 return Color.BROWN;
+            case fieldMapData.TILE_INN:
+                return Color.DEEPPINK;
             case fieldMapData.TILE_BRIDGE:
                 return Color.SADDLEBROWN;
             case fieldMapData.TILE_SWAMP:
@@ -2185,6 +2210,8 @@ public class DraponQuestFX extends Application {
                     shopMessageTime = System.currentTimeMillis();
                     // Play a sound or music for entering shop
                     // audioManager.playMusic(AudioManager.MUSIC_TOWN); // or a specific shop theme
+                } else if (tile == fieldMapData.TILE_INN) {
+                    currentMode = MODE_INN;
                 }
             }
 
@@ -2321,7 +2348,7 @@ public class DraponQuestFX extends Application {
      * and calculating the new experience requirement for the next level.
      * Displays a message informing the player of their level up.
      */
-    public void levelUp() {
+    public void levelUp(Runnable callback) {
         playerLevel++;
         xpToNextLevel = (int) (xpToNextLevel * 1.5);
         maxPlayerHP += 10;
@@ -2332,7 +2359,16 @@ public class DraponQuestFX extends Application {
         String msg = "You have reached level " + playerLevel + "!@" +
                 "Max HP increased by 10!\n" +
                 "Attack +2, Defense +1E";
-        displayMessage(msg);
+        displayMessage(msg, callback);
+    }
+
+    /**
+     * Increases the player's level, updating their stats (HP, Attack, Defense)
+     * and calculating the new experience requirement for the next level.
+     * Displays a message informing the player of their level up.
+     */
+    public void levelUp() {
+        levelUp(null);
     }
 
     /**

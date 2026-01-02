@@ -59,6 +59,8 @@ public class fieldMapData {
     public static final int TILE_CHEST = 14;
     /** Constant for House tile. */
     public static final int TILE_HOUSE = 15;
+    /** Constant for Inn tile. */
+    public static final int TILE_INN = 16;
 
     /**
      * The 2D array representing the town map layout (16x16 tiles).
@@ -354,7 +356,7 @@ public class fieldMapData {
         mapDataTown[5][3] = TILE_FLOOR; // Door
         mapDataTown[3][3] = TILE_SHOP;
 
-        // Building 2 (House)
+        // Building 2 (Inn)
         for (int r = 2; r < 6; r++) {
             for (int c = 9; c < 14; c++) {
                 if (r == 2 || r == 5 || c == 9 || c == 13) {
@@ -363,7 +365,7 @@ public class fieldMapData {
             }
         }
         mapDataTown[5][11] = TILE_FLOOR; // Door
-        mapDataTown[3][11] = TILE_HOUSE;
+        mapDataTown[3][11] = TILE_INN;
         
         // Building 3 (L-shaped house)
         for (int r = 8; r < 14; r++) {
