@@ -1,8 +1,11 @@
 package com.draponquest;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 
@@ -74,6 +77,11 @@ public class fieldMapData {
      */
     private static int[][] mapDataCave = new int[16][16];
     public static int[] caveChestLocation;
+
+    // Maps for storing names of towns, castles, and caves
+    private static Map<Point, String> townNames = new HashMap<>();
+    private static Map<Point, String> castleNames = new HashMap<>();
+    private static Map<Point, String> caveNames = new HashMap<>();
 
     /**
      * Returns the tile value from the overworld field map at the specified row and
@@ -430,5 +438,46 @@ public class fieldMapData {
         }
 
         caveChestLocation = bestLocation;
+    }
+
+    /**
+     * Retrieves the name of a location based on its map coordinates.
+     * 
+     * @param row The row index on the main field map.
+     * @param col The column index on the main field map.
+     * @return The name of the location, or null if no name is associated with these
+     *         coordinates.
+     */
+    public static String getLocationName(int row, int col) {
+        Point p = new Point(col, row); // awt Point is (x, y) -> (col, row)
+        if (townNames.containsKey(p))
+            return townNames.get(p);
+        if (castleNames.containsKey(p))
+            return castleNames.get(p);
+        if (caveNames.containsKey(p))
+            return caveNames.get(p);
+        return null;
+    }
+
+    static {
+        // Initialize Location Names
+        // Coordinates must match those in generate_alefgard.py
+
+        // Castles
+        castleNames.put(new Point(56, 56), "Tantegel Castle");
+        castleNames.put(new Point(65, 65), "Charlock Castle");
+
+        // Towns
+        townNames.put(new Point(59, 56), "Brecconary");
+        townNames.put(new Point(20, 18), "Garinham");
+        townNames.put(new Point(110, 25), "Kol");
+        townNames.put(new Point(105, 100), "Rimuldar");
+        townNames.put(new Point(30, 95), "Domdora");
+        townNames.put(new Point(80, 110), "Cantlin");
+
+        // Caves
+        caveNames.put(new Point(70, 20), "Erdrick's Cave");
+        caveNames.put(new Point(115, 45), "Staff of Rain Shrine");
+        caveNames.put(new Point(115, 115), "Holy Shrine");
     }
 }

@@ -89,7 +89,8 @@ public class DraponQuestFX extends Application {
     private static final int WAIT_MSEC = 100;
 
     /**
-     * A random number generator used for various game mechanics like encounters and NPC movement.
+     * A random number generator used for various game mechanics like encounters and
+     * NPC movement.
      */
     private Random random = new Random();
 
@@ -209,11 +210,13 @@ public class DraponQuestFX extends Application {
      */
     public int currentGameStatus = GAME_TITLE;
     /**
-     * The current mode of interaction within the game (e.g., movement, battle, shop).
+     * The current mode of interaction within the game (e.g., movement, battle,
+     * shop).
      */
     public int currentMode = MODE_MOVE;
     /**
-     * The current geographical place the player is in (e.g., field, building, cave).
+     * The current geographical place the player is in (e.g., field, building,
+     * cave).
      */
     private int currentPlace = PLACE_FIELD;
     /**
@@ -221,11 +224,13 @@ public class DraponQuestFX extends Application {
      */
     private int currentCommand = COM_TALK;
     /**
-     * Used for player animation frames (e.g., 0 or 1 to switch between two sprites).
+     * Used for player animation frames (e.g., 0 or 1 to switch between two
+     * sprites).
      */
     private int flip = 0;
     /**
-     * The direction the player character is currently facing (0=Up, 1=Down, 2=Left, 3=Right).
+     * The direction the player character is currently facing (0=Up, 1=Down, 2=Left,
+     * 3=Right).
      */
     private int playerDirection = 1; // 0=Up, 1=Down, 2=Left, 3=Right
     /**
@@ -235,7 +240,8 @@ public class DraponQuestFX extends Application {
 
     // Shop state
     /**
-     * The current mode within the shop interface (0: main menu, 1: buying, 2: selling).
+     * The current mode within the shop interface (0: main menu, 1: buying, 2:
+     * selling).
      */
     private int shopMode = 0; // 0: main, 1: buying, 2: selling
     /**
@@ -249,14 +255,15 @@ public class DraponQuestFX extends Application {
      */
     private int inventoryCursor = 0;
 
-
     // Map variables
     /**
-     * The X-coordinate of the top-left corner of the currently displayed map segment.
+     * The X-coordinate of the top-left corner of the currently displayed map
+     * segment.
      */
     private int fieldMapEndWidth = 40; // 40 + 8 = 48 (Tantegel X)
     /**
-     * The Y-coordinate of the top-left corner of the currently displayed map segment.
+     * The Y-coordinate of the top-left corner of the currently displayed map
+     * segment.
      */
     private int fieldMapEndHeight = 48; // 48 + 8 = 56 (Tantegel Y)
     /**
@@ -431,21 +438,25 @@ public class DraponQuestFX extends Application {
      */
     public int playerDefense = 2;
     /**
-     * A message displayed temporarily to the player, often after a command or action.
+     * A message displayed temporarily to the player, often after a command or
+     * action.
      */
     public String commandMessage = null;
     /**
-     * The timestamp when the command message was set, used for timing its display duration.
+     * The timestamp when the command message was set, used for timing its display
+     * duration.
      */
     public long commandMessageTime = 0;
 
     // Message box for shop actions
     /**
-     * A message displayed within the shop interface, typically for transaction feedback.
+     * A message displayed within the shop interface, typically for transaction
+     * feedback.
      */
     public String shopMessage = null;
     /**
-     * The timestamp when the shop message was set, used for timing its display duration.
+     * The timestamp when the shop message was set, used for timing its display
+     * duration.
      */
     public long shopMessageTime = 0;
 
@@ -459,7 +470,8 @@ public class DraponQuestFX extends Application {
      */
     private String saveMessage = null;
     /**
-     * The timestamp when the save message was set, used for timing its display duration.
+     * The timestamp when the save message was set, used for timing its display
+     * duration.
      */
     private long saveMessageTime = 0;
 
@@ -469,33 +481,55 @@ public class DraponQuestFX extends Application {
      */
     public String battleRewardMessage = null;
     /**
-     * The timestamp when the battle reward message was set, used for timing its display duration.
+     * The timestamp when the battle reward message was set, used for timing its
+     * display duration.
+     */
+    /**
+     * The timestamp when the battle reward message was set, used for timing its
+     * display duration.
      */
     public long battleRewardMessageTime = 0;
 
+    // Location Name Toast
+    /**
+     * The name of the current location to display as a toast.
+     */
+    private String currentLocationName = null;
+    /**
+     * The timestamp when the location name was set, used for timing its display
+     * duration.
+     */
+    private long locationNameTimer = 0;
+
     // NES-style Message fields
     /**
-     * The full text of the current message being displayed in the NES-style dialogue box.
+     * The full text of the current message being displayed in the NES-style
+     * dialogue box.
      */
     private String currentFullMessage = "";
     /**
-     * The portion of the current message that is currently visible in the dialogue box (typewriter effect).
+     * The portion of the current message that is currently visible in the dialogue
+     * box (typewriter effect).
      */
     private StringBuilder currentVisibleMessage = new StringBuilder();
     /**
-     * The index of the next character to be revealed in the current message during the typewriter effect.
+     * The index of the next character to be revealed in the current message during
+     * the typewriter effect.
      */
     private int messageCharIndex = 0;
     /**
-     * Flag indicating if the game is waiting for player input to advance the current message.
+     * Flag indicating if the game is waiting for player input to advance the
+     * current message.
      */
     private boolean isWaitingForInput = false;
     /**
-     * A tick counter used to control the speed of the typewriter effect for messages.
+     * A tick counter used to control the speed of the typewriter effect for
+     * messages.
      */
     private int typewriterTick = 0;
     /**
-     * The speed at which characters are revealed in the typewriter effect (ticks per character).
+     * The speed at which characters are revealed in the typewriter effect (ticks
+     * per character).
      */
     private static final int TYPEWRITER_SPEED = 1; // Ticks per character
     /**
@@ -512,7 +546,8 @@ public class DraponQuestFX extends Application {
      */
     public int battlesWon = 0; // Track number of battles won
     /**
-     * Stores the music track that was playing before a battle started, to resume it afterward.
+     * Stores the music track that was playing before a battle started, to resume it
+     * afterward.
      */
     private String preBattleMusic;
 
@@ -574,7 +609,7 @@ public class DraponQuestFX extends Application {
      * Array of treasure chests scattered throughout the game world.
      */
     private TreasureChest[] treasureChests;
-    
+
     /**
      * NPC Inner Class
      */
@@ -610,13 +645,14 @@ public class DraponQuestFX extends Application {
 
         /**
          * Constructs a new NPC.
-         * @param id The unique identifier for this NPC.
-         * @param x The initial X-coordinate of the NPC.
-         * @param y The initial Y-coordinate of the NPC.
-         * @param type The type of NPC.
-         * @param dir The initial direction the NPC is facing.
+         * 
+         * @param id     The unique identifier for this NPC.
+         * @param x      The initial X-coordinate of the NPC.
+         * @param y      The initial Y-coordinate of the NPC.
+         * @param type   The type of NPC.
+         * @param dir    The initial direction the NPC is facing.
          * @param script The ID of the script associated with this NPC.
-         * @param place The ID of the place where this NPC resides.
+         * @param place  The ID of the place where this NPC resides.
          */
         public NPC(int id, int x, int y, int type, int dir, int script, int place) {
             this.id = id;
@@ -671,7 +707,11 @@ public class DraponQuestFX extends Application {
         saveMessageTime = 0;
 
         battleRewardMessage = null;
+        battleRewardMessage = null;
         battleRewardMessageTime = 0;
+
+        currentLocationName = null;
+        locationNameTimer = 0;
 
         currentFullMessage = "";
         currentVisibleMessage.setLength(0);
@@ -693,7 +733,8 @@ public class DraponQuestFX extends Application {
 
     /**
      * Initializes core game components that persist across game resets,
-     * such as map data, audio system, and loading of static game assets like images.
+     * such as map data, audio system, and loading of static game assets like
+     * images.
      */
     private void initializeGame() {
         System.out.println("Initializing game components");
@@ -852,27 +893,33 @@ public class DraponQuestFX extends Application {
                 new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3),
                 new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1)
         };
-        
+
         treasureChests = new TreasureChest[] {
-            new TreasureChest(potion, fieldMapData.caveChestLocation[1], fieldMapData.caveChestLocation[0], PLACE_CAVE)
+                new TreasureChest(potion, fieldMapData.caveChestLocation[1], fieldMapData.caveChestLocation[0],
+                        PLACE_CAVE)
         };
     }
 
     /**
-     * Initializes the Non-Player Characters (NPCs) with their starting positions, types,
-     * directions, and associated script IDs. This method is typically called upon game initialization
+     * Initializes the Non-Player Characters (NPCs) with their starting positions,
+     * types,
+     * directions, and associated script IDs. This method is typically called upon
+     * game initialization
      * or when an area is loaded.
      */
     private void initNPCs() {
-        // King, Soldier, and Merchant will have random walkable positions in the building
+        // King, Soldier, and Merchant will have random walkable positions in the
+        // building
         int[] kingPos = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[2] = new NPC(2, kingPos[0], kingPos[1], 2, random.nextInt(4), 0, PLACE_BLDNG); // King with Script ID 0
 
         int[] soldierPos = generateRandomWalkableCoord(PLACE_BLDNG);
-        npcs[3] = new NPC(3, soldierPos[0], soldierPos[1], 0, random.nextInt(4), 2, PLACE_BLDNG); // Soldier with Script ID 2
+        npcs[3] = new NPC(3, soldierPos[0], soldierPos[1], 0, random.nextInt(4), 2, PLACE_BLDNG); // Soldier with Script
+                                                                                                  // ID 2
 
         int[] merchantPos = generateRandomWalkableCoord(PLACE_BLDNG);
-        npcs[4] = new NPC(4, merchantPos[0], merchantPos[1], 1, random.nextInt(4), 3, PLACE_BLDNG); // Merchant with Script ID 3
+        npcs[4] = new NPC(4, merchantPos[0], merchantPos[1], 1, random.nextInt(4), 3, PLACE_BLDNG); // Merchant with
+                                                                                                    // Script ID 3
 
         int[] soldierPos2 = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[5] = new NPC(5, soldierPos2[0], soldierPos2[1], 0, random.nextInt(4), 4, PLACE_BLDNG);
@@ -883,12 +930,15 @@ public class DraponQuestFX extends Application {
         int[] soldierPos3 = generateRandomWalkableCoord(PLACE_BLDNG);
         npcs[7] = new NPC(7, soldierPos3[0], soldierPos3[1], 0, random.nextInt(4), 6, PLACE_BLDNG);
     }
-    
+
     /**
      * Generates random walkable coordinates for NPCs within a given place.
      * This ensures NPCs don't spawn on walls or in the sea.
-     * @param placeID The ID of the place for which to generate coordinates (e.g., PLACE_BLDNG, PLACE_CAVE).
-     * @return An int array containing the {x, y} coordinates of a random walkable tile.
+     * 
+     * @param placeID The ID of the place for which to generate coordinates (e.g.,
+     *                PLACE_BLDNG, PLACE_CAVE).
+     * @return An int array containing the {x, y} coordinates of a random walkable
+     *         tile.
      */
     private int[] generateRandomWalkableCoord(int placeID) {
         int x, y;
@@ -922,8 +972,10 @@ public class DraponQuestFX extends Application {
                 tile = fieldMapData.mapDataReturnField(y, x);
             }
 
-            // Check if the tile is walkable and not the player's initial spawn point (for building)
-            if (isWalkable(y, x) && !(placeID == PLACE_BLDNG && x == 8 && y == 15)) { // Player spawns at (8,15) relative in building
+            // Check if the tile is walkable and not the player's initial spawn point (for
+            // building)
+            if (isWalkable(y, x) && !(placeID == PLACE_BLDNG && x == 8 && y == 15)) { // Player spawns at (8,15)
+                                                                                      // relative in building
                 // Ensure no other NPC is already at this position
                 boolean collision = false;
                 for (NPC npc : npcs) {
@@ -933,7 +985,7 @@ public class DraponQuestFX extends Application {
                     }
                 }
                 if (!collision) {
-                    return new int[]{x, y};
+                    return new int[] { x, y };
                 }
             }
         }
@@ -948,7 +1000,9 @@ public class DraponQuestFX extends Application {
         @Override
         /**
          * This method is called repeatedly by the JavaFX AnimationTimer.
-         * It updates the game state and renders the game frame if enough time has passed.
+         * It updates the game state and renders the game frame if enough time has
+         * passed.
+         * 
          * @param now The current time in nanoseconds.
          */
         public void handle(long now) {
@@ -1021,7 +1075,7 @@ public class DraponQuestFX extends Application {
                 // Game over logic
                 break;
         }
-        
+
         // Update NPCs if not in battle or a menu
         if (currentMode == MODE_MOVE) {
             updateNPCs();
@@ -1048,17 +1102,25 @@ public class DraponQuestFX extends Application {
         for (NPC npc : npcs) {
             // Only move NPCs that exist, are in the current area
             if (npc != null && npc.placeID == currentPlace && random.nextDouble() < moveChance) {
-                
+
                 int direction = random.nextInt(4); // 0=Up, 1=Down, 2=Left, 3=Right
-                
+
                 int targetX = npc.x;
                 int targetY = npc.y;
 
                 switch (direction) {
-                    case 0: targetY--; break; // Up
-                    case 1: targetY++; break; // Down
-                    case 2: targetX--; break; // Left
-                    case 3: targetX++; break; // Right
+                    case 0:
+                        targetY--;
+                        break; // Up
+                    case 1:
+                        targetY++;
+                        break; // Down
+                    case 2:
+                        targetX--;
+                        break; // Left
+                    case 3:
+                        targetX++;
+                        break; // Right
                 }
 
                 // --- Collision Detection ---
@@ -1117,7 +1179,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders the game's title screen, displaying the game logo, "Press Enter" prompt, and copyright information.
+     * Renders the game's title screen, displaying the game logo, "Press Enter"
+     * prompt, and copyright information.
      */
     private void renderTitleScreen() {
         // Clear canvas with black
@@ -1129,7 +1192,7 @@ public class DraponQuestFX extends Application {
         double windowHeight = 120;
         double windowX = 20;
         double windowY = DISP_HEIGHT * 0.35 - 70; // Center around where text will be
-        
+
         gc.setFill(Color.BLACK);
         gc.fillRect(windowX, windowY, windowWidth, windowHeight);
         gc.setStroke(Color.WHITE);
@@ -1140,16 +1203,16 @@ public class DraponQuestFX extends Application {
 
         // Title text "DRAPON QUEST"
         String title = "DRAPON QUEST";
-        
+
         // Dynamic font sizing for the title to fit inside the window
         double titleFontSize = getFittingFontSize(title, Font.font("Garamond", FontWeight.BOLD, 72), windowWidth * 0.9);
         gc.setFont(Font.font("Garamond", FontWeight.BOLD, titleFontSize));
         gc.setTextAlign(TextAlignment.CENTER);
-        
+
         // Shadow for title
         gc.setFill(Color.BLACK);
         gc.fillText(title, DISP_WIDTH / 2 + 4, DISP_HEIGHT * 0.35 + 4);
-        
+
         // Main title text
         gc.setFill(Color.rgb(220, 200, 120)); // Gold-like color
         gc.fillText(title, DISP_WIDTH / 2, DISP_HEIGHT * 0.35);
@@ -1169,7 +1232,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders the main game screen, including the field map, player character, UI elements, and minimap.
+     * Renders the main game screen, including the field map, player character, UI
+     * elements, and minimap.
      */
     private void renderGameScreen() {
         // Render field map
@@ -1359,7 +1423,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Placeholder method. The player is drawn as part of the `renderFieldMap()` method.
+     * Placeholder method. The player is drawn as part of the `renderFieldMap()`
+     * method.
      */
     private void renderPlayer() {
         // Remove player drawing here to avoid double rendering
@@ -1471,7 +1536,7 @@ public class DraponQuestFX extends Application {
 
             if (shopMode == 0) { // Main menu: Buy/Sell
                 gc.setFont(Font.font("Arial", 28));
-                String[] options = {"Buy", "Sell", "Exit"};
+                String[] options = { "Buy", "Sell", "Exit" };
                 for (int i = 0; i < options.length; i++) {
                     if (i == shopCursor) {
                         gc.setFill(Color.YELLOW);
@@ -1484,7 +1549,7 @@ public class DraponQuestFX extends Application {
                 gc.setFont(Font.font("Arial", 28));
                 gc.setFill(Color.YELLOW);
                 gc.fillText("Items for sale:", DISP_WIDTH / 2, 120);
-                
+
                 java.util.List<Item> items = shop.getItemsForSale();
                 for (int i = 0; i < items.size(); i++) {
                     if (i == shopCursor) {
@@ -1496,9 +1561,9 @@ public class DraponQuestFX extends Application {
                     String text = (i + 1) + ". " + item.getName() + " - " + item.getValue() + " gold";
                     gc.fillText(text, DISP_WIDTH / 2, 160 + i * 40);
                 }
-                 gc.setFont(Font.font("Arial", 24));
-                 gc.setFill(Color.WHITE);
-                 gc.fillText("Press ESC to go back.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
+                gc.setFont(Font.font("Arial", 24));
+                gc.setFill(Color.WHITE);
+                gc.fillText("Press ESC to go back.", DISP_WIDTH / 2, DISP_HEIGHT - 40);
 
             } else if (shopMode == 2) { // Selling
                 gc.setFont(Font.font("Arial", 28));
@@ -1551,12 +1616,59 @@ public class DraponQuestFX extends Application {
             gc.fillText("EVENT! (ESC to exit)", 64, DISP_HEIGHT / 2);
         }
         // Save/load message (scaled up)
+
         if (saveMessage != null && System.currentTimeMillis() - saveMessageTime < 2000) {
             gc.setFill(Color.YELLOW);
             gc.fillRect(0, 0, DISP_WIDTH, 48);
             gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 24));
             gc.fillText(saveMessage, 16, 32);
+        }
+
+        // Location Name Toast
+        if (currentLocationName != null) {
+            long elapsed = System.currentTimeMillis() - locationNameTimer;
+            if (elapsed < 3000) {
+                // Fade out effect
+                double alpha = 1.0;
+                if (elapsed > 2000) {
+                    alpha = 1.0 - (elapsed - 2000) / 1000.0;
+                }
+
+                gc.save();
+                gc.setGlobalAlpha(alpha);
+
+                // Draw fancy background
+                String name = currentLocationName;
+                gc.setFont(Font.font("Garamond", FontWeight.BOLD, 48));
+                double textWidth = getFittingFontSize(name, Font.font("Garamond", FontWeight.BOLD, 48),
+                        DISP_WIDTH - 100);
+                gc.setFont(Font.font("Garamond", FontWeight.BOLD, textWidth)); // Re-calculate correct size if
+                                                                               // getFittingFontSize returned size
+
+                // Simply use the size returned by getFittingFontSize to set font
+                gc.setFont(Font.font("Garamond", FontWeight.BOLD, textWidth));
+
+                // Measure text width for centering (approximate)
+                javafx.scene.text.Text t = new javafx.scene.text.Text(name);
+                t.setFont(gc.getFont());
+                double width = t.getLayoutBounds().getWidth();
+                double x = (DISP_WIDTH - width) / 2;
+                double y = DISP_HEIGHT / 2 - 50; // slightly above center
+
+                // Shadow/Outline
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(4);
+                gc.strokeText(name, x, y);
+
+                // Text
+                gc.setFill(Color.GOLD);
+                gc.fillText(name, x, y);
+
+                gc.restore();
+            } else {
+                currentLocationName = null;
+            }
         }
 
         // Unified NES-style Dialogue box (moved to end to ensure it overlays
@@ -1590,7 +1702,8 @@ public class DraponQuestFX extends Application {
     /**
      * Wraps a given text string to fit within a specified maximum width.
      * This is used for formatting dialogue and other in-game messages.
-     * @param text The input text string to wrap.
+     * 
+     * @param text     The input text string to wrap.
      * @param maxWidth The maximum width in pixels the text should occupy.
      * @return The wrapped text string with newline characters inserted as needed.
      */
@@ -1605,11 +1718,11 @@ public class DraponQuestFX extends Application {
             for (String word : words) {
                 // Create a test line with the new word
                 String testLine = currentLine.length() > 0 ? currentLine + " " + word : word;
-                
+
                 // Measure the width of the test line
                 javafx.scene.text.Text textNode = new javafx.scene.text.Text(testLine);
                 textNode.setFont(gc.getFont());
-                
+
                 if (textNode.getLayoutBounds().getWidth() <= maxWidth) {
                     // If it fits, append the word
                     if (currentLine.length() > 0) {
@@ -1626,13 +1739,17 @@ public class DraponQuestFX extends Application {
         }
         return wrappedText.toString().trim();
     }
-    
+
     /**
      * Calculates a font size that makes the given text fit within a maximum width.
-     * @param text The text string for which to calculate the fitting font size.
-     * @param initialFont The initial font to use as a base for family, style, and a starting size for adjustment.
-     * @param maxWidth The maximum width that the text should not exceed.
-     * @return The adjusted font size that makes the text fit within the maximum width.
+     * 
+     * @param text        The text string for which to calculate the fitting font
+     *                    size.
+     * @param initialFont The initial font to use as a base for family, style, and a
+     *                    starting size for adjustment.
+     * @param maxWidth    The maximum width that the text should not exceed.
+     * @return The adjusted font size that makes the text fit within the maximum
+     *         width.
      */
     private double getFittingFontSize(String text, javafx.scene.text.Font initialFont, double maxWidth) {
         double fontSize = initialFont.getSize();
@@ -1654,7 +1771,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders a small status window on the game screen, displaying key player statistics
+     * Renders a small status window on the game screen, displaying key player
+     * statistics
      * such as level, current HP, and gold.
      */
     private void renderStatusWindow() {
@@ -1683,12 +1801,13 @@ public class DraponQuestFX extends Application {
         gc.fillText(String.valueOf(playerLevel), boxX + boxWidth - 20, boxY + 35);
         gc.fillText(String.valueOf(playerHP), boxX + boxWidth - 20, boxY + 65);
         gc.fillText(String.valueOf(playerGold), boxX + boxWidth - 20, boxY + 95);
-        
+
         gc.setTextAlign(TextAlignment.LEFT); // Reset alignment
     }
 
     /**
-     * Renders the dedicated status screen, providing a detailed overview of the player's attributes,
+     * Renders the dedicated status screen, providing a detailed overview of the
+     * player's attributes,
      * including level, HP, XP, gold, attack, and defense.
      */
     private void renderStatusScreen() {
@@ -1704,7 +1823,7 @@ public class DraponQuestFX extends Application {
         gc.setTextAlign(TextAlignment.LEFT);
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("MS Gothic", 28));
-        
+
         // Title
         gc.fillText("Status", 40, 60);
 
@@ -1761,7 +1880,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders a placeholder or "waiting" screen, typically used during loading or pauses.
+     * Renders a placeholder or "waiting" screen, typically used during loading or
+     * pauses.
      * Currently, this method is not fully implemented and serves as a placeholder.
      */
     private void renderWaitScreen() {
@@ -1769,7 +1889,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders the "continue" screen, typically shown after game over, offering options to continue or restart.
+     * Renders the "continue" screen, typically shown after game over, offering
+     * options to continue or restart.
      * Currently, this method is not fully implemented and serves as a placeholder.
      */
     private void renderContinueScreen() {
@@ -1794,8 +1915,10 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Renders a small, overlaid minimap of the current area, showing player position and map features.
-     * The minimap scales its display based on whether the player is in the field or an indoor area.
+     * Renders a small, overlaid minimap of the current area, showing player
+     * position and map features.
+     * The minimap scales its display based on whether the player is in the field or
+     * an indoor area.
      */
     private void renderMinimap() {
         int x = DISP_WIDTH - 138;
@@ -1845,7 +1968,9 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Returns a simplified color representation for a given tile type, used for rendering the minimap.
+     * Returns a simplified color representation for a given tile type, used for
+     * rendering the minimap.
+     * 
      * @param tile The integer ID of the tile.
      * @return A JavaFX Color object corresponding to the tile type.
      */
@@ -1892,10 +2017,12 @@ public class DraponQuestFX extends Application {
 
     /**
      * Handles the logic for the ENTER or SPACE key, used for advancing dialogue,
-     * selecting menu options, or initiating game actions based on the current game state.
+     * selecting menu options, or initiating game actions based on the current game
+     * state.
      */
     public void hitKeySelect() {
-        System.out.println("hitKeySelect called - currentGameStatus: " + currentGameStatus + ", currentMode: " + currentMode);
+        System.out.println(
+                "hitKeySelect called - currentGameStatus: " + currentGameStatus + ", currentMode: " + currentMode);
 
         // Handle NES-style message box input first
         if (currentFullMessage != null && !currentFullMessage.isEmpty()) {
@@ -2037,7 +2164,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Handles the ESCAPE key input, used for exiting menus, events, or battles (if the battle has concluded).
+     * Handles the ESCAPE key input, used for exiting menus, events, or battles (if
+     * the battle has concluded).
      */
     public void hitSoft2() {
         System.out.println("ESC pressed. currentMode=" + currentMode + ", playerHP=" + playerHP + ", monsterHP="
@@ -2075,19 +2203,28 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Triggers a NES-style message box to display a given message without a callback.
-     * @param msg The message string to display. Special characters like '@', 'H', and 'E'
-     *            can be embedded to control message flow (page breaks, waiting for input).
+     * Triggers a NES-style message box to display a given message without a
+     * callback.
+     * 
+     * @param msg The message string to display. Special characters like '@', 'H',
+     *            and 'E'
+     *            can be embedded to control message flow (page breaks, waiting for
+     *            input).
      */
     public void displayMessage(String msg) {
         displayMessage(msg, null);
     }
 
     /**
-     * Triggers a NES-style message box to display a given message and executes a callback
-     * function once the message display is completed and acknowledged by the player.
-     * @param msg The message string to display. Special characters like '@', 'H', and 'E'
-     *            can be embedded to control message flow (page breaks, waiting for input).
+     * Triggers a NES-style message box to display a given message and executes a
+     * callback
+     * function once the message display is completed and acknowledged by the
+     * player.
+     * 
+     * @param msg      The message string to display. Special characters like '@',
+     *                 'H', and 'E'
+     *                 can be embedded to control message flow (page breaks, waiting
+     *                 for input).
      * @param callback A Runnable to be executed after the message box is closed.
      */
     public void displayMessage(String msg, Runnable callback) {
@@ -2100,8 +2237,10 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Checks if a specific map tile at the given row and column coordinates is walkable by the player.
+     * Checks if a specific map tile at the given row and column coordinates is
+     * walkable by the player.
      * Unwalkable tiles include sea (0) and walls (11).
+     * 
      * @param row The row index of the tile to check.
      * @param col The column index of the tile to check.
      * @return True if the tile is walkable, false otherwise.
@@ -2117,16 +2256,21 @@ public class DraponQuestFX extends Application {
         }
         // Sea (0) and Wall (11) are unwalkable
         boolean walkable = tile != 0 && tile != fieldMapData.TILE_WALL;
-        System.out.println("isWalkable: row=" + row + ", col=" + col + ", tile=" + tile + ", walkable=" + walkable);
+        // System.out.println("isWalkable: row=" + row + ", col=" + col + ", tile=" +
+        // tile + ", walkable=" + walkable);
         return walkable;
     }
 
     /**
-     * Checks if there is an NPC at the specified map coordinates within a given place.
-     * @param targetX The X-coordinate to check for an NPC.
-     * @param targetY The Y-coordinate to check for an NPC.
-     * @param targetPlaceId The ID of the place (e.g., PLACE_BLDNG, PLACE_FIELD) where the check is performed.
-     * @return True if an NPC is found at the target coordinates in the specified place, false otherwise.
+     * Checks if there is an NPC at the specified map coordinates within a given
+     * place.
+     * 
+     * @param targetX       The X-coordinate to check for an NPC.
+     * @param targetY       The Y-coordinate to check for an NPC.
+     * @param targetPlaceId The ID of the place (e.g., PLACE_BLDNG, PLACE_FIELD)
+     *                      where the check is performed.
+     * @return True if an NPC is found at the target coordinates in the specified
+     *         place, false otherwise.
      */
     private boolean isNpcAt(int targetX, int targetY, int targetPlaceId) {
         for (NPC npc : npcs) {
@@ -2140,7 +2284,8 @@ public class DraponQuestFX extends Application {
     /**
      * Moves the player on the map and triggers random encounters.
      * 
-     * @param direction The direction in which the player is attempting to move (0=up, 1=down, 2=left, 3=right).
+     * @param direction The direction in which the player is attempting to move
+     *                  (0=up, 1=down, 2=left, 3=right).
      */
     private void moveFieldMap(int direction) {
         System.out.println("moveFieldMap called - direction: " + direction);
@@ -2186,7 +2331,8 @@ public class DraponQuestFX extends Application {
                 fieldMapEndHeight = savedFieldMapY;
                 audioManager.playMusic(AudioManager.MUSIC_FIELD);
                 audioManager.playSound(AudioManager.SOUND_MOVE);
-                System.out.println("Exited area by stepping onto exit tile at: " + (fieldMapEndHeight + 8) + "," + (fieldMapEndWidth + 8));
+                System.out.println("Exited area by stepping onto exit tile at: " + (fieldMapEndHeight + 8) + ","
+                        + (fieldMapEndWidth + 8));
                 return;
             }
         }
@@ -2240,6 +2386,28 @@ public class DraponQuestFX extends Application {
                     // Start at the bottom of the area (entrance)
                     fieldMapEndWidth = 0;
                     fieldMapEndHeight = 7; // 7 + 8 = 15 (bottom row)
+                    // Start at the bottom of the area (entrance)
+                    fieldMapEndWidth = 0;
+                    fieldMapEndHeight = 7; // 7 + 8 = 15 (bottom row)
+
+                    // Set location name
+                    // Use playerRow and playerCol to get the specific tile the player entered
+                    String locName = fieldMapData.getLocationName(playerRow, playerCol);
+
+                    if (locName != null) {
+                        currentLocationName = locName;
+                        locationNameTimer = System.currentTimeMillis();
+                    } else {
+                        // Default names if not specific
+                        if (currentTile == fieldMapData.TILE_TOWN)
+                            currentLocationName = "Town";
+                        else if (currentTile == fieldMapData.TILE_CASTLE)
+                            currentLocationName = "Castle";
+                        else if (currentTile == fieldMapData.TILE_CAVE)
+                            currentLocationName = "Cave";
+                        locationNameTimer = System.currentTimeMillis();
+                    }
+
                     System.out.println("Entered area from field at: " + savedFieldMapY + "," + savedFieldMapX);
                 }
             }
@@ -2372,7 +2540,9 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Retrieves the name of the music track that was playing before the current battle started.
+     * Retrieves the name of the music track that was playing before the current
+     * battle started.
+     * 
      * @return The name of the pre-battle music track.
      */
     public String getPreBattleMusic() {
@@ -2380,7 +2550,9 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Sets the music track that should resume playing after the current battle concludes.
+     * Sets the music track that should resume playing after the current battle
+     * concludes.
+     * 
      * @param music The name of the music track to set as pre-battle music.
      */
     public void setPreBattleMusic(String music) {
@@ -2399,10 +2571,18 @@ public class DraponQuestFX extends Application {
         int targetCol = playerCol;
 
         switch (playerDirection) {
-            case 0: targetRow--; break; // Up
-            case 1: targetRow++; break; // Down
-            case 2: targetCol--; break; // Left
-            case 3: targetCol++; break; // Right
+            case 0:
+                targetRow--;
+                break; // Up
+            case 1:
+                targetRow++;
+                break; // Down
+            case 2:
+                targetCol--;
+                break; // Left
+            case 3:
+                targetCol++;
+                break; // Right
         }
 
         boolean found = false;
@@ -2415,7 +2595,8 @@ public class DraponQuestFX extends Application {
                     String msg = scriptData.getScript(npcs[j].scriptID) + "E";
                     displayMessage(msg);
                     // Optional: make NPC face player
-                    // npcs[j].direction = (playerDirection + 1) % 4; // Simplified logic to face player
+                    // npcs[j].direction = (playerDirection + 1) % 4; // Simplified logic to face
+                    // player
                     break; // Found an NPC, stop checking
                 }
             }
@@ -2428,10 +2609,12 @@ public class DraponQuestFX extends Application {
 
     /**
      * Checks for a treasure chest in the direction the player is currently facing.
-     * If a chest is found and unopened, its contents are added to the player's inventory.
+     * If a chest is found and unopened, its contents are added to the player's
+     * inventory.
      */
     private void checkTreasure() {
-        System.out.println("checkTreasure called. Player direction: " + playerDirection + ", currentPlace: " + currentPlace);
+        System.out.println(
+                "checkTreasure called. Player direction: " + playerDirection + ", currentPlace: " + currentPlace);
         int playerRow = fieldMapEndHeight + 8;
         int playerCol = fieldMapEndWidth + 8;
 
@@ -2439,12 +2622,21 @@ public class DraponQuestFX extends Application {
         int targetCol = playerCol;
 
         switch (playerDirection) {
-            case 0: targetRow--; break; // Up
-            case 1: targetRow++; break; // Down
-            case 2: targetCol--; break; // Left
-            case 3: targetCol++; break; // Right
+            case 0:
+                targetRow--;
+                break; // Up
+            case 1:
+                targetRow++;
+                break; // Down
+            case 2:
+                targetCol--;
+                break; // Left
+            case 3:
+                targetCol++;
+                break; // Right
         }
-        System.out.println("Player at (" + playerCol + ", " + playerRow + "), checking tile at (" + targetCol + ", " + targetRow + ")");
+        System.out.println("Player at (" + playerCol + ", " + playerRow + "), checking tile at (" + targetCol + ", "
+                + targetRow + ")");
 
         if (currentPlace == PLACE_CAVE) {
             int tile = fieldMapData.mapDataReturnCave(targetRow, targetCol);
@@ -2467,13 +2659,15 @@ public class DraponQuestFX extends Application {
                 }
             }
         }
-        
+
         displayMessage("There is nothing to check here.E");
     }
 
     /**
-     * Executes the logic associated with the currently selected command from the in-game menu.
-     * This method handles actions like talking to NPCs, checking for treasures, using magic or items,
+     * Executes the logic associated with the currently selected command from the
+     * in-game menu.
+     * This method handles actions like talking to NPCs, checking for treasures,
+     * using magic or items,
      * or viewing the player's status.
      */
     private void handleCommandSelection() {
@@ -2517,16 +2711,19 @@ public class DraponQuestFX extends Application {
     /**
      * Handles keyboard input specific to the shop interface, allowing navigation
      * through shop menus (buy, sell, exit) and item selection.
+     * 
      * @param keyCode The KeyCode representing the key pressed by the user.
      */
     public void handleShopInput(KeyCode keyCode) {
         if (shopMode == 0) { // Main menu
             if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
                 shopCursor--;
-                if (shopCursor < 0) shopCursor = 2;
+                if (shopCursor < 0)
+                    shopCursor = 2;
             } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
                 shopCursor++;
-                if (shopCursor > 2) shopCursor = 0;
+                if (shopCursor > 2)
+                    shopCursor = 0;
             } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
                 if (shopCursor == 0) { // Buy
                     shopMode = 1;
@@ -2548,10 +2745,12 @@ public class DraponQuestFX extends Application {
             java.util.List<Item> items = shop.getItemsForSale();
             if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
                 shopCursor--;
-                if (shopCursor < 0) shopCursor = items.size() - 1;
+                if (shopCursor < 0)
+                    shopCursor = items.size() - 1;
             } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
                 shopCursor++;
-                if (shopCursor >= items.size()) shopCursor = 0;
+                if (shopCursor >= items.size())
+                    shopCursor = 0;
             } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
                 if (!items.isEmpty()) {
                     Item selectedItem = items.get(shopCursor);
@@ -2566,10 +2765,12 @@ public class DraponQuestFX extends Application {
             java.util.List<Item> playerItems = getInventory().getItems();
             if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
                 shopCursor--;
-                if (shopCursor < 0) shopCursor = playerItems.size() - 1;
+                if (shopCursor < 0)
+                    shopCursor = playerItems.size() - 1;
             } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
                 shopCursor++;
-                if (shopCursor >= playerItems.size()) shopCursor = 0;
+                if (shopCursor >= playerItems.size())
+                    shopCursor = 0;
             } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
                 if (!playerItems.isEmpty()) {
                     Item selectedItem = playerItems.get(shopCursor);
@@ -2590,6 +2791,7 @@ public class DraponQuestFX extends Application {
     /**
      * Handles keyboard input specific to the inventory screen, allowing navigation
      * through items and their selection/use.
+     * 
      * @param keyCode The KeyCode representing the key pressed by the user.
      */
     public void handleInventoryInput(KeyCode keyCode) {
@@ -2618,9 +2820,9 @@ public class DraponQuestFX extends Application {
             // Here you would add the actual effect of the item
             // For example, healing the player:
             // if (selectedItem.getEffect().equals("heal_20")) {
-            //     playerHP += 20;
-            //     if (playerHP > maxPlayerHP) playerHP = maxPlayerHP;
-            //     getInventory().removeItem(selectedItem);
+            // playerHP += 20;
+            // if (playerHP > maxPlayerHP) playerHP = maxPlayerHP;
+            // getInventory().removeItem(selectedItem);
             // }
             // After using, we can either close the inventory or wait.
             // For now, let's just show the message and the user can press ESC to close.
@@ -2630,7 +2832,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Toggles the background music on or off. If music is enabled and the game is in an open/move state,
+     * Toggles the background music on or off. If music is enabled and the game is
+     * in an open/move state,
      * the field music will start playing.
      */
     public void toggleMusic() {
@@ -2660,7 +2863,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Decreases the volume for both background music and sound effects by a fixed increment.
+     * Decreases the volume for both background music and sound effects by a fixed
+     * increment.
      * The volume will not go below 0.0.
      */
     public void decreaseVolume() {
@@ -2671,7 +2875,8 @@ public class DraponQuestFX extends Application {
     }
 
     /**
-     * Increases the volume for both background music and sound effects by a fixed increment.
+     * Increases the volume for both background music and sound effects by a fixed
+     * increment.
      * The volume will not exceed 1.0.
      */
     public void increaseVolume() {
@@ -2683,6 +2888,7 @@ public class DraponQuestFX extends Application {
 
     /**
      * Returns the player's inventory object.
+     * 
      * @return The Inventory instance associated with the player.
      */
     public Inventory getInventory() {
