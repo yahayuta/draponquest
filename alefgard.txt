@@ -1,0 +1,19 @@
+Please fill this file with the textual representation of the Alefgard map from Dragon Warrior 1 NES.
+
+Use the following characters to represent the tiles:
+. = sea
+s = sand
+p = plains
+f = forest
+S = shop
+M = mountain
+T = town
+C = castle
+B = bridge
+W = swamp
+# = wall
+_ = floor
+^ = cave
+c = chest
+h = house
+i = inn

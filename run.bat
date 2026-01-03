@@ -18,8 +18,11 @@ REM Copy resources to target directory
 if not exist "target\classes\images" mkdir "target\classes\images"
 copy "src\main\resources\images\*" "target\classes\images\" >nul 2>&1
 
+
 if not exist "target\classes\sounds" mkdir "target\classes\sounds"
 copy "src\main\resources\sounds\*" "target\classes\sounds\" >nul 2>&1
+
+copy "src\main\resources\alefgard_data.txt" "target\classes\" >nul 2>&1
 
 REM Run the game
 java --module-path "%JAVAFX_SDK%\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp target\classes com.draponquest.DraponQuestFX
