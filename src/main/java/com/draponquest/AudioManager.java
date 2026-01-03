@@ -41,6 +41,7 @@ public class AudioManager {
     /** Sound effect for game over. */
     public static final String SOUND_GAME_OVER = "game_over";
     public static final String SOUND_HEAL = "heal";
+    public static final String SOUND_CURSOR = "cursor";
 
     // Background music tracks
     /** Background music for the title screen. */
@@ -158,6 +159,7 @@ public class AudioManager {
             // Add missing generated sound files
             loadSoundEffect(SOUND_GAME_OVER, "/sounds/game_over.wav");
             loadSoundEffect(SOUND_HEAL, "/sounds/heal.wav");
+            loadSoundEffect(SOUND_CURSOR, "/sounds/cursor.wav");
 
             System.out.println("Sound effects loaded: " + soundEffects.size() + " effects");
         } catch (Exception e) {

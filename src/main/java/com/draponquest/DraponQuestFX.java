@@ -224,6 +224,11 @@ public class DraponQuestFX extends Application {
      */
     private int currentCommand = COM_TALK;
     /**
+     * The currently selected command in a battle menu.
+     */
+    public int battleCommand = BCOM_ATK;
+
+    /**
      * Used for player animation frames (e.g., 0 or 1 to switch between two
      * sprites).
      */
@@ -1483,45 +1488,68 @@ public class DraponQuestFX extends Application {
         }
         // Battle screen (scaled up)
         if (currentGameStatus == GAME_OPEN && currentMode == MODE_BATTLE) {
-            gc.setFill(Color.rgb(32, 32, 64, 0.85));
+            // Background
+            gc.setFill(Color.rgb(0, 0, 0, 0.85)); // Darker for more focus
             gc.fillRect(0, 0, DISP_WIDTH, DISP_HEIGHT);
-            gc.setFill(Color.WHITE);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 40));
-            gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-            gc.fillText(LocalizationManager.getText("battle_title"), DISP_WIDTH / 2, 60);
-            // Draw monster name centered above image
-            if (battleManager.getCurrentMonster() != null && battleManager.getCurrentMonster().image != null
-                    && !battleManager.getCurrentMonster().image.isError()) {
+
+            // Monster Name and Image
+            if (battleManager.getCurrentMonster() != null) {
+                gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
                 gc.setFont(javafx.scene.text.Font.font("Arial", 28));
                 gc.setFill(Color.YELLOW);
-                gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH / 2, 120);
-                // Draw monster image centered
-                gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH - 128) / 2, 130, 128, 128);
-            } else {
-                gc.setFill(Color.DARKRED);
-                gc.fillRect((DISP_WIDTH - 128) / 2, 130, 128, 128);
-                gc.setFill(Color.WHITE);
-                gc.setFont(javafx.scene.text.Font.font("Arial", 18));
-                gc.fillText(LocalizationManager.getText("no_monster_image"), DISP_WIDTH / 2, 190);
+                gc.fillText(battleManager.getCurrentMonster().name, DISP_WIDTH / 2, 180);
+
+                if (battleManager.getCurrentMonster().image != null
+                        && !battleManager.getCurrentMonster().image.isError()) {
+                    gc.drawImage(battleManager.getCurrentMonster().image, (DISP_WIDTH - 128) / 2, 200, 128, 128);
+                } else {
+                    gc.setFill(Color.DARKRED);
+                    gc.fillRect((DISP_WIDTH - 128) / 2, 200, 128, 128);
+                    gc.setFill(Color.WHITE);
+                    gc.setFont(javafx.scene.text.Font.font("Arial", 18));
+                    gc.fillText("No Image", DISP_WIDTH / 2, 260);
+                }
             }
-            // Draw HP bars, moved up to avoid message box overlap
-            gc.setFont(javafx.scene.text.Font.font("Arial", 22));
-            gc.setFill(Color.LIME);
-            String playerHpStr = LocalizationManager.getText("player_hp") + playerHP + "/" + maxPlayerHP + " | ATK: "
-                    + playerAttack + " | DEF: " + playerDefense;
-            gc.fillText(playerHpStr, DISP_WIDTH / 2, 270);
 
-            gc.setFill(Color.RED);
-            String monsterHpStr = battleManager.getCurrentMonster().name + LocalizationManager.getText("monster_hp")
-                    + battleManager.getMonsterHP() + " | ATK: " + battleManager.getCurrentMonster().attack + " | DEF: "
-                    + battleManager.getCurrentMonster().defense;
-            gc.fillText(monsterHpStr, DISP_WIDTH / 2, 305);
+            // ONLY the battle menu
+            int boxWidth = DISP_WIDTH - 40;
+            int boxHeight = 150;
+            int boxX = 20;
+            int boxY = DISP_HEIGHT - boxHeight - 20; // At the bottom
 
-            // Draw action options (A: Attack D: Defend R: Run)
-            gc.setFill(Color.YELLOW);
-            gc.setFont(javafx.scene.text.Font.font("Arial", 24));
-            gc.fillText("A: Attack   D: Defend   R: Run", DISP_WIDTH / 2, DISP_HEIGHT - 30);
-            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset to default
+            gc.setFill(Color.BLACK);
+            gc.fillRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setStroke(Color.WHITE);
+            gc.setLineWidth(4);
+            gc.strokeRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setLineWidth(2);
+            gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
+
+            // Left side: Player Stats
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("MS Gothic", 24));
+            gc.setTextAlign(TextAlignment.LEFT);
+            gc.fillText("LV: " + playerLevel, boxX + 20, boxY + 35);
+            gc.fillText("HP: " + playerHP, boxX + 20, boxY + 65);
+            gc.fillText("G:  " + playerGold, boxX + 20, boxY + 95);
+
+            // Right side: Battle Commands
+            gc.setFont(Font.font("MS Gothic", 28));
+            String[] commands = {
+                    "Attack",
+                    "Magic",
+                    "Item",
+                    "Run"
+            };
+            int commandsX = boxX + 200;
+            for (int i = 0; i < commands.length; i++) {
+                int y = boxY + 35 + i * 28;
+                if (battleCommand == i + 1) {
+                    gc.fillText(">", commandsX, y);
+                }
+                gc.fillText(commands[i], commandsX + 30, y);
+            }
+            gc.setTextAlign(javafx.scene.text.TextAlignment.LEFT); // Reset
         }
         if (currentMode == MODE_SHOP) {
             // Background
@@ -1674,14 +1702,18 @@ public class DraponQuestFX extends Application {
         // Unified NES-style Dialogue box (moved to end to ensure it overlays
         // everything)
         if (currentGameStatus == GAME_OPEN && currentFullMessage != null && !currentFullMessage.isEmpty()) {
+            int boxY = DISP_HEIGHT - 160;
+            if (currentMode == MODE_BATTLE) {
+                boxY = 20;
+            }
             // Draw NES-style dialogue box
             gc.setFill(Color.BLACK);
-            gc.fillRect(10, DISP_HEIGHT - 160, DISP_WIDTH - 20, 150);
+            gc.fillRect(10, boxY, DISP_WIDTH - 20, 150);
             gc.setStroke(Color.WHITE);
             gc.setLineWidth(4);
-            gc.strokeRect(10, DISP_HEIGHT - 160, DISP_WIDTH - 20, 150);
+            gc.strokeRect(10, boxY, DISP_WIDTH - 20, 150);
             gc.setLineWidth(2);
-            gc.strokeRect(15, DISP_HEIGHT - 155, DISP_WIDTH - 30, 140);
+            gc.strokeRect(15, boxY + 5, DISP_WIDTH - 30, 140);
 
             gc.setFill(Color.WHITE);
             gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
@@ -1689,12 +1721,12 @@ public class DraponQuestFX extends Application {
             String wrappedText = wrapText(currentVisibleMessage.toString(), DISP_WIDTH - 60);
             String[] lines = wrappedText.split("\n");
             for (int i = 0; i < lines.length; i++) {
-                gc.fillText(lines[i], 30, DISP_HEIGHT - 120 + i * 28);
+                gc.fillText(lines[i], 30, boxY + 40 + i * 28);
             }
 
             // Blinking cursor if waiting
             if (isWaitingForInput && (System.currentTimeMillis() / 500) % 2 == 0) {
-                gc.fillText("▼", DISP_WIDTH - 50, DISP_HEIGHT - 30);
+                gc.fillText("▼", DISP_WIDTH - 50, boxY + 130);
             }
         }
     }
@@ -2050,15 +2082,7 @@ public class DraponQuestFX extends Application {
                     }
                 }
                 // Close message
-                currentFullMessage = "";
-                currentVisibleMessage.setLength(0);
-                messageCharIndex = 0;
-                isWaitingForInput = false;
-                if (messageCallback != null) {
-                    Runnable callback = messageCallback;
-                    messageCallback = null;
-                    callback.run();
-                }
+                closeMessage();
                 return;
             }
         }
@@ -2088,10 +2112,39 @@ public class DraponQuestFX extends Application {
             audioManager.playSound(AudioManager.SOUND_MENU_SELECT);
             // Handle command selection
             handleCommandSelection();
+        } else if (currentMode == MODE_BATTLE) {
+            if (currentFullMessage == null || currentFullMessage.isEmpty()) {
+                battleManager.executeBattleCommand(battleCommand);
+            }
         } else if (currentMode == MODE_SHOP) {
             handleShopInput(KeyCode.ENTER);
         } else if (currentMode == MODE_INVENTORY) {
             handleInventoryInput(KeyCode.ENTER);
+        }
+    }
+
+    public void handleBattleInput(KeyCode keyCode) {
+        if (isWaitingForInput)
+            return;
+        switch (keyCode) {
+            case UP:
+            case W:
+                if (battleCommand > BCOM_ATK) {
+                    battleCommand--;
+                    audioManager.playSound(AudioManager.SOUND_CURSOR);
+                }
+                break;
+            case DOWN:
+            case S:
+                if (battleCommand < BCOM_RUN) {
+                    battleCommand++;
+                    audioManager.playSound(AudioManager.SOUND_CURSOR);
+                }
+                break;
+            case ENTER:
+            case SPACE:
+                battleManager.executeBattleCommand(battleCommand);
+                break;
         }
     }
 
@@ -2234,6 +2287,18 @@ public class DraponQuestFX extends Application {
         isWaitingForInput = false;
         typewriterTick = 0;
         messageCallback = callback;
+    }
+
+    public void closeMessage() {
+        currentFullMessage = "";
+        currentVisibleMessage.setLength(0);
+        messageCharIndex = 0;
+        isWaitingForInput = false;
+        if (messageCallback != null) {
+            Runnable callback = messageCallback;
+            messageCallback = null;
+            callback.run();
+        }
     }
 
     /**

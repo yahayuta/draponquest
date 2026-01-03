@@ -73,8 +73,9 @@ public class BattleManager {
      * Handles player input during a battle, such as attacking, defending, or attempting to run.
      * @param keyCode The KeyCode representing the key pressed by the user.
      */
-    public void handleBattleInput(KeyCode keyCode) {
-        System.out.println("Battle input: " + keyCode + ", playerTurn=" + playerTurn + ", playerHP=" + game.playerHP
+    public void executeBattleCommand(int command) {
+        game.closeMessage();
+        System.out.println("Battle command: " + command + ", playerTurn=" + playerTurn + ", playerHP=" + game.playerHP
                 + ", monsterHP=" + monsterHP);
         if (game.playerHP <= 0 || monsterHP <= 0) {
             System.out.println("Battle input ignored: battle is over");
@@ -82,8 +83,8 @@ public class BattleManager {
         }
 
         if (playerTurn) {
-            switch (keyCode) {
-                case A:
+            switch (command) {
+                case 1: // BCOM_ATK
                     int damage = Math.max(1, game.playerAttack - currentMonster.defense);
                     monsterHP -= damage;
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
@@ -101,19 +102,17 @@ public class BattleManager {
                     });
                     playerTurn = false;
                     break;
-
-                case D:
-                    System.out.println("Player defends");
-                    game.audioManager.playSound(AudioManager.SOUND_DEFEND);
-                    isDefending = true;
-
-                    game.displayMessage(LocalizationManager.getText("battle_you_defend") + "E", () -> {
-                        monsterTurn();
+                case 2: // BCOM_MGK
+                    game.displayMessage("Magic is not implemented yet.E", () -> {
+                        playerTurn = true;
                     });
-                    playerTurn = false;
                     break;
-
-                case R:
+                case 3: // BCOM_ITEM
+                    game.displayMessage("Item is not implemented yet.E", () -> {
+                        playerTurn = true;
+                    });
+                    break;
+                case 4: // BCOM_RUN
                     // Try to escape: 50% chance
                     if (Math.random() < 0.5) {
                         System.out.println("Player escaped from battle");
