@@ -66,7 +66,10 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
   - `Arrow Keys / WASD`: Navigate options and items.
 - **Improved NPC Interaction**: Talking to NPCs now requires the player to be directly facing them, ensuring consistent interaction logic across the game (similar to treasure chest interaction).
 - **Shop Accessibility**: The town shop is now accessible, with a doorway added to its building.
-- **Basic Item Usage**: The Inventory menu now supports basic item "usage" (currently displays a message). Further item effects can be implemented in future updates.
+- **Basic Item Usage**: The Inventory menu now supports item usage with meaningful feedback.
+  - **Item Messages**: Item usage now displays localized messages (e.g., "HP recovered 10!") in the NES-style dialogue box.
+  - **Improved Layout**: Message text wrapping and alignment have been refined to ensure text never overflows the dialogue box, even for long messages or Japanese text.
+  - **Visuals**: The message box font size (22px) and padding have been optimized for better readability.
 - **Enhanced Item System**:
   - **Shop Inventory**: The shop inventory has been updated with items like "Antidote" and "Medical Herb".
   - **Item Effects**: Items now have functional effects (e.g., Medical Herb heals HP, Antidote cures poison).

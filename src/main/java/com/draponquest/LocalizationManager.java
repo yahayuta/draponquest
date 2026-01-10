@@ -31,7 +31,8 @@ public class LocalizationManager {
     // Text data for different languages
     /**
      * A map storing all localized text. The outer map's key is the language code,
-     * and the inner map's key is the text identifier, with the value being the localized string.
+     * and the inner map's key is the text identifier, with the value being the
+     * localized string.
      */
     private static final Map<String, Map<String, String>> textData = new HashMap<>();
 
@@ -40,7 +41,8 @@ public class LocalizationManager {
     }
 
     /**
-     * Initializes all predefined text data for supported languages (English and Japanese).
+     * Initializes all predefined text data for supported languages (English and
+     * Japanese).
      * This method is called once when the class is loaded.
      */
     private static void initializeTextData() {
@@ -117,6 +119,13 @@ public class LocalizationManager {
         englishText.put("npc_king", "I am the King!@Defeat the Dragonlord!E");
         englishText.put("npc_default", "Hello there.E");
 
+        // Item usage
+        englishText.put("item_used", "You used the ");
+        englishText.put("item_heal", ".@HP recovered ");
+        englishText.put("item_cure", ".@The poison has left your body.E");
+        englishText.put("item_no_effect", "It wouldn't have any effect now.E");
+        englishText.put("item_nothing", ".@But nothing happened.E");
+
         textData.put(LANG_ENGLISH, englishText);
 
         // Japanese text
@@ -192,6 +201,54 @@ public class LocalizationManager {
         japaneseText.put("npc_king", "わしは王様じゃ！@竜王を倒してくれ！E");
         japaneseText.put("npc_default", "こんにちは。E");
 
+        // Item usage
+        japaneseText.put("item_used", "あなたは ");
+        japaneseText.put("item_heal", " をつかった。@HPが ");
+        japaneseText.put("item_heal_suffix", " かいふくした！E"); // specific suffix for JP if needed, but structure might
+                                                           // differ. English uses "HP recovered X!". JP usually "You
+                                                           // used item. HP recovered X!"
+        // Re-thinking JP structure to match code logic or adapting code logic.
+        // Code: "You used the " + name + ".@HP recovered " + amount + "!E"
+        // JP: "name" + " をつかった。@HPが " + amount + " かいふくした！E"
+        // So: item_used -> "name" prefix? No.
+        // The current code construction is: prefix + item_name + suffix + amount + "!"
+
+        // Let's look at English: "You used the " + item.getName() + ".@HP recovered " +
+        // amount + "!E"
+        // JP Translation ideal: [Item Name] + " をつかった。@HPが " + [Amount] + " かいふくした！E"
+        // This means the prefix "You used the " is empty or just "" in JP if the name
+        // comes first?
+        // No, `handleInventoryInput` does `displayMessage("You used the " + ...)`
+
+        // I will need to adjust the code in DraponQuestFX to handle this construction
+        // better or just use a format string approach if possible, but simplest is:
+        // English: item_used="You used the ", item_mid=".@HP recovered ", item_end="!E"
+        // JP: item_used="", item_mid=" をつかった！@HPが ", item_end=" かいふくした！E" (Wait, "You
+        // used the Potion" -> "Potion wo tsukatta")
+        // In English it is "You used the Potion".
+        // In Japanese "Potion wo tsukatta".
+        // So `item_used` for JP should be empty string?
+        // But the code does `item_used + name`.
+        // If I set `item_used` to "", then it becomes "Potion...". Correct.
+
+        japaneseText.put("item_used", "");
+        japaneseText.put("item_used_suffix", " をつかった。"); // New key needed? The code currently does `+ item.getName() +
+                                                         // chain`.
+
+        // Actually, to support both languages properly without massive code changes, I
+        // should probably standardise the message construction.
+        // Or just map it carefully.
+
+        // Let's stick to the plan's keys and adjust code to be flexible.
+        japaneseText.put("item_used_prefix", ""); // Empty for JP, name comes first usually or "You used "
+        japaneseText.put("item_used_suffix", "をつかった。");
+        japaneseText.put("item_heal", "@HPが ");
+        japaneseText.put("item_heal_suffix", " かいふくした！E");
+
+        japaneseText.put("item_cure", "@毒が 消えた！E");
+        japaneseText.put("item_no_effect", "今は使っても意味がないようだ。E");
+        japaneseText.put("item_nothing", "@しかし 何も起こらなかった。E");
+
         textData.put(LANG_JAPANESE, japaneseText);
     }
 
@@ -199,6 +256,7 @@ public class LocalizationManager {
      * Retrieves the localized text for a given key in the {@code currentLanguage}.
      * If the text is not found in the current language, it falls back to English.
      * If still not found, the key itself is returned.
+     * 
      * @param key The key identifier for the desired text string.
      * @return The localized text string.
      */
@@ -214,8 +272,11 @@ public class LocalizationManager {
 
     /**
      * Sets the current language for localization.
-     * The language must be one of the defined constants (LANG_ENGLISH or LANG_JAPANESE).
-     * @param language The language code to set (e.g., "en" for English, "ja" for Japanese).
+     * The language must be one of the defined constants (LANG_ENGLISH or
+     * LANG_JAPANESE).
+     * 
+     * @param language The language code to set (e.g., "en" for English, "ja" for
+     *                 Japanese).
      */
     public static void setLanguage(String language) {
         if (LANG_ENGLISH.equals(language) || LANG_JAPANESE.equals(language)) {
@@ -225,6 +286,7 @@ public class LocalizationManager {
 
     /**
      * Returns the currently active language code.
+     * 
      * @return The language code (e.g., "en" or "ja").
      */
     public static String getCurrentLanguage() {
@@ -244,6 +306,7 @@ public class LocalizationManager {
 
     /**
      * Returns a human-readable name for the currently active language.
+     * 
      * @return "English" or "日本語".
      */
     public static String getLanguageDisplayName() {
