@@ -443,6 +443,10 @@ public class DraponQuestFX extends Application {
      */
     public int playerDefense = 2;
     /**
+     * The player character's poison status.
+     */
+    public boolean isPoisoned = false;
+    /**
      * A message displayed temporarily to the player, often after a command or
      * action.
      */
@@ -702,6 +706,7 @@ public class DraponQuestFX extends Application {
         playerGold = 0;
         playerAttack = 5;
         playerDefense = 2;
+        isPoisoned = false;
         commandMessage = null;
         commandMessageTime = 0;
 
@@ -730,7 +735,8 @@ public class DraponQuestFX extends Application {
 
         // Re-initialize complex objects
         inventory = new Inventory();
-        inventory.addItem(new Item("Potion", "Restores 20 HP", "heal_20", 10)); // Add initial potion
+        inventory.addItem(potion); // Add initial potion
+        inventory.addItem(antidote);
         shop = new Shop();
         battleManager = new BattleManager(this);
         initNPCs(); // Re-initialize NPCs with new random positions
@@ -892,11 +898,11 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10, herb, 0.2),
-                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15, herb, 0.3),
-                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20, potion, 0.2),
-                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3),
-                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1)
+                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10, herb, 0.2, false),
+                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15, herb, 0.3, false),
+                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20, potion, 0.2, false),
+                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3, false),
+                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1, true)
         };
 
         treasureChests = new TreasureChest[] {
@@ -1437,6 +1443,22 @@ public class DraponQuestFX extends Application {
     }
 
     /**
+     * Sets the fill color of the GraphicsContext based on the player's status.
+     * Red if HP < 5% (Critical), Yellow if Poisoned, White otherwise.
+     * 
+     * @param gc The GraphicsContext to set the fill for.
+     */
+    private void setTextColor(GraphicsContext gc) {
+        if (playerHP < maxPlayerHP * 0.05) {
+            gc.setFill(Color.RED);
+        } else if (isPoisoned) {
+            gc.setFill(Color.YELLOW);
+        } else {
+            gc.setFill(Color.WHITE);
+        }
+    }
+
+    /**
      * Renders all user interface elements, including status windows, command menus,
      * shop interfaces, inventory, battle overlays, and the NES-style dialogue box.
      */
@@ -1461,7 +1483,7 @@ public class DraponQuestFX extends Application {
             gc.setLineWidth(2);
             gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
 
-            gc.setFill(Color.WHITE);
+            setTextColor(gc);
             gc.setFont(Font.font("MS Gothic", 28));
             String[] commands = {
                     LocalizationManager.getText("menu_talk"),
@@ -1480,7 +1502,7 @@ public class DraponQuestFX extends Application {
         }
         // Command action message (scaled up)
         if (currentGameStatus == GAME_OPEN && commandMessage != null) {
-            gc.setFill(Color.WHITE);
+            setTextColor(gc);
             gc.fillRect(0, DISP_HEIGHT - 64, DISP_WIDTH, 64);
             gc.setFill(Color.BLACK);
             gc.setFont(javafx.scene.text.Font.font("Arial", 28));
@@ -1526,7 +1548,7 @@ public class DraponQuestFX extends Application {
             gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
 
             // Left side: Player Stats
-            gc.setFill(Color.WHITE);
+            setTextColor(gc);
             gc.setFont(Font.font("MS Gothic", 24));
             gc.setTextAlign(TextAlignment.LEFT);
             gc.fillText("LV: " + playerLevel, boxX + 20, boxY + 35);
@@ -1715,7 +1737,13 @@ public class DraponQuestFX extends Application {
             gc.setLineWidth(2);
             gc.strokeRect(15, boxY + 5, DISP_WIDTH - 30, 140);
 
-            gc.setFill(Color.WHITE);
+            if (playerHP < maxPlayerHP * 0.05) {
+                gc.setFill(Color.RED);
+            } else if (isPoisoned) {
+                gc.setFill(Color.YELLOW);
+            } else {
+                gc.setFill(Color.WHITE);
+            }
             gc.setFont(javafx.scene.text.Font.font("MS Gothic", 24));
 
             String wrappedText = wrapText(currentVisibleMessage.toString(), DISP_WIDTH - 60);
@@ -1821,7 +1849,9 @@ public class DraponQuestFX extends Application {
         gc.setLineWidth(2);
         gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
 
-        gc.setFill(Color.WHITE);
+        gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
+
+        setTextColor(gc);
         gc.setFont(Font.font("MS Gothic", 24));
         gc.setTextAlign(TextAlignment.LEFT);
 
@@ -1853,7 +1883,7 @@ public class DraponQuestFX extends Application {
         gc.strokeRect(15, 15, DISP_WIDTH - 30, DISP_HEIGHT - 30);
 
         gc.setTextAlign(TextAlignment.LEFT);
-        gc.setFill(Color.WHITE);
+        setTextColor(gc);
         gc.setFont(Font.font("MS Gothic", 28));
 
         // Title
@@ -2510,6 +2540,29 @@ public class DraponQuestFX extends Application {
             // Play movement sound
             audioManager.playSound(AudioManager.SOUND_MOVE);
             score += 1;
+
+            // Poison Damage Logic
+            if (isPoisoned) {
+                playerHP -= 1;
+                System.out.println("Poison damage! playerHP=" + playerHP);
+                // Flash effect or sound could go here
+                // For now, just a message periodically? Or just the HP drop.
+                // Let's check for death
+                if (playerHP <= 0) {
+                    playerHP = 0;
+                    // Handle Game Over in Overworld
+                    currentGameStatus = GAME_OVER;
+                    audioManager.playSound(AudioManager.SOUND_DEFEAT); // Or specific sound
+                    audioManager.playSound(AudioManager.SOUND_GAME_OVER);
+                    // Force render update to show game over screen immediately/next frame
+                } else {
+                    // Periodic message could be annoying, so maybe just screen flash in render?
+                    // Or just show "The poison effects your body" every 10 steps?
+                    if (score % 10 == 0) {
+                        displayMessage("The poison affects your body.E");
+                    }
+                }
+            }
         } else {
             System.out.println("Move blocked: not walkable or out of bounds");
         }
@@ -2880,17 +2933,56 @@ public class DraponQuestFX extends Application {
             }
         } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
             Item selectedItem = playerItems.get(inventoryCursor);
-            // "Use" the item - for now, just display a message
-            displayMessage("You used the " + selectedItem.getName() + ".E");
-            // Here you would add the actual effect of the item
-            // For example, healing the player:
-            // if (selectedItem.getEffect().equals("heal_20")) {
-            // playerHP += 20;
-            // if (playerHP > maxPlayerHP) playerHP = maxPlayerHP;
-            // getInventory().removeItem(selectedItem);
-            // }
-            // After using, we can either close the inventory or wait.
-            // For now, let's just show the message and the user can press ESC to close.
+
+            // Process Item Effect
+            String effect = selectedItem.getEffect();
+            boolean itemUsed = false;
+
+            if (effect.startsWith("heal_")) {
+                try {
+                    int amount = Integer.parseInt(effect.substring(5));
+                    if (playerHP >= maxPlayerHP) {
+                        displayMessage("It wouldn't have any effect now.E");
+                    } else {
+                        playerHP += amount;
+                        if (playerHP > maxPlayerHP) {
+                            playerHP = maxPlayerHP;
+                        }
+                        displayMessage("You used the " + selectedItem.getName() + ".@HP recovered " + amount + "!E");
+                        audioManager.playSound(AudioManager.SOUND_HEAL); // Assuming SOUND_HEAL exists, or similar
+                        itemUsed = true;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid heal amount in effect: " + effect);
+                }
+            } else if (effect.equals("cure_poison")) {
+                if (isPoisoned) {
+                    isPoisoned = false;
+                    displayMessage("You used the " + selectedItem.getName() + ".@The poison has left your body.E");
+                    // audioManager.playSound(AudioManager.SOUND_CURE); // If exists
+                    itemUsed = true;
+                } else {
+                    displayMessage("It wouldn't have any effect now.E");
+                }
+            } else {
+                displayMessage("You used the " + selectedItem.getName() + ".@But nothing happened.E");
+                // Consume anyway? Or not? Usually 'nothing happened' means not consumed in DQ?
+                // For 'event' items, usually they do nothing here.
+            }
+
+            if (itemUsed) {
+                getInventory().removeItem(selectedItem);
+                // Adjust cursor if last item was removed
+                if (inventoryCursor >= getInventory().getItems().size()) {
+                    inventoryCursor = Math.max(0, getInventory().getItems().size() - 1);
+                }
+                // If inventory becomes empty, return to move mode?
+                // Creating a seamless experience: stay in inventory if items remain.
+                if (getInventory().getItems().isEmpty()) {
+                    currentMode = MODE_MOVE;
+                }
+            }
+
         } else if (keyCode == KeyCode.ESCAPE) {
             currentMode = MODE_MOVE;
         }

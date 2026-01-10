@@ -67,6 +67,14 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
 - **Improved NPC Interaction**: Talking to NPCs now requires the player to be directly facing them, ensuring consistent interaction logic across the game (similar to treasure chest interaction).
 - **Shop Accessibility**: The town shop is now accessible, with a doorway added to its building.
 - **Basic Item Usage**: The Inventory menu now supports basic item "usage" (currently displays a message). Further item effects can be implemented in future updates.
+- **Enhanced Item System**:
+  - **Shop Inventory**: The shop inventory has been updated with items like "Antidote" and "Medical Herb".
+  - **Item Effects**: Items now have functional effects (e.g., Medical Herb heals HP, Antidote cures poison).
+  - **Poison Mechanics**: Enemies can now poison the player, and poison damage is taken while walking.
+- **Dynamic UI Colors**:
+  - **Message Box**: Text color changes based on status (Red for Critical HP, Yellow for Poison).
+  - **All Menus**: Status, Command, and Inventory windows also reflect these status colors.
+- **Enemy Scaling**: Enemies now scale in difficulty as the player levels up, keeping combat challenging.
 
 ## 🎮 About DraponQuest
 
