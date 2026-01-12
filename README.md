@@ -81,6 +81,7 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
   - A fully functional magic system with MP (Magic Point) management.
   - **Field Spells**: Use `Heal` to restore HP, or `Return`/`Outside` for fast travel.
   - **Battle Spells**: Cast `Fireball` to deal damage to monsters, or `Heal` to recover during combat.
+  - **MP Restoration**: MP is fully restored when staying at an inn and upon reaching a new level.
   - **MP Display**: Current MP is displayed in the persistent status window and on the status screen.
 - **Enemy Scaling**: Enemies now scale in difficulty as the player levels up, keeping combat challenging.
 

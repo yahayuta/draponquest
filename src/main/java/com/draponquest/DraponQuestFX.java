@@ -1121,7 +1121,8 @@ public class DraponQuestFX extends Application {
 
         if (currentMode == MODE_INN) {
             playerHP = maxPlayerHP;
-            displayMessage("You feel rested and your HP has been restored.E", () -> {
+            playerMP = maxPlayerMP;
+            displayMessage("You feel rested and your HP and MP have been restored.E", () -> {
                 currentMode = MODE_MOVE;
             });
             audioManager.playSound(AudioManager.SOUND_HEAL);
@@ -2744,12 +2745,15 @@ public class DraponQuestFX extends Application {
         playerLevel++;
         xpToNextLevel = (int) (xpToNextLevel * 1.5);
         maxPlayerHP += 10;
+        maxPlayerMP += 5;
         playerHP = maxPlayerHP;
+        playerMP = maxPlayerMP;
         playerAttack += 2;
         playerDefense += 1;
 
         String msg = "You have reached level " + playerLevel + "!@" +
                 "Max HP increased by 10!\n" +
+                "Max MP increased by 5!\n" +
                 "Attack +2, Defense +1E";
         displayMessage(msg, callback);
     }
