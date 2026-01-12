@@ -77,6 +77,11 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
 - **Dynamic UI Colors**:
   - **Message Box**: Text color changes based on status (Red for Critical HP, Yellow for Poison).
   - **All Menus**: Status, Command, and Inventory windows also reflect these status colors.
+- **Magic System**:
+  - A fully functional magic system with MP (Magic Point) management.
+  - **Field Spells**: Use `Heal` to restore HP, or `Return`/`Outside` for fast travel.
+  - **Battle Spells**: Cast `Fireball` to deal damage to monsters, or `Heal` to recover during combat.
+  - **MP Display**: Current MP is displayed in the persistent status window and on the status screen.
 - **Enemy Scaling**: Enemies now scale in difficulty as the player levels up, keeping combat challenging.
 
 ## 🎮 About DraponQuest
@@ -107,6 +112,12 @@ DraponQuest is a classic RPG-style mobile game originally developed for the DoJa
 - **Sequential Battle Logic**: Turn-based combat events are sequentially ordered using callbacks, ensuring player actions, monster attacks, and victory/defeat messages are never skipped.
 - **Enhanced Level-Up**: Property increases (Level, HP, Attack, Defense) are clearly displayed in sequential message pages upon victory.
 - **Minimap System**: A real-time 128x128 pixel minimap in the top-right corner. It provides a global world view on the field and automatically switches to a detailed local view in towns. (Automatically hidden during battles and in caves for a clean experience.)
+- **Magic System**:
+  - **Heal**: Restores 10-15 HP.
+  - **Fireball**: Deals 10-15 damage to enemies in battle.
+  - **Return**: Warps the player back to Tantegel Castle when on the field.
+  - **Outside**: Warps the player out of caves directly to the field map.
+  - **MP Management**: Spells cost Magic Points (MP), which are displayed in the status windows.
 
 ## 🚀 Quick Start
 
@@ -185,6 +196,7 @@ mvn javafx:run
 
 - **Movement Mode**: Use arrow keys to explore the map
 - **Command Mode**: Navigate through action menus (Talk, Check, Magic, Item, Status)
+- **Magic Mode**: Select and cast spells from the Magic menu
 - **Battle Mode**: Engage in turn-based combat (ESC only exits after battle is over)
 - **Event Mode**: Interact with story events and NPCs
 
@@ -502,7 +514,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Areas for Improvement
 
-- Enhanced battle system with more actions (magic, items)
 - Inventory management
 - More sophisticated save system
 - Additional monster types and encounters
