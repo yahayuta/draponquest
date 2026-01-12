@@ -12,7 +12,8 @@ import javafx.application.Platform;
 public class BattleManager {
 
     /**
-     * A reference to the main game instance to access global game state and methods.
+     * A reference to the main game instance to access global game state and
+     * methods.
      */
     private DraponQuestFX game;
     /**
@@ -35,9 +36,15 @@ public class BattleManager {
      * Stores messages related to the current battle's events.
      */
     private String battleMessage;
+    // Scaled Monster Stats
+    private int monsterAttack;
+    private int monsterDefense;
+    private int monsterXP;
+    private int monsterGold;
 
     /**
      * Constructs a new BattleManager.
+     * 
      * @param game The main DraponQuestFX game instance.
      */
     public BattleManager(DraponQuestFX game) {
@@ -56,6 +63,17 @@ public class BattleManager {
         System.out.println("Selected monster: " + currentMonster.name + " (HP: " + currentMonster.maxHP + ", Attack: "
                 + currentMonster.attack + ", Defense: " + currentMonster.defense + ")");
         monsterHP = currentMonster.maxHP;
+
+        // Scaling Logic
+        double scaleFactor = 1.0 + (game.playerLevel - 1) * 0.2; // 20% increase per level
+        monsterHP = (int) (currentMonster.maxHP * scaleFactor);
+        monsterAttack = (int) (currentMonster.attack * scaleFactor);
+        monsterDefense = (int) (currentMonster.defense * scaleFactor);
+        monsterXP = (int) (currentMonster.xpValue * scaleFactor);
+        monsterGold = (int) (currentMonster.goldValue * scaleFactor);
+
+        System.out.println("Scaled Monster: HP=" + monsterHP + ", Atk=" + monsterAttack + ", Def=" + monsterDefense);
+
         playerTurn = true;
         isDefending = false; // Reset defending state
         battleMessage = "";
@@ -70,7 +88,9 @@ public class BattleManager {
     }
 
     /**
-     * Handles player input during a battle, such as attacking, defending, or attempting to run.
+     * Handles player input during a battle, such as attacking, defending, or
+     * attempting to run.
+     * 
      * @param keyCode The KeyCode representing the key pressed by the user.
      */
     public void executeBattleCommand(int command) {
@@ -85,7 +105,7 @@ public class BattleManager {
         if (playerTurn) {
             switch (command) {
                 case 1: // BCOM_ATK
-                    int damage = Math.max(1, game.playerAttack - currentMonster.defense);
+                    int damage = Math.max(1, game.playerAttack - monsterDefense);
                     monsterHP -= damage;
                     System.out.println("Player attacks: monsterHP=" + monsterHP);
                     game.audioManager.playSound(AudioManager.SOUND_ATTACK);
@@ -136,14 +156,15 @@ public class BattleManager {
     }
 
     /**
-     * Executes the monster's turn during battle, calculating and applying damage to the player.
+     * Executes the monster's turn during battle, calculating and applying damage to
+     * the player.
      * Considers if the player is defending to reduce incoming damage.
      */
     private void monsterTurn() {
         if (monsterHP <= 0)
             return;
 
-        int monsterDamage = Math.max(1, currentMonster.attack - game.playerDefense);
+        int monsterDamage = Math.max(1, monsterAttack - game.playerDefense);
         if (isDefending) {
             monsterDamage = (int) (monsterDamage * 0.5); // Reduce damage by 50% if defending
             isDefending = false;
@@ -152,7 +173,18 @@ public class BattleManager {
         System.out.println("Monster attacks: playerHP=" + game.playerHP);
 
         String monsterMsg = currentMonster.name + LocalizationManager.getText("battle_monster_deals")
-                + monsterDamage + LocalizationManager.getText("battle_damage") + "E";
+                + monsterDamage + LocalizationManager.getText("battle_damage");
+
+        // Poison Logic
+        final String poisonMsg;
+        if (currentMonster.hasPoison && !game.isPoisoned && Math.random() < 0.3) {
+            game.isPoisoned = true;
+            poisonMsg = "@You were poisoned!";
+        } else {
+            poisonMsg = "";
+        }
+
+        monsterMsg += poisonMsg + "E";
 
         game.displayMessage(monsterMsg, () -> {
             if (game.playerHP <= 0) {
@@ -164,26 +196,31 @@ public class BattleManager {
     }
 
     /**
-     * Checks if the player has won the battle. If so, updates player stats (XP, gold),
+     * Checks if the player has won the battle. If so, updates player stats (XP,
+     * gold),
      * handles item drops, and transitions the game state out of battle.
      */
     private void checkVictory() {
         monsterHP = 0;
         game.battlesWon++;
-        game.playerXP += currentMonster.xpValue;
-        game.playerGold += currentMonster.goldValue;
+        game.playerXP += monsterXP;
+        game.playerGold += monsterGold;
 
         // --- Item Drop Logic ---
         String itemDropMessagePart = "";
-        if (currentMonster.itemDrop != null && Math.random() < currentMonster.dropChance) {
-            game.getInventory().addItem(currentMonster.itemDrop);
-            itemDropMessagePart = "@" + currentMonster.name + " dropped a " + currentMonster.itemDrop.getName() + "!";
+        if (currentMonster.itemDrop != null) {
+            if (Math.random() < currentMonster.dropChance) {
+                game.getInventory().addItem(currentMonster.itemDrop);
+                // Using @ for new line in message system
+                itemDropMessagePart = "@" + currentMonster.name + " dropped a " + currentMonster.itemDrop.getName()
+                        + "!";
+            }
         }
 
         // NES-style victory message
         String winMsg = currentMonster.name + " is defeated!@" +
-                LocalizationManager.getText("battle_gained") + " " + currentMonster.xpValue + " XP\n" +
-                "and " + currentMonster.goldValue + " gold!" + itemDropMessagePart + "E";
+                LocalizationManager.getText("battle_gained") + " " + monsterXP + " XP@" +
+                "and " + monsterGold + " gold!" + itemDropMessagePart + "E";
 
         game.displayMessage(winMsg, () -> {
             Runnable afterLevelUp = () -> {
@@ -221,6 +258,7 @@ public class BattleManager {
 
     /**
      * Returns the current battle message.
+     * 
      * @return A string containing information about recent battle events.
      */
     public String getBattleMessage() {
@@ -229,6 +267,7 @@ public class BattleManager {
 
     /**
      * Returns the monster currently fighting in the battle.
+     * 
      * @return The current Monster object.
      */
     public Monster getCurrentMonster() {
@@ -237,6 +276,7 @@ public class BattleManager {
 
     /**
      * Returns the current hit points of the monster in battle.
+     * 
      * @return The current HP of the monster.
      */
     public int getMonsterHP() {
