@@ -123,9 +123,12 @@ public class BattleManager {
                     playerTurn = false;
                     break;
                 case 2: // BCOM_MGK
-                    game.displayMessage("Magic is not implemented yet.E", () -> {
-                        playerTurn = true;
-                    });
+                    System.out.println("Battle: Switching to Magic Mode");
+                    game.previousMode = DraponQuestFX.MODE_BATTLE;
+                    game.currentMode = DraponQuestFX.MODE_MAGIC;
+                    // cursor reset handled in DraponQuestFX if needed, or we rely on last position
+                    // or reset
+                    // game.resetMagicCursor(); // if method existed
                     break;
                 case 3: // BCOM_ITEM
                     game.displayMessage("Item is not implemented yet.E", () -> {
@@ -281,5 +284,22 @@ public class BattleManager {
      */
     public int getMonsterHP() {
         return monsterHP;
+    }
+
+    // Magic Support Types
+    public void applyMagicDamage(int damage) {
+        if (monsterHP <= 0)
+            return;
+        monsterHP -= damage;
+        System.out.println("Magic applied damage: " + damage + ", remaining HP: " + monsterHP);
+        // Effects handled by displayMessage in DraponQuestFX
+    }
+
+    public void endPlayerTurn() {
+        if (monsterHP <= 0) {
+            checkVictory();
+        } else {
+            monsterTurn();
+        }
     }
 }

@@ -149,6 +149,10 @@ public class DraponQuestFX extends Application {
      * Game mode: Player is in an inn.
      */
     static final int MODE_INN = 7;
+    /**
+     * Game mode: Player is selecting magic.
+     */
+    static final int MODE_MAGIC = 8;
 
     // Places
     /**
@@ -215,6 +219,11 @@ public class DraponQuestFX extends Application {
      */
     public int currentMode = MODE_MOVE;
     /**
+     * The previous mode, used for returning from sub-menus like Magic.
+     */
+    public int previousMode = MODE_MOVE;
+
+    /**
      * The current geographical place the player is in (e.g., field, building,
      * cave).
      */
@@ -259,6 +268,12 @@ public class DraponQuestFX extends Application {
      * The current selection index in the inventory menu.
      */
     private int inventoryCursor = 0;
+
+    // Magic state
+    /**
+     * The current selection index in the magic menu.
+     */
+    private int magicCursor = 0;
 
     // Map variables
     /**
@@ -431,9 +446,18 @@ public class DraponQuestFX extends Application {
      */
     public int xpToNextLevel = 10;
     /**
+     * The player character's current magic points.
+     */
+    public int playerMP = 10;
+    /**
+     * The player character's maximum magic points.
+     */
+    public int maxPlayerMP = 10;
+    /**
      * The player character's current gold amount.
      */
     public int playerGold = 0;
+
     /**
      * The player character's current attack power.
      */
@@ -700,7 +724,10 @@ public class DraponQuestFX extends Application {
 
         playerHP = 40;
         maxPlayerHP = 40;
+        playerMP = 10;
+        maxPlayerMP = 10;
         playerXP = 0;
+
         playerLevel = 1;
         xpToNextLevel = 10;
         playerGold = 0;
@@ -1094,7 +1121,8 @@ public class DraponQuestFX extends Application {
 
         if (currentMode == MODE_INN) {
             playerHP = maxPlayerHP;
-            displayMessage("You feel rested and your HP has been restored.E", () -> {
+            playerMP = maxPlayerMP;
+            displayMessage("You feel rested and your HP and MP have been restored.E", () -> {
                 currentMode = MODE_MOVE;
             });
             audioManager.playSound(AudioManager.SOUND_HEAL);
@@ -1500,6 +1528,42 @@ public class DraponQuestFX extends Application {
                 gc.fillText(commands[i], boxX + 50, y);
             }
         }
+
+        // Magic Menu (Field)
+        if (currentGameStatus == GAME_OPEN && currentMode == MODE_MAGIC) {
+            int boxX = 210;
+            int boxY = 20;
+            int boxWidth = 200;
+            int boxHeight = 200;
+
+            gc.setFill(Color.BLACK);
+            gc.fillRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setStroke(Color.WHITE);
+            gc.setLineWidth(4);
+            gc.strokeRect(boxX, boxY, boxWidth, boxHeight);
+            gc.setLineWidth(2);
+            gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
+
+            setTextColor(gc);
+            gc.setFont(Font.font("MS Gothic", 28));
+            String[] spells = {
+                    LocalizationManager.getText("spell_heal"),
+                    LocalizationManager.getText("spell_fireball"),
+                    LocalizationManager.getText("spell_return"),
+                    LocalizationManager.getText("spell_outside")
+            };
+            // Add MP costs for display? "Heal (3)"
+            int[] costs = { 3, 5, 8, 6 };
+
+            for (int i = 0; i < spells.length; i++) {
+                int y = boxY + 40 + i * 36;
+                if (magicCursor == i) {
+                    gc.fillText(">", boxX + 20, y);
+                }
+                gc.fillText(spells[i], boxX + 50, y);
+            }
+        }
+
         // Command action message (scaled up)
         if (currentGameStatus == GAME_OPEN && commandMessage != null) {
             setTextColor(gc);
@@ -1552,7 +1616,8 @@ public class DraponQuestFX extends Application {
             gc.setFont(Font.font("MS Gothic", 24));
             gc.setTextAlign(TextAlignment.LEFT);
             gc.fillText("LV: " + playerLevel, boxX + 20, boxY + 35);
-            gc.fillText("HP: " + playerHP, boxX + 20, boxY + 65);
+            gc.fillText("HP: " + playerHP, boxX + 20, boxY + 55);
+            gc.fillText("MP: " + playerMP, boxX + 20, boxY + 75);
             gc.fillText("G:  " + playerGold, boxX + 20, boxY + 95);
 
             // Right side: Battle Commands
@@ -1880,7 +1945,7 @@ public class DraponQuestFX extends Application {
         int boxX = 20;
         int boxY = 20;
         int boxWidth = 180;
-        int boxHeight = 120;
+        int boxHeight = 150; // Increased height to fit MP
 
         gc.setFill(Color.BLACK);
         gc.fillRect(boxX, boxY, boxWidth, boxHeight);
@@ -1890,20 +1955,20 @@ public class DraponQuestFX extends Application {
         gc.setLineWidth(2);
         gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
 
-        gc.strokeRect(boxX + 5, boxY + 5, boxWidth - 10, boxHeight - 10);
-
         setTextColor(gc);
         gc.setFont(Font.font("MS Gothic", 24));
         gc.setTextAlign(TextAlignment.LEFT);
 
         gc.fillText("LV", boxX + 15, boxY + 35);
         gc.fillText("HP", boxX + 15, boxY + 65);
-        gc.fillText("G", boxX + 15, boxY + 95);
+        gc.fillText("MP", boxX + 15, boxY + 95);
+        gc.fillText("G", boxX + 15, boxY + 125);
 
         gc.setTextAlign(TextAlignment.RIGHT);
         gc.fillText(String.valueOf(playerLevel), boxX + boxWidth - 20, boxY + 35);
         gc.fillText(String.valueOf(playerHP), boxX + boxWidth - 20, boxY + 65);
-        gc.fillText(String.valueOf(playerGold), boxX + boxWidth - 20, boxY + 95);
+        gc.fillText(String.valueOf(playerMP), boxX + boxWidth - 20, boxY + 95);
+        gc.fillText(String.valueOf(playerGold), boxX + boxWidth - 20, boxY + 125);
 
         gc.setTextAlign(TextAlignment.LEFT); // Reset alignment
     }
@@ -1933,10 +1998,11 @@ public class DraponQuestFX extends Application {
         // Stats
         gc.fillText("Level: " + playerLevel, 40, 120);
         gc.fillText("HP: " + playerHP + "/" + maxPlayerHP, 40, 160);
-        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 40, 200);
-        gc.fillText("Gold: " + playerGold, 40, 240);
-        gc.fillText("Attack: " + playerAttack, 40, 280);
-        gc.fillText("Defense: " + playerDefense, 40, 320);
+        gc.fillText("MP: " + playerMP + "/" + maxPlayerMP, 40, 200);
+        gc.fillText("XP: " + playerXP + "/" + xpToNextLevel, 40, 240);
+        gc.fillText("Gold: " + playerGold, 40, 280);
+        gc.fillText("Attack: " + playerAttack, 40, 320);
+        gc.fillText("Defense: " + playerDefense, 40, 360);
 
         gc.setFont(Font.font("MS Gothic", 24));
         gc.setTextAlign(TextAlignment.CENTER);
@@ -2679,12 +2745,15 @@ public class DraponQuestFX extends Application {
         playerLevel++;
         xpToNextLevel = (int) (xpToNextLevel * 1.5);
         maxPlayerHP += 10;
+        maxPlayerMP += 5;
         playerHP = maxPlayerHP;
+        playerMP = maxPlayerMP;
         playerAttack += 2;
         playerDefense += 1;
 
         String msg = "You have reached level " + playerLevel + "!@" +
                 "Max HP increased by 10!\n" +
+                "Max MP increased by 5!\n" +
                 "Attack +2, Defense +1E";
         displayMessage(msg, callback);
     }
@@ -2850,9 +2919,12 @@ public class DraponQuestFX extends Application {
         // Show message for selected command or switch to battle/event
         String[] commands = { "TALK", "CHECK", "MAGIC", "ITEM", "STATUS" };
         if (currentCommand == COM_MGK) {
-            System.out.println("MAGIC selected: starting battle");
-            battleManager.startBattle();
+            System.out.println("MAGIC selected: entering magic mode");
+            previousMode = MODE_COM; // Remember we came from command menu
+            currentMode = MODE_MAGIC;
+            magicCursor = 0;
         } else if (currentCommand == COM_ITEM) {
+
             System.out.println("ITEM selected: entering inventory mode");
             currentMode = MODE_INVENTORY;
             inventoryCursor = 0;
@@ -3202,6 +3274,153 @@ public class DraponQuestFX extends Application {
      * 
      * @param args Command-line arguments.
      */
+    /**
+     * Casts a spell based on the selected index.
+     * 0: Heal, 1: Fireball, 2: Return, 3: Outside
+     */
+    public void castSpell(int spellIndex) {
+        // Spell Costs and IDs
+        // 0: Heal (3 MP)
+        // 1: Fireball (5 MP)
+        // 2: Return (8 MP)
+        // 3: Outside (6 MP)
+
+        int cost = 0;
+        String spellKey = "";
+
+        switch (spellIndex) {
+            case 0:
+                cost = 3;
+                spellKey = "spell_heal";
+                break;
+            case 1:
+                cost = 5;
+                spellKey = "spell_fireball";
+                break;
+            case 2:
+                cost = 8;
+                spellKey = "spell_return";
+                break;
+            case 3:
+                cost = 6;
+                spellKey = "spell_outside";
+                break;
+        }
+
+        if (playerMP < cost) {
+            displayMessage(LocalizationManager.getText("msg_not_enough_mp"));
+            return;
+        }
+
+        playerMP -= cost;
+        String msg = LocalizationManager.getText("msg_cast_spell") +
+                LocalizationManager.getText(spellKey) +
+                (LocalizationManager.getCurrentLanguage().equals(LocalizationManager.LANG_JAPANESE)
+                        ? LocalizationManager.getText("msg_cast_spell_suffix")
+                        : "")
+                + ".";
+
+        // Append effect message
+        final int finalSpellIndex = spellIndex;
+        if (spellIndex == 0) { // Heal
+            int healAmount = 10 + random.nextInt(6); // 10-15
+            playerHP = Math.min(maxPlayerHP, playerHP + healAmount);
+            if (LocalizationManager.getCurrentLanguage().equals(LocalizationManager.LANG_JAPANESE)) {
+                msg += LocalizationManager.getText("msg_spell_heal") + healAmount
+                        + LocalizationManager.getText("msg_spell_heal_suffix");
+            } else {
+                msg += LocalizationManager.getText("msg_spell_heal") + healAmount + "!E";
+            }
+            audioManager.playSound(AudioManager.SOUND_HEAL);
+
+            if (previousMode == MODE_BATTLE) {
+                displayMessage(msg, () -> {
+                    battleManager.endPlayerTurn();
+                });
+                return;
+            }
+        } else if (spellIndex == 1) { // Fireball
+            if (previousMode == MODE_BATTLE) {
+                int damage = 10 + random.nextInt(6); // 10-15 damage
+                msg += "The monster took " + damage + " damage!E";
+                audioManager.playSound(AudioManager.SOUND_ATTACK);
+                battleManager.applyMagicDamage(damage);
+                displayMessage(msg, () -> {
+                    battleManager.endPlayerTurn();
+                });
+                return;
+            } else {
+                msg += LocalizationManager.getText("item_nothing") + "E";
+            }
+        } else if (spellIndex == 2) { // Return
+            if (previousMode == MODE_BATTLE) {
+                msg += LocalizationManager.getText("item_nothing") + "E";
+            } else {
+                // Warp to Tantegel entrance on Field
+                currentPlace = PLACE_FIELD;
+                fieldMapEndWidth = 40;
+                fieldMapEndHeight = 48;
+                msg += LocalizationManager.getText("msg_spell_return") + "E";
+                audioManager.playSound(AudioManager.SOUND_VICTORY);
+            }
+        } else if (spellIndex == 3) { // Outside
+            if (previousMode == MODE_BATTLE) {
+                msg += LocalizationManager.getText("item_nothing") + "E";
+            } else if (currentPlace == PLACE_CAVE) {
+                // Return to field, saved position
+                currentPlace = PLACE_FIELD;
+                fieldMapEndWidth = savedFieldMapX;
+                fieldMapEndHeight = savedFieldMapY;
+                msg += LocalizationManager.getText("msg_spell_return") + "E";
+                audioManager.playSound(AudioManager.SOUND_VICTORY);
+            } else {
+                msg += LocalizationManager.getText("item_nothing") + "E";
+            }
+        }
+
+        displayMessage(msg);
+    }
+
+    /**
+     * Handles keyboard input specific to the magic screen.
+     */
+    public void handleMagicInput(KeyCode keyCode) {
+        // Spell list: Heal, Fireball, Return, Outside
+        int spellCount = 4;
+
+        if (keyCode == KeyCode.UP || keyCode == KeyCode.W) {
+            magicCursor--;
+            if (magicCursor < 0)
+                magicCursor = spellCount - 1;
+        } else if (keyCode == KeyCode.DOWN || keyCode == KeyCode.S) {
+            magicCursor++;
+            if (magicCursor >= spellCount)
+                magicCursor = 0;
+        } else if (keyCode == KeyCode.ENTER || keyCode == KeyCode.SPACE) {
+            castSpell(magicCursor);
+            // If we are in battle, castSpell will handle endPlayerTurn via callback
+            // We should NOT set currentMode = MODE_MOVE here if we are in battle.
+            // Actually, if we cast a spell, we should probably switch to MODE_MOVE (field)
+            // or remain in MODE_BATTLE (but let the message box handle the transition).
+            if (previousMode == MODE_BATTLE) {
+                // BattleManager or displayMessage callback will handle the next state.
+                // Just stay in MODE_BATTLE or switch to a "waiting" state?
+                // For now, let's switch back to MODE_BATTLE so the message box can be dismissed
+                // correctly.
+                currentMode = MODE_BATTLE;
+            } else {
+                currentMode = MODE_MOVE;
+            }
+        } else if (keyCode == KeyCode.ESCAPE) {
+            // Return to previous mode (Battle or Move)
+            if (previousMode == MODE_BATTLE) {
+                currentMode = MODE_BATTLE;
+            } else {
+                currentMode = MODE_MOVE;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         launch(args);
     }

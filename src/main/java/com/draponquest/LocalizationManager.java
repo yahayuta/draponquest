@@ -66,6 +66,19 @@ public class LocalizationManager {
         englishText.put("menu_item", "ITEM");
         englishText.put("menu_status", "STATUS");
 
+        // Magic Spells
+        englishText.put("spell_heal", "Heal");
+        englishText.put("spell_fireball", "Fireball");
+        englishText.put("spell_return", "Return");
+        englishText.put("spell_outside", "Outside");
+
+        // Magic messages
+        englishText.put("msg_not_enough_mp", "Not enough MP!E");
+        englishText.put("msg_cast_spell", " chanted the spell of ");
+        englishText.put("msg_spell_heal", ".@HP recovered ");
+        englishText.put("msg_spell_fireball", " burns the enemy!@Damage: ");
+        englishText.put("msg_spell_return", " surrounds the party!E");
+
         // Battle text
         englishText.put("battle_title", "BATTLE! (ESC to exit)");
         englishText.put("battle_attack", "A: Attack");
@@ -147,6 +160,21 @@ public class LocalizationManager {
         japaneseText.put("menu_magic", "まほう");
         japaneseText.put("menu_item", "どうぐ");
         japaneseText.put("menu_status", "じょうたい");
+
+        // Magic Spells
+        japaneseText.put("spell_heal", "ホイミ");
+        japaneseText.put("spell_fireball", "ギラ");
+        japaneseText.put("spell_return", "ルーラ");
+        japaneseText.put("spell_outside", "リレミト");
+
+        // Magic messages
+        japaneseText.put("msg_not_enough_mp", "MPが足りない！E");
+        japaneseText.put("msg_cast_spell", "は ");
+        japaneseText.put("msg_cast_spell_suffix", " のじゅもんをとなえた！");
+        japaneseText.put("msg_spell_heal", "@HPが ");
+        japaneseText.put("msg_spell_heal_suffix", " かいふくした！E");
+        japaneseText.put("msg_spell_fireball", "！@敵を焼き払った！@ダメージ: ");
+        japaneseText.put("msg_spell_return", "！@不思議な光が包み込む！E");
 
         // Battle text
         japaneseText.put("battle_title", "たたかい！(ESCで終了)");
