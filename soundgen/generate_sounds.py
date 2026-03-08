@@ -168,40 +168,50 @@ def generate_music():
     print("Generating music...")
     global BEAT_DURATION
 
-    # Title Music (FF1 Prelude)
-    TEMPO = 100
+    # Title Music (FF4 The Red Wings)
+    TEMPO = 110
     BEAT_DURATION = 60 / TEMPO
-    prelude_arpeggio = [
-        ('C4', 0.25), ('D4', 0.25), ('E4', 0.25), ('G4', 0.25),
-        ('C5', 0.25), ('D5', 0.25), ('E5', 0.25), ('G5', 0.25),
-        ('C6', 0.25), ('G5', 0.25), ('E5', 0.25), ('D5', 0.25),
-        ('C5', 0.25), ('G4', 0.25), ('E4', 0.25), ('D4', 0.25),
-        
-        ('A3', 0.25), ('B3', 0.25), ('C4', 0.25), ('E4', 0.25),
-        ('A4', 0.25), ('B4', 0.25), ('C5', 0.25), ('E5', 0.25),
-        ('A5', 0.25), ('E5', 0.25), ('C5', 0.25), ('B4', 0.25),
-        ('A4', 0.25), ('E4', 0.25), ('C4', 0.25), ('B3', 0.25)
+    red_wings_melody = [
+        ('C5', 0.5), ('G4', 0.5), ('C5', 1.0), ('Eb5', 1.0), ('D5', 0.5), ('G4', 0.5), ('D5', 1.0), ('F5', 1.0),
+        ('Eb5', 0.5), ('C5', 0.5), ('G4', 1.0), ('C5', 1.0), ('Bb4', 0.5), ('G4', 0.5), ('Eb4', 1.0), ('G4', 1.0)
     ] * 2
-    title_music = generate_track_from_sequence(prelude_arpeggio, 'triangle', VOLUME, use_adsr=True)
+    red_wings_harmony = [
+        ('C3', 1.0), ('G3', 1.0), ('C4', 1.0),
+        ('G2', 1.0), ('D3', 1.0), ('G3', 1.0),
+        ('C3', 1.0), ('G3', 1.0), ('C4', 1.0),
+        ('Eb2', 1.0), ('Bb2', 1.0), ('Eb3', 1.0)
+    ] * 2
+    melody_track = generate_track_from_sequence(red_wings_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.8, release=0.2)
+    harmony_track = generate_track_from_sequence(red_wings_harmony, 'sawtooth', VOLUME * 0.7, use_adsr=True)
+    percussion_pattern = [1, 0, 1, 0] * 8
+    percussion_track = generate_percussion_track(percussion_pattern, 0.5, VOLUME * 0.5)
+
+    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
+    title_music = melody_track + harmony_track + percussion_track
     title_music = np.tile(title_music, 2)
     title_music /= np.max(np.abs(title_music))
     save_wav('title.wav', title_music, SAMPLE_RATE)
 
-    # Field Music (FF1 Main Theme / Overworld)
-    TEMPO = 120
+    # Field Music (FF4 Main Theme)
+    TEMPO = 90
     BEAT_DURATION = 60 / TEMPO
     field_melody = [
-        ('C4', 2.0), ('G4', 2.0), ('F4', 0.5), ('E4', 0.5), ('F4', 1.0), ('D4', 2.0),
-        ('C4', 2.0), ('E4', 2.0), ('D4', 1.5), ('C4', 0.5), ('B3', 2.0),
-        ('C4', 2.0), ('G4', 2.0), ('A4', 1.0), ('G4', 1.0), ('F4', 1.0), ('E4', 1.0),
-        ('D4', 2.0), ('B3', 2.0), ('C4', 4.0)
+        ('G4', 1.5), ('A4', 0.5), ('B4', 1.0), ('C5', 1.0), ('D5', 2.0), ('B4', 2.0),
+        ('G4', 1.5), ('A4', 0.5), ('B4', 1.0), ('C5', 1.0), ('A4', 4.0),
+        ('E5', 1.5), ('F#5', 0.5), ('G5', 1.0), ('D5', 1.0), ('C5', 2.0), ('B4', 2.0),
+        ('A4', 1.5), ('B4', 0.5), ('C5', 1.0), ('D5', 1.0), ('G4', 4.0)
     ]
     field_harmony = [
-        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('E3', 1.0), 
-        ('F2', 1.0), ('A2', 1.0), ('G2', 1.0), ('B2', 1.0),
-    ] * 5
-    melody_track = generate_track_from_sequence(field_melody, 'square', VOLUME, use_adsr=True)
-    harmony_track = generate_track_from_sequence(field_harmony, 'triangle', VOLUME * 0.6, use_adsr=True)
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5),
+        ('G2', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('B2', 0.5),
+        ('F2', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('A2', 0.5),
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5),
+    ] * 2
+    melody_track = generate_track_from_sequence(field_melody, 'square', VOLUME, use_adsr=True, attack=0.1, decay=0.3, sustain=0.5, release=0.4)
+    harmony_track = generate_track_from_sequence(field_harmony, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -210,23 +220,23 @@ def generate_music():
     field_music /= np.max(np.abs(field_music))
     save_wav('bgm_field.wav', field_music, SAMPLE_RATE)
 
-    # Castle Music (Cornelia Castle)
+    # Castle Music (FF4 Baron Castle)
     TEMPO = 90
     BEAT_DURATION = 60 / TEMPO
     castle_melody = [
-        ('A4', 1.0), ('G4', 1.0), ('F4', 1.0), ('E4', 1.0),
-        ('D4', 1.0), ('A3', 1.0), ('D4', 2.0),
-        ('Bb4', 1.0), ('A4', 1.0), ('G4', 1.0), ('F4', 1.0),
-        ('E4', 1.5), ('F4', 0.5), ('G4', 2.0)
+        ('C4', 1.0), ('G4', 1.0), ('C5', 1.0), ('Bb4', 0.5), ('Ab4', 0.5),
+        ('G4', 1.0), ('F4', 1.0), ('G4', 2.0),
+        ('Eb4', 1.0), ('Bb4', 1.0), ('Eb5', 1.0), ('Db5', 0.5), ('Cb5', 0.5),
+        ('Bb4', 1.0), ('Ab4', 1.0), ('Bb4', 2.0)
     ] * 2
     castle_harmony = [
-        ('D3', 1.0), ('F3', 1.0), ('A3', 1.0), ('F3', 1.0),
-        ('D3', 1.0), ('F3', 1.0), ('A3', 1.0), ('F3', 1.0),
-        ('G3', 1.0), ('Bb3', 1.0), ('D4', 1.0), ('Bb3', 1.0),
-        ('A3', 1.0), ('C4', 1.0), ('E4', 1.0), ('C4', 1.0)
+        ('C3', 1.0), ('G3', 1.0), ('C4', 1.0), ('G3', 1.0),
+        ('C3', 1.0), ('Eb3', 1.0), ('G3', 1.0), ('Eb3', 1.0),
+        ('Eb3', 1.0), ('Bb3', 1.0), ('Eb4', 1.0), ('Bb3', 1.0),
+        ('Eb3', 1.0), ('Gb3', 1.0), ('Bb3', 1.0), ('Gb3', 1.0)
     ] * 2
-    melody_track = generate_track_from_sequence(castle_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.3, sustain=0.4, release=0.3)
-    harmony_track = generate_track_from_sequence(castle_harmony, 'triangle', VOLUME * 0.6, use_adsr=True)
+    melody_track = generate_track_from_sequence(castle_melody, 'triangle', VOLUME, use_adsr=True, attack=0.02, decay=0.2, sustain=0.4, release=0.2)
+    harmony_track = generate_track_from_sequence(castle_harmony, 'sine', VOLUME * 0.8, use_adsr=True)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -235,23 +245,23 @@ def generate_music():
     castle_music /= np.max(np.abs(castle_music))
     save_wav('bgm_castle.wav', castle_music, SAMPLE_RATE)
 
-    # Cave Music (Matoya's Cave)
-    TEMPO = 140
+    # Cave Music (FF4 Into the Darkness)
+    TEMPO = 110
     BEAT_DURATION = 60 / TEMPO
     cave_melody = [
-        ('E4', 0.5), ('F#4', 0.5), ('G4', 0.5), ('A4', 0.5), ('B4', 1.0), ('C5', 1.0),
-        ('B4', 1.0), ('G4', 1.0), ('E4', 2.0),
-        ('C5', 0.5), ('B4', 0.5), ('A4', 0.5), ('G4', 0.5), ('A4', 1.0), ('B4', 1.0),
-        ('A4', 1.0), ('F#4', 1.0), ('D4', 2.0)
+        ('D3', 0.5), ('F3', 0.5), ('A3', 0.5), ('D4', 1.0), ('C4', 0.5), ('Bb3', 0.5), ('A3', 0.5),
+        ('G3', 0.5), ('Bb3', 0.5), ('D4', 0.5), ('G4', 1.0), ('F4', 0.5), ('Eb4', 0.5), ('D4', 0.5),
+        ('C4', 1.0), ('Bb3', 1.0), ('A3', 1.0), ('G3', 1.0),
+        ('A3', 4.0)
     ] * 2
     cave_harmony = [
-        ('E3', 1.0), ('B3', 1.0), ('E3', 1.0), ('C4', 1.0),
-        ('E3', 1.0), ('B3', 1.0), ('E3', 1.0), ('B3', 1.0),
-        ('D3', 1.0), ('A3', 1.0), ('D3', 1.0), ('G3', 1.0),
-        ('D3', 1.0), ('A3', 1.0), ('D3', 1.0), ('A3', 1.0)
+        ('D2', 1.0), ('A2', 1.0), ('D3', 1.0), ('A2', 1.0),
+        ('G2', 1.0), ('D3', 1.0), ('G3', 1.0), ('D3', 1.0),
+        ('C2', 1.0), ('G2', 1.0), ('C3', 1.0), ('G2', 1.0),
+        ('A1', 1.0), ('E2', 1.0), ('A2', 1.0), ('E2', 1.0)
     ] * 2
-    melody_track = generate_track_from_sequence(cave_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.2, sustain=0.4, release=0.1)
-    harmony_track = generate_track_from_sequence(cave_harmony, 'sawtooth', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.2, sustain=0.3, release=0.1)
+    melody_track = generate_track_from_sequence(cave_melody, 'sawtooth', VOLUME, use_adsr=True, attack=0.2, decay=0.4, sustain=0.3, release=0.4)
+    harmony_track = generate_track_from_sequence(cave_harmony, 'sawtooth', VOLUME * 0.4, use_adsr=True, attack=0.1, decay=0.3, sustain=0.2, release=0.2)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -260,32 +270,23 @@ def generate_music():
     cave_music /= np.max(np.abs(cave_music))
     save_wav('bgm_cave.wav', cave_music, SAMPLE_RATE)
 
-    # Town Music (FF1 Town Theme)
-    TEMPO = 100
+    # Town Music (FF4 Town Theme)
+    TEMPO = 130
     BEAT_DURATION = 60 / TEMPO
     town_melody = [
-        ('E4', 1.0), ('C4', 1.0), ('G4', 2.0),
-        ('E4', 1.0), ('C4', 1.0), ('A4', 2.0),
-        ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('F4', 0.5), ('G4', 2.0),
-        ('E4', 0.5), ('D4', 0.5), ('C4', 0.5), ('D4', 0.5), ('E4', 2.0),
-        
-        ('F4', 1.0), ('D4', 1.0), ('A4', 2.0),
-        ('G4', 1.0), ('E4', 1.0), ('C5', 2.0),
-        ('B4', 0.5), ('A4', 0.5), ('G4', 0.5), ('A4', 0.5), ('B4', 2.0),
-        ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('D4', 0.5), ('C4', 2.0)
+        ('C5', 1.0), ('G4', 1.0), ('A4', 0.5), ('G4', 0.5), ('F4', 0.5), ('G4', 0.5), ('E4', 2.0),
+        ('F4', 1.0), ('A4', 1.0), ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('D4', 0.5), ('C4', 2.0),
+        ('D4', 1.0), ('A4', 1.0), ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('F4', 0.5), ('E4', 2.0),
+        ('D4', 0.5), ('E4', 0.5), ('F4', 0.5), ('G4', 0.5), ('A4', 1.0), ('B4', 1.0), ('C5', 2.0)
     ]
     town_harmony = [
-        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('E3', 1.0),
-        ('F2', 1.0), ('A2', 1.0), ('C3', 1.0), ('A2', 1.0),
-        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('E3', 1.0),
-        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('B2', 1.0),
-        ('F2', 1.0), ('A2', 1.0), ('C3', 1.0), ('A2', 1.0),
-        ('E2', 1.0), ('G2', 1.0), ('C3', 1.0), ('G2', 1.0),
-        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('B2', 1.0),
-        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('E3', 1.0)
+        ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('A3', 0.5), ('C3', 0.5), ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
+        ('D3', 0.5), ('A3', 0.5), ('F4', 0.5), ('A3', 0.5), ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('B3', 0.5), ('D3', 0.5), ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
     ]
-    melody_track = generate_track_from_sequence(town_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.5, release=0.2)
-    harmony_track = generate_track_from_sequence(town_harmony, 'triangle', VOLUME * 0.7, use_adsr=True)
+    melody_track = generate_track_from_sequence(town_melody, 'triangle', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
+    harmony_track = generate_track_from_sequence(town_harmony, 'triangle', VOLUME * 0.6, use_adsr=True)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -294,41 +295,35 @@ def generate_music():
     town_music /= np.max(np.abs(town_music))
     save_wav('bgm_town.wav', town_music, SAMPLE_RATE)
 
-    # Battle Music (FF1 Battle Theme)
+    # Battle Music (FF4 Battle 1)
     TEMPO = 160
     BEAT_DURATION = 60 / TEMPO
     
-    # Intro
-    intro_melody = [
-        ('REST', 4.0), ('REST', 4.0)
-    ]
+    # Fast bass intro
     intro_bass = [
-        ('D2', 0.5), ('D2', 0.5), ('D2', 0.5), ('D2', 0.5), ('Eb2', 0.5), ('Eb2', 0.5), ('Eb2', 0.5), ('Eb2', 0.5)
-    ] * 2
+        ('G2', 0.25), ('G2', 0.25), ('Bb2', 0.25), ('G2', 0.25), ('C3', 0.25), ('G2', 0.25), ('Bb2', 0.25), ('G2', 0.25)
+    ] * 4
+    intro_melody = [('REST', 8.0)]
     
     # Main Melody
     battle_melody = [
-        ('A4', 0.5), ('G4', 0.5), ('A4', 1.0), ('D5', 2.0),
-        ('C5', 1.0), ('Bb4', 0.5), ('A4', 0.5), ('G4', 2.0),
-        ('F4', 0.5), ('E4', 0.5), ('F4', 1.0), ('A4', 2.0),
-        ('G4', 1.0), ('F4', 0.5), ('E4', 0.5), ('D4', 2.0)
+        ('G4', 0.5), ('Bb4', 0.5), ('G4', 0.5), ('C5', 0.5), ('Bb4', 1.0), ('G4', 1.0),
+        ('F4', 0.5), ('Ab4', 0.5), ('F4', 0.5), ('Bb4', 0.5), ('Ab4', 1.0), ('F4', 1.0),
+        ('G4', 0.5), ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('C5', 1.0), ('D5', 1.0),
+        ('Eb5', 0.5), ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('G4', 2.0)
     ] * 2
     battle_bass = [
-        ('D2', 0.25), ('A2', 0.25), ('D3', 0.25), ('A2', 0.25),
-        ('D2', 0.25), ('A2', 0.25), ('D3', 0.25), ('A2', 0.25),
-        ('C2', 0.25), ('G2', 0.25), ('C3', 0.25), ('G2', 0.25),
-        ('C2', 0.25), ('G2', 0.25), ('C3', 0.25), ('G2', 0.25),
-        ('Bb1', 0.25), ('F2', 0.25), ('Bb2', 0.25), ('F2', 0.25),
-        ('Bb1', 0.25), ('F2', 0.25), ('Bb2', 0.25), ('F2', 0.25),
-        ('A1', 0.25), ('E2', 0.25), ('A2', 0.25), ('E2', 0.25),
-        ('A1', 0.25), ('E2', 0.25), ('A2', 0.25), ('E2', 0.25)
+        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
+        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5), ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5)
     ] * 2
 
-    percussion_pattern = [1, 0, 1, 0] * 16 * 2
+    percussion_pattern = [1, 0, 0, 1, 1, 0, 1, 0] * 16
 
-    melody_track = generate_track_from_sequence(intro_melody + battle_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.5, release=0.1)
-    harmony_track = generate_track_from_sequence(intro_bass + battle_bass, 'sawtooth', VOLUME * 0.7, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
-    percussion_track = generate_percussion_track(percussion_pattern, 0.25, VOLUME * 0.5)
+    melody_track = generate_track_from_sequence(intro_melody + battle_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
+    harmony_track = generate_track_from_sequence(intro_bass + battle_bass, 'sawtooth', VOLUME * 0.7, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.1)
+    percussion_track = generate_percussion_track(percussion_pattern, 0.25, VOLUME * 0.6)
     
     final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
@@ -341,8 +336,8 @@ def generate_music():
     battle_music /= np.max(np.abs(battle_music))
     save_wav('bgm_battle.wav', battle_music, SAMPLE_RATE)
 
-    # Victory Music (FF1 Fanfare)
-    TEMPO = 140
+    # Victory Music (FF4 Fanfare)
+    TEMPO = 150
     BEAT_DURATION = 60 / TEMPO
     victory_melody = [
         ('C5', 0.25), ('C5', 0.25), ('C5', 0.25), ('C5', 1.0),
@@ -352,7 +347,7 @@ def generate_music():
         ('C4', 0.25), ('C4', 0.25), ('C4', 0.25), ('C4', 1.0),
         ('Ab3', 1.0), ('Bb3', 1.0), ('C4', 0.5), ('REST', 0.25), ('Bb3', 0.25), ('C4', 2.0)
     ]
-    melody_track = generate_track_from_sequence(victory_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.5, release=0.2)
+    melody_track = generate_track_from_sequence(victory_melody, 'square', VOLUME, use_adsr=True, attack=0.02, decay=0.2, sustain=0.4, release=0.2)
     harmony_track = generate_track_from_sequence(victory_harmony, 'triangle', VOLUME * 0.8, use_adsr=True)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
