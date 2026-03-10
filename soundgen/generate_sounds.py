@@ -7,11 +7,11 @@ SAMPLE_RATE = 44100
 VOLUME = 0.25
 
 NOTE_FREQS = {
-    'C1': 32.70, 'C#1': 34.65, 'D1': 36.71, 'Eb1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'A1': 55.00, 'Bb1': 58.27, 'B1': 61.74,
-    'C2': 65.41, 'C#2': 69.30, 'D2': 73.42, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'A2': 110.00, 'Bb2': 116.54, 'B2': 123.47,
-    'C3': 130.81, 'C#3': 138.59, 'D3': 146.83, 'Eb3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'Bb3': 233.08, 'B3': 246.94, 'Ab3': 207.65,
-    'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'Eb4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88,
-    'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'Eb5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'A5': 880.00, 'Bb5': 932.33, 'B5': 987.77,
+    'C1': 32.70, 'C#1': 34.65, 'D1': 36.71, 'Eb1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'Ab1': 51.91, 'A1': 55.00, 'Bb1': 58.27, 'B1': 61.74,
+    'C2': 65.41, 'C#2': 69.30, 'D2': 73.42, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'Ab2': 103.83, 'A2': 110.00, 'Bb2': 116.54, 'B2': 123.47,
+    'C3': 130.81, 'C#3': 138.59, 'Db3': 138.59, 'D3': 146.83, 'Eb3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'Gb3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'Ab3': 207.65, 'A3': 220.00, 'Bb3': 233.08, 'B3': 246.94,
+    'C4': 261.63, 'C#4': 277.18, 'Db4': 277.18, 'D4': 293.66, 'Eb4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'Ab4': 415.30, 'A4': 440.00, 'Bb4': 466.16, 'B4': 493.88, 'Cb5': 493.88,
+    'C5': 523.25, 'C#5': 554.37, 'Db5': 554.37, 'D5': 587.33, 'Eb5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'Ab5': 830.61, 'A5': 880.00, 'Bb5': 932.33, 'B5': 987.77,
     'C6': 1046.50, 'C#6': 1108.73, 'D6': 1174.66, 'Eb6': 1244.51, 'E6': 1318.51, 'F6': 1396.91, 'F#6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'A6': 1760.00, 'Bb6': 1864.66, 'B6': 1975.53,
     'REST': 0
 }
@@ -355,6 +355,444 @@ def generate_music():
     victory_music = melody_track + harmony_track
     victory_music /= np.max(np.abs(victory_music))
     save_wav('victory_music.wav', victory_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Boss Battle Music (FF4 Battle with the Four Fiends)
+    # =========================================================================
+    TEMPO = 180
+    BEAT_DURATION = 60 / TEMPO
+
+    # Aggressive, driving bass intro
+    boss_intro_bass = [
+        ('E2', 0.25), ('E2', 0.25), ('E3', 0.25), ('E2', 0.25),
+        ('G2', 0.25), ('G2', 0.25), ('G3', 0.25), ('G2', 0.25),
+        ('A2', 0.25), ('A2', 0.25), ('A3', 0.25), ('A2', 0.25),
+        ('Bb2', 0.25), ('Bb2', 0.25), ('B2', 0.25), ('B2', 0.25),
+    ] * 2
+
+    # Intense, dramatic melody
+    boss_melody = [
+        ('E5', 0.5), ('G5', 0.25), ('E5', 0.25), ('B4', 0.5), ('C5', 0.5),
+        ('D5', 0.5), ('E5', 0.25), ('D5', 0.25), ('C5', 0.5), ('B4', 0.5),
+        ('A4', 0.5), ('C5', 0.25), ('A4', 0.25), ('E4', 0.5), ('F4', 0.25), ('G4', 0.25),
+        ('A4', 1.0), ('G4', 0.5), ('F4', 0.25), ('E4', 0.25),
+        ('E5', 0.5), ('F#5', 0.25), ('G5', 0.25), ('A5', 0.5), ('G5', 0.25), ('F#5', 0.25),
+        ('E5', 0.5), ('D5', 0.25), ('C5', 0.25), ('B4', 0.5), ('A4', 0.5),
+        ('G4', 0.5), ('A4', 0.25), ('B4', 0.25), ('C5', 0.5), ('D5', 0.5),
+        ('E5', 1.0), ('REST', 0.5), ('E5', 0.5),
+    ]
+
+    boss_bass = [
+        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+        ('A2', 0.5), ('G2', 0.5), ('F2', 0.5), ('E2', 0.5),
+        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
+        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
+    ]
+
+    boss_percussion = [1, 0, 1, 1, 1, 0, 1, 0] * 16
+
+    boss_intro_melody = [('REST', 8.0)]
+    melody_track = generate_track_from_sequence(boss_intro_melody + boss_melody * 2, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.05, sustain=0.5, release=0.05)
+    harmony_track = generate_track_from_sequence(boss_intro_bass + boss_bass * 2, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
+    percussion_track = generate_percussion_track(boss_percussion, 0.25, VOLUME * 0.7)
+
+    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
+    boss_music = melody_track + harmony_track + percussion_track
+    boss_music = np.clip(boss_music, -1.0, 1.0)
+    boss_music = np.tile(boss_music, 2)
+    boss_music /= np.max(np.abs(boss_music))
+    save_wav('bgm_boss.wav', boss_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Final Battle Music (FF4 The Final Battle)
+    # =========================================================================
+    TEMPO = 190
+    BEAT_DURATION = 60 / TEMPO
+
+    final_intro = [
+        ('C3', 0.25), ('Eb3', 0.25), ('F#3', 0.25), ('C4', 0.25),
+        ('C3', 0.25), ('Eb3', 0.25), ('F#3', 0.25), ('C4', 0.25),
+        ('Db3', 0.25), ('E3', 0.25), ('G3', 0.25), ('Db4', 0.25),
+        ('Db3', 0.25), ('E3', 0.25), ('G3', 0.25), ('Db4', 0.25),
+    ] * 2
+
+    final_melody = [
+        ('C5', 0.25), ('C5', 0.25), ('Eb5', 0.5), ('F5', 0.25), ('Eb5', 0.25), ('C5', 0.5),
+        ('Bb4', 0.25), ('C5', 0.25), ('Eb5', 0.5), ('F5', 0.5), ('G5', 0.5),
+        ('Ab5', 0.5), ('G5', 0.25), ('F5', 0.25), ('Eb5', 0.5), ('D5', 0.5),
+        ('Eb5', 1.0), ('REST', 0.5), ('C5', 0.5),
+        ('F5', 0.5), ('Eb5', 0.25), ('D5', 0.25), ('C5', 0.5), ('Bb4', 0.5),
+        ('Ab4', 0.25), ('Bb4', 0.25), ('C5', 0.5), ('Eb5', 0.5), ('F5', 0.5),
+        ('G5', 0.5), ('Ab5', 0.25), ('G5', 0.25), ('F5', 0.5), ('Eb5', 0.5),
+        ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('C5', 0.5),
+    ]
+
+    final_bass = [
+        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
+        ('Bb1', 0.5), ('F2', 0.5), ('Bb1', 0.5), ('F2', 0.5),
+        ('Ab1', 0.5), ('Eb2', 0.5), ('Ab1', 0.5), ('Eb2', 0.5),
+        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
+        ('Ab1', 0.5), ('Eb2', 0.5), ('Ab1', 0.5), ('Eb2', 0.5),
+        ('G1', 0.5), ('D2', 0.5), ('G1', 0.5), ('D2', 0.5),
+        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
+    ]
+
+    final_percussion = [1, 1, 0, 1, 1, 0, 1, 1] * 16
+
+    final_intro_melody = [('REST', 8.0)]
+    melody_track = generate_track_from_sequence(final_intro_melody + final_melody * 2, 'square', VOLUME, use_adsr=True, attack=0.005, decay=0.05, sustain=0.6, release=0.05)
+    harmony_track = generate_track_from_sequence(final_intro + final_bass * 2, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.01, decay=0.08, sustain=0.4, release=0.08)
+    percussion_track = generate_percussion_track(final_percussion, 0.25, VOLUME * 0.8)
+
+    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
+    final_battle_music = melody_track + harmony_track + percussion_track
+    final_battle_music = np.clip(final_battle_music, -1.0, 1.0)
+    final_battle_music = np.tile(final_battle_music, 2)
+    final_battle_music /= np.max(np.abs(final_battle_music))
+    save_wav('bgm_final_boss.wav', final_battle_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Airship Theme (FF4 Airship)
+    # =========================================================================
+    TEMPO = 140
+    BEAT_DURATION = 60 / TEMPO
+
+    airship_melody = [
+        ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5), ('A5', 1.0), ('G5', 1.0),
+        ('F#5', 0.5), ('E5', 0.5), ('D5', 1.0), ('B4', 1.0),
+        ('A4', 0.5), ('B4', 0.5), ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5),
+        ('G5', 2.0), ('F#5', 1.0), ('E5', 1.0),
+        ('D5', 1.0), ('F#5', 0.5), ('A5', 0.5), ('G5', 1.0), ('F#5', 1.0),
+        ('E5', 0.5), ('D5', 0.5), ('C#5', 1.0), ('D5', 1.0),
+        ('B4', 0.5), ('C#5', 0.5), ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5),
+        ('D5', 2.0), ('REST', 1.0), ('REST', 1.0),
+    ]
+
+    airship_harmony = [
+        ('D3', 0.5), ('A3', 0.5), ('D4', 0.5), ('A3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('B3', 0.5), ('D3', 0.5),
+        ('D3', 0.5), ('A3', 0.5), ('D4', 0.5), ('A3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('D3', 0.5), ('A3', 0.5), ('D4', 0.5), ('A3', 0.5),
+    ] * 2
+
+    airship_percussion = [1, 0, 0, 1, 0, 1, 0, 0] * 16
+
+    melody_track = generate_track_from_sequence(airship_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.6, release=0.3)
+    harmony_track = generate_track_from_sequence(airship_harmony, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
+    percussion_track = generate_percussion_track(airship_percussion, 0.5, VOLUME * 0.4)
+    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
+    airship_music = melody_track + harmony_track + percussion_track
+    airship_music = np.tile(airship_music, 2)
+    airship_music /= np.max(np.abs(airship_music))
+    save_wav('bgm_airship.wav', airship_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Theme of Love (FF4 Theme of Love)
+    # =========================================================================
+    TEMPO = 72
+    BEAT_DURATION = 60 / TEMPO
+
+    love_melody = [
+        ('E5', 2.0), ('D5', 1.0), ('C5', 1.0),
+        ('B4', 2.0), ('A4', 1.0), ('G4', 1.0),
+        ('A4', 1.5), ('B4', 0.5), ('C5', 1.0), ('D5', 1.0),
+        ('E5', 3.0), ('REST', 1.0),
+        ('D5', 2.0), ('C5', 1.0), ('B4', 1.0),
+        ('A4', 2.0), ('G4', 1.0), ('F4', 1.0),
+        ('G4', 1.5), ('A4', 0.5), ('B4', 1.0), ('C5', 1.0),
+        ('D5', 3.0), ('REST', 1.0),
+        ('C5', 2.0), ('D5', 1.0), ('E5', 1.0),
+        ('F5', 2.0), ('E5', 1.0), ('D5', 1.0),
+        ('C5', 1.5), ('D5', 0.5), ('E5', 1.0), ('D5', 1.0),
+        ('C5', 3.0), ('REST', 1.0),
+    ]
+
+    love_harmony = [
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        ('A2', 0.5), ('C3', 0.5), ('E3', 0.5), ('A3', 0.5), ('C3', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('F2', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('G2', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('F2', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('E2', 0.5), ('G2', 0.5), ('B2', 0.5), ('E3', 0.5), ('G2', 0.5), ('B2', 0.5), ('E3', 0.5), ('B2', 0.5),
+        ('G2', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('B2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('A2', 0.5), ('C3', 0.5), ('E3', 0.5), ('A3', 0.5), ('C3', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('F2', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('A2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('E3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+    ]
+
+    melody_track = generate_track_from_sequence(love_melody, 'sine', VOLUME, use_adsr=True, attack=0.2, decay=0.4, sustain=0.5, release=0.5)
+    harmony_track = generate_track_from_sequence(love_harmony, 'triangle', VOLUME * 0.4, use_adsr=True, attack=0.05, decay=0.2, sustain=0.3, release=0.2)
+    final_length = max(len(melody_track), len(harmony_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    love_music = melody_track + harmony_track
+    love_music = np.tile(love_music, 2)
+    love_music /= np.max(np.abs(love_music))
+    save_wav('bgm_love.wav', love_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Suspense / Tension Theme (FF4 Suspicion)
+    # =========================================================================
+    TEMPO = 80
+    BEAT_DURATION = 60 / TEMPO
+
+    suspense_melody = [
+        ('B3', 1.0), ('C4', 1.0), ('B3', 1.0), ('REST', 1.0),
+        ('Bb3', 1.0), ('B3', 1.0), ('Bb3', 1.0), ('REST', 1.0),
+        ('A3', 1.0), ('Bb3', 1.0), ('A3', 0.5), ('G#3', 0.5), ('A3', 1.0),
+        ('G3', 2.0), ('REST', 1.0), ('F#3', 1.0),
+        ('G3', 1.0), ('A3', 1.0), ('Bb3', 1.0), ('B3', 1.0),
+        ('C4', 2.0), ('B3', 1.0), ('Bb3', 1.0),
+        ('A3', 1.0), ('G#3', 0.5), ('A3', 0.5), ('Bb3', 1.0), ('A3', 1.0),
+        ('G3', 2.0), ('REST', 2.0),
+    ]
+
+    suspense_harmony = [
+        ('E2', 2.0), ('REST', 2.0),
+        ('Eb2', 2.0), ('REST', 2.0),
+        ('D2', 2.0), ('REST', 2.0),
+        ('C2', 2.0), ('REST', 2.0),
+        ('E2', 2.0), ('REST', 2.0),
+        ('F2', 2.0), ('REST', 2.0),
+        ('D2', 2.0), ('REST', 2.0),
+        ('C2', 2.0), ('REST', 2.0),
+    ]
+
+    melody_track = generate_track_from_sequence(suspense_melody, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.3, decay=0.5, sustain=0.3, release=0.5)
+    harmony_track = generate_track_from_sequence(suspense_harmony, 'sine', VOLUME * 0.5, use_adsr=True, attack=0.2, decay=0.3, sustain=0.2, release=0.3)
+    final_length = max(len(melody_track), len(harmony_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    suspense_music = melody_track + harmony_track
+    suspense_music = np.tile(suspense_music, 2)
+    suspense_music /= np.max(np.abs(suspense_music))
+    save_wav('bgm_suspense.wav', suspense_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Shop Theme (FF4 Shop)
+    # =========================================================================
+    TEMPO = 150
+    BEAT_DURATION = 60 / TEMPO
+
+    shop_melody = [
+        ('C5', 0.5), ('E5', 0.5), ('G5', 0.5), ('E5', 0.5),
+        ('F5', 0.5), ('A5', 0.5), ('G5', 0.5), ('E5', 0.5),
+        ('D5', 0.5), ('F5', 0.5), ('E5', 0.5), ('C5', 0.5),
+        ('D5', 1.0), ('G4', 0.5), ('REST', 0.5),
+        ('C5', 0.5), ('D5', 0.5), ('E5', 0.5), ('G5', 0.5),
+        ('A5', 0.5), ('G5', 0.5), ('E5', 0.5), ('C5', 0.5),
+        ('D5', 0.5), ('E5', 0.5), ('F5', 0.5), ('G5', 0.5),
+        ('C5', 1.5), ('REST', 0.5),
+    ]
+
+    shop_harmony = [
+        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
+        ('F3', 0.5), ('C4', 0.5), ('F3', 0.5), ('C4', 0.5),
+        ('G3', 0.5), ('D4', 0.5), ('G3', 0.5), ('D4', 0.5),
+        ('G3', 0.5), ('D4', 0.5), ('G3', 0.5), ('D4', 0.5),
+        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
+        ('F3', 0.5), ('C4', 0.5), ('F3', 0.5), ('C4', 0.5),
+        ('G3', 0.5), ('D4', 0.5), ('G3', 0.5), ('D4', 0.5),
+        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
+    ]
+
+    melody_track = generate_track_from_sequence(shop_melody, 'triangle', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.5, release=0.1)
+    harmony_track = generate_track_from_sequence(shop_harmony, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.1)
+    final_length = max(len(melody_track), len(harmony_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    shop_music = melody_track + harmony_track
+    shop_music = np.tile(shop_music, 3)
+    shop_music /= np.max(np.abs(shop_music))
+    save_wav('bgm_shop.wav', shop_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Inn / Rest Theme (FF4 Inn)
+    # =========================================================================
+    TEMPO = 60
+    BEAT_DURATION = 60 / TEMPO
+
+    inn_melody = [
+        ('G4', 1.0), ('B4', 1.0), ('D5', 2.0),
+        ('C5', 1.0), ('B4', 1.0), ('A4', 2.0),
+        ('G4', 1.0), ('A4', 1.0), ('B4', 1.0), ('G4', 1.0),
+        ('A4', 3.0), ('REST', 1.0),
+        ('B4', 1.0), ('D5', 1.0), ('E5', 2.0),
+        ('D5', 1.0), ('C5', 1.0), ('B4', 2.0),
+        ('A4', 1.0), ('B4', 1.0), ('C5', 1.0), ('A4', 1.0),
+        ('G4', 3.0), ('REST', 1.0),
+    ]
+
+    inn_harmony = [
+        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
+        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('C4', 1.0),
+        ('D3', 1.0), ('F#3', 1.0), ('A3', 1.0), ('D4', 1.0),
+        ('G2', 1.0), ('D3', 1.0), ('G3', 1.0), ('D3', 1.0),
+        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
+        ('A2', 1.0), ('C3', 1.0), ('E3', 1.0), ('A3', 1.0),
+        ('D3', 1.0), ('F#3', 1.0), ('A3', 1.0), ('D4', 1.0),
+        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
+    ]
+
+    melody_track = generate_track_from_sequence(inn_melody, 'sine', VOLUME * 0.8, use_adsr=True, attack=0.3, decay=0.5, sustain=0.4, release=0.5)
+    harmony_track = generate_track_from_sequence(inn_harmony, 'sine', VOLUME * 0.3, use_adsr=True, attack=0.1, decay=0.3, sustain=0.2, release=0.3)
+    final_length = max(len(melody_track), len(harmony_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    inn_music = melody_track + harmony_track
+    inn_music /= np.max(np.abs(inn_music))
+    save_wav('bgm_inn.wav', inn_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Tower / Dungeon Theme (FF4 Tower of Zot)
+    # =========================================================================
+    TEMPO = 130
+    BEAT_DURATION = 60 / TEMPO
+
+    tower_melody = [
+        ('A3', 0.5), ('C4', 0.5), ('E4', 0.5), ('A4', 0.5),
+        ('G#4', 0.5), ('E4', 0.5), ('C4', 0.5), ('G#3', 0.5),
+        ('A3', 0.5), ('D4', 0.5), ('F4', 0.5), ('A4', 0.5),
+        ('G4', 0.5), ('F4', 0.5), ('D4', 0.5), ('A3', 0.5),
+        ('Bb3', 0.5), ('D4', 0.5), ('F4', 0.5), ('Bb4', 0.5),
+        ('A4', 0.5), ('F4', 0.5), ('D4', 0.5), ('Bb3', 0.5),
+        ('G#3', 0.5), ('B3', 0.5), ('E4', 0.5), ('G#4', 0.5),
+        ('A4', 1.0), ('E4', 0.5), ('A3', 0.5),
+    ] * 2
+
+    tower_bass = [
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+        ('G#2', 0.5), ('E3', 0.5), ('G#2', 0.5), ('E3', 0.5),
+        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
+        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
+    ] * 2
+
+    tower_percussion = [1, 0, 0, 1, 0, 0, 1, 0] * 16
+
+    melody_track = generate_track_from_sequence(tower_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.1)
+    harmony_track = generate_track_from_sequence(tower_bass, 'sawtooth', VOLUME * 0.6, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.1)
+    percussion_track = generate_percussion_track(tower_percussion, 0.5, VOLUME * 0.5)
+    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
+    tower_music = melody_track + harmony_track + percussion_track
+    tower_music = np.clip(tower_music, -1.0, 1.0)
+    tower_music = np.tile(tower_music, 2)
+    tower_music /= np.max(np.abs(tower_music))
+    save_wav('bgm_tower.wav', tower_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Prologue / Opening Theme (FF4 Prologue)
+    # =========================================================================
+    TEMPO = 100
+    BEAT_DURATION = 60 / TEMPO
+
+    prologue_arp = [
+        ('C4', 0.25), ('E4', 0.25), ('G4', 0.25), ('C5', 0.25),
+        ('E5', 0.25), ('C5', 0.25), ('G4', 0.25), ('E4', 0.25),
+        ('D4', 0.25), ('F4', 0.25), ('A4', 0.25), ('D5', 0.25),
+        ('F5', 0.25), ('D5', 0.25), ('A4', 0.25), ('F4', 0.25),
+        ('E4', 0.25), ('G4', 0.25), ('B4', 0.25), ('E5', 0.25),
+        ('G5', 0.25), ('E5', 0.25), ('B4', 0.25), ('G4', 0.25),
+        ('F4', 0.25), ('A4', 0.25), ('C5', 0.25), ('F5', 0.25),
+        ('A5', 0.25), ('F5', 0.25), ('C5', 0.25), ('A4', 0.25),
+    ]
+
+    prologue_melody = [
+        ('C5', 2.0), ('D5', 1.0), ('E5', 1.0),
+        ('F5', 2.0), ('E5', 1.0), ('D5', 1.0),
+        ('C5', 1.0), ('E5', 1.0), ('G5', 2.0),
+        ('F5', 1.0), ('E5', 1.0), ('D5', 1.0), ('C5', 1.0),
+        ('B4', 2.0), ('C5', 1.0), ('D5', 1.0),
+        ('E5', 2.0), ('D5', 1.0), ('C5', 1.0),
+        ('A4', 1.0), ('B4', 1.0), ('C5', 2.0),
+        ('G4', 1.0), ('A4', 1.0), ('B4', 1.0), ('C5', 1.0),
+    ]
+
+    prologue_bass = [
+        ('C3', 2.0), ('G2', 2.0),
+        ('F2', 2.0), ('G2', 2.0),
+        ('C3', 2.0), ('E3', 2.0),
+        ('F2', 2.0), ('G2', 2.0),
+        ('G2', 2.0), ('C3', 2.0),
+        ('A2', 2.0), ('E2', 2.0),
+        ('F2', 2.0), ('G2', 2.0),
+        ('C3', 2.0), ('G2', 2.0),
+    ]
+
+    arp_track = generate_track_from_sequence(prologue_arp * 4, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.05)
+    melody_track = generate_track_from_sequence(prologue_melody, 'square', VOLUME * 0.8, use_adsr=True, attack=0.1, decay=0.3, sustain=0.6, release=0.3)
+    bass_track = generate_track_from_sequence(prologue_bass, 'sine', VOLUME * 0.5, use_adsr=True, attack=0.1, decay=0.3, sustain=0.4, release=0.3)
+    final_length = max(len(arp_track), len(melody_track), len(bass_track))
+    arp_track = np.pad(arp_track, (0, final_length - len(arp_track)))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
+    prologue_music = arp_track + melody_track + bass_track
+    prologue_music = np.tile(prologue_music, 2)
+    prologue_music /= np.max(np.abs(prologue_music))
+    save_wav('bgm_prologue.wav', prologue_music, SAMPLE_RATE)
+
+    # =========================================================================
+    # Game Over Music (FF4 Game Over - cinematic)
+    # =========================================================================
+    TEMPO = 60
+    BEAT_DURATION = 60 / TEMPO
+
+    gameover_melody = [
+        ('C5', 2.0), ('B4', 1.0), ('Bb4', 1.0),
+        ('A4', 2.0), ('Ab4', 1.0), ('G4', 1.0),
+        ('F#4', 2.0), ('F4', 1.0), ('E4', 1.0),
+        ('Eb4', 2.0), ('D4', 1.0), ('C4', 1.0),
+        ('B3', 1.0), ('C4', 1.0), ('Eb4', 2.0),
+        ('D4', 1.0), ('C4', 1.0), ('B3', 1.0), ('C4', 1.0),
+        ('C4', 4.0),
+        ('REST', 4.0),
+    ]
+
+    gameover_harmony = [
+        ('C3', 2.0), ('G3', 2.0),
+        ('F2', 2.0), ('C3', 2.0),
+        ('D2', 2.0), ('A2', 2.0),
+        ('Eb2', 2.0), ('Bb2', 2.0),
+        ('G2', 2.0), ('Eb3', 2.0),
+        ('F2', 2.0), ('G2', 2.0),
+        ('C2', 4.0),
+        ('REST', 4.0),
+    ]
+
+    melody_track = generate_track_from_sequence(gameover_melody, 'sawtooth', VOLUME, use_adsr=True, attack=0.3, decay=0.5, sustain=0.3, release=0.8)
+    harmony_track = generate_track_from_sequence(gameover_harmony, 'sine', VOLUME * 0.5, use_adsr=True, attack=0.2, decay=0.4, sustain=0.3, release=0.5)
+    final_length = max(len(melody_track), len(harmony_track))
+    melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
+    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    gameover_music = melody_track + harmony_track
+    gameover_music /= np.max(np.abs(gameover_music))
+    save_wav('bgm_game_over.wav', gameover_music, SAMPLE_RATE)
 
 
 if __name__ == "__main__":

@@ -2556,10 +2556,11 @@ public class DraponQuestFX extends Application {
                     shopCursor = 0;
                     shopMessage = "Welcome!";
                     shopMessageTime = System.currentTimeMillis();
-                    // Play a sound or music for entering shop
-                    // audioManager.playMusic(AudioManager.MUSIC_TOWN); // or a specific shop theme
+                    // Play shop theme
+                    audioManager.playMusic(AudioManager.MUSIC_SHOP);
                 } else if (tile == fieldMapData.TILE_INN) {
                     currentMode = MODE_INN;
+                    audioManager.playMusic(AudioManager.MUSIC_INN);
                 }
             }
 

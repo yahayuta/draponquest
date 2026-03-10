@@ -58,6 +58,26 @@ public class AudioManager {
     public static final String MUSIC_CASTLE = "castle";
     /** Background music for caves. */
     public static final String MUSIC_CAVE = "cave";
+    /** Background music for boss battles. */
+    public static final String MUSIC_BOSS = "boss";
+    /** Background music for the final boss battle. */
+    public static final String MUSIC_FINAL_BOSS = "final_boss";
+    /** Background music for airship travel. */
+    public static final String MUSIC_AIRSHIP = "airship";
+    /** Background music for love/story themes. */
+    public static final String MUSIC_LOVE = "love";
+    /** Background music for suspense/tension scenes. */
+    public static final String MUSIC_SUSPENSE = "suspense";
+    /** Background music for shops. */
+    public static final String MUSIC_SHOP = "shop";
+    /** Background music for inns. */
+    public static final String MUSIC_INN = "inn";
+    /** Background music for towers/dungeons. */
+    public static final String MUSIC_TOWER = "tower";
+    /** Background music for the prologue/opening. */
+    public static final String MUSIC_PROLOGUE = "prologue";
+    /** Cinematic game over music. */
+    public static final String MUSIC_GAME_OVER_MUSIC = "game_over_music";
 
     // Audio settings
     /**
@@ -199,6 +219,16 @@ public class AudioManager {
             loadBackgroundMusicTrack(MUSIC_TOWN, "/sounds/bgm_town.wav");
             loadBackgroundMusicTrack(MUSIC_CASTLE, "/sounds/bgm_castle.wav");
             loadBackgroundMusicTrack(MUSIC_CAVE, "/sounds/bgm_cave.wav");
+            loadBackgroundMusicTrack(MUSIC_BOSS, "/sounds/bgm_boss.wav");
+            loadBackgroundMusicTrack(MUSIC_FINAL_BOSS, "/sounds/bgm_final_boss.wav");
+            loadBackgroundMusicTrack(MUSIC_AIRSHIP, "/sounds/bgm_airship.wav");
+            loadBackgroundMusicTrack(MUSIC_LOVE, "/sounds/bgm_love.wav");
+            loadBackgroundMusicTrack(MUSIC_SUSPENSE, "/sounds/bgm_suspense.wav");
+            loadBackgroundMusicTrack(MUSIC_SHOP, "/sounds/bgm_shop.wav");
+            loadBackgroundMusicTrack(MUSIC_INN, "/sounds/bgm_inn.wav");
+            loadBackgroundMusicTrack(MUSIC_TOWER, "/sounds/bgm_tower.wav");
+            loadBackgroundMusicTrack(MUSIC_PROLOGUE, "/sounds/bgm_prologue.wav");
+            loadBackgroundMusicTrack(MUSIC_GAME_OVER_MUSIC, "/sounds/bgm_game_over.wav");
 
             System.out.println("Background music loaded: " + backgroundMusic.size() + " tracks");
         } catch (Exception e) {
