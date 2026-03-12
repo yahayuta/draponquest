@@ -925,11 +925,11 @@ public class DraponQuestFX extends Application {
         }
         // Initialize monsters array
         monsters = new Monster[] {
-                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10, herb, 0.2, false),
-                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15, herb, 0.3, false),
-                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20, potion, 0.2, false),
-                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3, false),
-                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1, true)
+                new Monster(monster1Image, "Tung Tung Tung Sahur", 4, 2, 1, 5, 10, herb, 0.2, false, false, false),
+                new Monster(monster2Image, "Tralalero Tralala", 6, 4, 2, 8, 15, herb, 0.3, false, false, false),
+                new Monster(monster3Image, "Bombardiro Crocodilo", 9, 6, 3, 12, 20, potion, 0.2, false, false, false),
+                new Monster(monster4Image, "Ballerina Cappuccina", 8, 5, 2, 15, 25, potion, 0.3, false, false, false),
+                new Monster(monster5Image, "Cappuccino Assassino", 12, 7, 4, 25, 40, antidote, 0.1, true, true, false)
         };
 
         treasureChests = new TreasureChest[] {
@@ -2233,11 +2233,17 @@ public class DraponQuestFX extends Application {
         } else if (currentGameStatus == GAME_TITLE) {
             System.out.println("Starting game...");
             currentGameStatus = GAME_OPEN;
-            // Play field music
-            audioManager.playMusic(AudioManager.MUSIC_FIELD);
+            // Play prologue music for the opening sequence
+            audioManager.playMusic(AudioManager.MUSIC_PROLOGUE);
             // NES-style message test
             displayMessage(
-                    "Welcome to the\nworld of Drapon Quest!@The King awaits you\nin the castle.H@Be careful out\nthere!E");
+                    "Welcome to the\nworld of Drapon Quest!@The King awaits you\nin the castle.H@Be careful out\nthere!E",
+                    () -> {
+                        // After message, if we are still on the field, switch to field music
+                        if (currentPlace == PLACE_FIELD) {
+                            audioManager.playMusic(AudioManager.MUSIC_FIELD);
+                        }
+                    });
         } else if (currentMode == MODE_MOVE) {
             System.out.println("Opening command menu");
             currentMode = MODE_COM;
@@ -2600,14 +2606,23 @@ public class DraponQuestFX extends Application {
                     if (locName != null) {
                         currentLocationName = locName;
                         locationNameTimer = System.currentTimeMillis();
+                        
+                        // Check for special music based on location name
+                        if (locName.toLowerCase().contains("tower") || locName.toLowerCase().contains("tower of zot")) {
+                            audioManager.playMusic(AudioManager.MUSIC_TOWER);
+                        } else if (currentTile == fieldMapData.TILE_CAVE) {
+                            audioManager.playMusic(AudioManager.MUSIC_CAVE);
+                        }
                     } else {
                         // Default names if not specific
                         if (currentTile == fieldMapData.TILE_TOWN)
                             currentLocationName = "Town";
                         else if (currentTile == fieldMapData.TILE_CASTLE)
                             currentLocationName = "Castle";
-                        else if (currentTile == fieldMapData.TILE_CAVE)
+                        else if (currentTile == fieldMapData.TILE_CAVE) {
                             currentLocationName = "Cave";
+                            audioManager.playMusic(AudioManager.MUSIC_CAVE); // Default cave music
+                        }
                         locationNameTimer = System.currentTimeMillis();
                     }
 
@@ -2662,6 +2677,7 @@ public class DraponQuestFX extends Application {
                     currentGameStatus = GAME_OVER;
                     audioManager.playSound(AudioManager.SOUND_DEFEAT); // Or specific sound
                     audioManager.playSound(AudioManager.SOUND_GAME_OVER);
+                    audioManager.playMusic(AudioManager.MUSIC_GAME_OVER_MUSIC);
                     // Force render update to show game over screen immediately/next frame
                 } else {
                     // Periodic message could be annoying, so maybe just screen flash in render?
@@ -2820,9 +2836,25 @@ public class DraponQuestFX extends Application {
                 // Check if NPC is at target coordinates
                 if (npcs[j].x == targetCol && npcs[j].y == targetRow) {
                     found = true;
+                    final int scriptID = npcs[j].scriptID;
+                    final String preTalkMusic = audioManager.getCurrentMusicTrack();
+
                     // Use the NPC's assigned scriptID to get the correct dialogue
-                    String msg = scriptData.getScript(npcs[j].scriptID) + "E";
-                    displayMessage(msg);
+                    String msg = scriptData.getScript(scriptID) + "E";
+
+                    // Play situational music
+                    if (scriptID == 2) {
+                        audioManager.playMusic(AudioManager.MUSIC_SUSPENSE);
+                    } else if (scriptID == 3) {
+                        audioManager.playMusic(AudioManager.MUSIC_LOVE);
+                    }
+
+                    displayMessage(msg, () -> {
+                        // Resume previous music if it was changed
+                        if (scriptID == 2 || scriptID == 3) {
+                            audioManager.playMusic(preTalkMusic);
+                        }
+                    });
                     // Optional: make NPC face player
                     // npcs[j].direction = (playerDirection + 1) % 4; // Simplified logic to face
                     // player

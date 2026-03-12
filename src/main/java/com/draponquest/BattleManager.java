@@ -84,7 +84,14 @@ public class BattleManager {
         game.setPreBattleMusic(game.audioManager.getCurrentMusicTrack());
         // Play battle start sound and music
         game.audioManager.playSound(AudioManager.SOUND_BATTLE_START);
-        game.audioManager.playMusic(AudioManager.MUSIC_BATTLE);
+        
+        if (currentMonster.isFinalBoss) {
+            game.audioManager.playMusic(AudioManager.MUSIC_FINAL_BOSS);
+        } else if (currentMonster.isBoss) {
+            game.audioManager.playMusic(AudioManager.MUSIC_BOSS);
+        } else {
+            game.audioManager.playMusic(AudioManager.MUSIC_BATTLE);
+        }
     }
 
     /**
@@ -257,6 +264,7 @@ public class BattleManager {
         // Play defeat sound and game over music
         game.audioManager.playSound(AudioManager.SOUND_DEFEAT);
         game.audioManager.playSound(AudioManager.SOUND_GAME_OVER);
+        game.audioManager.playMusic(AudioManager.MUSIC_GAME_OVER_MUSIC);
     }
 
     /**
