@@ -169,112 +169,130 @@ def generate_music():
     global BEAT_DURATION
 
     # =========================================================================
-    # Title Music (FF4 The Red Wings) - Cm military march
+    # Title Music (FF4 The Red Wings) - High Fidelity implementation
     # =========================================================================
-    TEMPO = 120
+    TEMPO = 118
     BEAT_DURATION = 60 / TEMPO
+    # Melody - Trumpets/Brass
     red_wings_melody = [
-        # Phrase 1: Military march motif in C minor
+        ('F4', 0.25), ('G4', 0.25), ('Ab4', 0.25), ('Bb4', 0.25),
+        ('C5', 1.0), ('REST', 0.5), ('G4', 0.5),
+        ('C5', 1.0), ('REST', 0.5), ('G4', 0.5),
+        ('C5', 0.5), ('D5', 0.5), ('Eb5', 0.5), ('F5', 0.5),
+        ('G5', 2.0),
+        
         ('G4', 0.5), ('G4', 0.5), ('G4', 0.5), ('Ab4', 0.5),
         ('Bb4', 1.5), ('Bb4', 0.5), ('Ab4', 0.5), ('G4', 0.5),
         ('F4', 0.5), ('F4', 0.5), ('F4', 0.5), ('G4', 0.5),
         ('Ab4', 1.5), ('Ab4', 0.5), ('G4', 0.5), ('F4', 0.5),
-        # Phrase 2: Rising passage
+        
         ('Eb4', 0.5), ('F4', 0.5), ('G4', 0.5), ('Ab4', 0.5),
-        ('Bb4', 0.5), ('C5', 0.5), ('D5', 1.0),
-        ('Eb5', 0.5), ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5),
-        ('C5', 2.0),
-        # Phrase 3: Variation
-        ('G4', 0.5), ('G4', 0.5), ('G4', 0.5), ('Ab4', 0.5),
-        ('Bb4', 1.0), ('C5', 0.5), ('Bb4', 0.5),
-        ('Ab4', 0.5), ('G4', 0.5), ('F4', 0.5), ('G4', 0.5),
-        ('Eb4', 2.0),
-        # Phrase 4: Resolution
-        ('F4', 0.5), ('G4', 0.5), ('Ab4', 0.5), ('Bb4', 0.5),
-        ('C5', 1.0), ('Bb4', 0.5), ('Ab4', 0.5),
-        ('G4', 1.0), ('F4', 0.5), ('Eb4', 0.5),
+        ('Bb4', 0.5), ('C5', 0.5), ('D5', 0.5), ('Eb5', 0.5),
+        ('F5', 1.5), ('Eb5', 0.5), ('D5', 0.5), ('C5', 0.5),
+        ('Bb4', 2.0),
+    ]
+    # Counter-melody - Low Brass
+    red_wings_counter = [
+        ('C4', 0.5), ('G4', 0.5), ('C4', 0.5), ('G4', 0.5),
+        ('C4', 0.5), ('G4', 0.5), ('C4', 0.5), ('G4', 0.5),
+        ('C4', 0.5), ('G4', 0.5), ('C4', 0.5), ('G4', 0.5),
+        ('C4', 0.5), ('G4', 0.5), ('C4', 0.5), ('G4', 0.5),
+        ('C4', 2.0),
+        
+        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
+        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
+        ('F3', 0.5), ('C4', 0.5), ('F3', 0.5), ('C4', 0.5),
+        ('F3', 0.5), ('C4', 0.5), ('F3', 0.5), ('C4', 0.5),
+        
+        ('Ab3', 0.5), ('Eb4', 0.5), ('Ab3', 0.5), ('Eb4', 0.5),
+        ('Bb3', 0.5), ('F4', 0.5), ('Bb3', 0.5), ('F4', 0.5),
+        ('Bb3', 0.5), ('F4', 0.5), ('Bb3', 0.5), ('F4', 0.5),
         ('C4', 2.0),
     ]
-    red_wings_harmony = [
-        # Driving bass in C minor
+    # Bass - Orchestral hits/Timpani feel
+    red_wings_bass = [
+        ('C2', 0.5), ('C2', 0.5), ('C2', 0.5), ('C2', 0.5),
+        ('C2', 1.0), ('REST', 0.5), ('C2', 0.5),
+        ('C2', 1.0), ('REST', 0.5), ('C2', 0.5),
+        ('C2', 0.5), ('C2', 0.5), ('C2', 0.5), ('C2', 0.5),
+        ('C2', 2.0),
+        
         ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
         ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
         ('Ab2', 0.5), ('Eb3', 0.5), ('Ab2', 0.5), ('Eb3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
+        
         ('Ab2', 0.5), ('Eb3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
+        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
+        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
+        ('C2', 2.0),
     ]
-    melody_track = generate_track_from_sequence(red_wings_melody, 'square', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.8, release=0.2)
-    harmony_track = generate_track_from_sequence(red_wings_harmony, 'sawtooth', VOLUME * 0.7, use_adsr=True)
-    percussion_pattern = [1, 0, 1, 0] * 8
-    percussion_track = generate_percussion_track(percussion_pattern, 0.5, VOLUME * 0.5)
+    
+    melody_track = generate_track_from_sequence(red_wings_melody, 'square', VOLUME, use_adsr=True, attack=0.02, decay=0.1, sustain=0.7, release=0.1)
+    counter_track = generate_track_from_sequence(red_wings_counter, 'sawtooth', VOLUME * 0.6, use_adsr=True, attack=0.05, decay=0.2, sustain=0.5, release=0.2)
+    bass_track = generate_track_from_sequence(red_wings_bass, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
+    percussion_pattern = [1, 0, 1, 1] * 16 # Timpani roll feel
+    percussion_track = generate_percussion_track(percussion_pattern, 0.25, VOLUME * 0.5)
 
-    final_length = max(len(melody_track), len(harmony_track), len(percussion_track))
+    final_length = max(len(melody_track), len(counter_track), len(bass_track), len(percussion_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
-    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
+    counter_track = np.pad(counter_track, (0, final_length - len(counter_track)))
+    bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
     percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
-    title_music = melody_track + harmony_track + percussion_track
+    
+    title_music = melody_track + counter_track + bass_track + percussion_track
     title_music = np.tile(title_music, 2)
     title_music /= np.max(np.abs(title_music))
     save_wav('title.wav', title_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Field Music (FF4 Main Theme of FFIV) - Key of C, flowing
+    # Field Music (FF4 Main Theme of Final Fantasy IV) - High Fidelity
     # =========================================================================
-    TEMPO = 95
+    TEMPO = 92
     BEAT_DURATION = 60 / TEMPO
     field_melody = [
-        # Opening phrase - sweeping heroic theme
-        ('E4', 0.5), ('F4', 0.5), ('G4', 1.0), ('C5', 1.0),
-        ('B4', 0.5), ('A4', 0.5), ('G4', 1.0), ('REST', 1.0),
-        ('F4', 0.5), ('G4', 0.5), ('A4', 1.0), ('D5', 1.0),
-        ('C5', 0.5), ('B4', 0.5), ('A4', 1.0), ('REST', 1.0),
-        # Second phrase
-        ('G4', 0.5), ('A4', 0.5), ('B4', 1.0), ('E5', 1.0),
-        ('D5', 0.5), ('C5', 0.5), ('B4', 0.5), ('A4', 0.5),
-        ('G4', 1.0), ('A4', 0.5), ('B4', 0.5),
-        ('C5', 2.0), ('REST', 1.0),
-        # Third phrase - lyrical contrast
-        ('E5', 1.0), ('D5', 0.5), ('C5', 0.5),
-        ('B4', 1.0), ('A4', 0.5), ('G4', 0.5),
-        ('A4', 1.0), ('B4', 0.5), ('C5', 0.5),
-        ('D5', 2.0), ('REST', 1.0),
-        # Resolution
+        # Main Heroic Theme
+        ('C4', 0.5), ('D4', 0.5), ('E4', 1.0), ('G4', 1.0),
+        ('F4', 0.5), ('E4', 0.5), ('D4', 1.0), ('REST', 1.0),
+        ('D4', 0.5), ('E4', 0.5), ('F4', 1.0), ('A4', 1.0),
+        ('G4', 0.5), ('F4', 0.5), ('E4', 1.0), ('REST', 1.0),
+        
+        ('G4', 0.5), ('A4', 0.5), ('B4', 1.0), ('D5', 1.0),
         ('C5', 0.5), ('B4', 0.5), ('A4', 0.5), ('G4', 0.5),
-        ('F4', 0.5), ('G4', 0.5), ('A4', 1.0),
-        ('G4', 1.0), ('F4', 0.5), ('E4', 0.5),
-        ('C4', 2.0), ('REST', 1.0),
+        ('A4', 1.5), ('G4', 0.5), ('A4', 0.5), ('B4', 0.5),
+        ('C5', 2.0), ('REST', 2.0),
+        
+        # Bridge
+        ('E5', 1.0), ('D5', 0.5), ('C5', 0.5), ('B4', 1.0), ('A4', 0.5), ('G4', 0.5),
+        ('A4', 1.0), ('B4', 0.5), ('C5', 0.5), ('D5', 2.0), ('REST', 1.0),
+        
+        ('C5', 0.5), ('B4', 0.5), ('A4', 0.5), ('G4', 0.5), ('F4', 0.5), ('G4', 0.5),
+        ('A4', 1.5), ('G4', 0.5), ('A4', 1.0), ('D5', 1.0),
+        ('C5', 4.0)
     ]
     field_harmony = [
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('B2', 0.5), ('D3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('C3', 0.5), ('E3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('C3', 0.5), ('E3', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('B2', 0.5), ('D3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('B2', 0.5), ('D3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('C3', 0.5), ('E3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('B2', 0.5), ('D3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
+        ('C3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('C3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        
+        ('B2', 0.5), ('G3', 0.5), ('B3', 0.5), ('G3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        
+        ('C3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        ('A2', 0.5), ('E3', 0.5), ('A3', 0.5), ('E3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        
+        ('C3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F3', 0.5), ('C3', 0.5),
+        ('G2', 0.5), ('D3', 0.5), ('G3', 0.5), ('D3', 0.5),
+        ('C3', 4.0)
     ]
-    melody_track = generate_track_from_sequence(field_melody, 'square', VOLUME, use_adsr=True, attack=0.1, decay=0.3, sustain=0.5, release=0.4)
-    harmony_track = generate_track_from_sequence(field_harmony, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.4, release=0.1)
+    melody_track = generate_track_from_sequence(field_melody, 'triangle', VOLUME, use_adsr=True, attack=0.1, decay=0.3, sustain=0.5, release=0.4)
+    harmony_track = generate_track_from_sequence(field_harmony, 'sine', VOLUME * 0.4, use_adsr=True, attack=0.05, decay=0.2, sustain=0.4, release=0.3)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -284,42 +302,38 @@ def generate_music():
     save_wav('bgm_field.wav', field_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Castle Music (FF4 Kingdom of Baron) - Cm/Eb, regal
+    # Castle Music (FF4 Kingdom of Baron) - High Fidelity implementation
     # =========================================================================
-    TEMPO = 85
+    TEMPO = 82
     BEAT_DURATION = 60 / TEMPO
     castle_melody = [
-        # Stately horn-like theme in C minor
-        ('Eb4', 1.0), ('G4', 1.0), ('Bb4', 0.5), ('Ab4', 0.5),
-        ('G4', 1.0), ('F4', 0.5), ('Eb4', 0.5), ('F4', 2.0),
-        ('G4', 1.0), ('Bb4', 1.0), ('C5', 0.5), ('Bb4', 0.5),
-        ('Ab4', 1.0), ('G4', 0.5), ('F4', 0.5), ('Eb4', 2.0),
-        # Second phrase - ascending nobility
-        ('Bb4', 1.0), ('C5', 1.0), ('D5', 0.5), ('Eb5', 0.5),
-        ('D5', 1.0), ('C5', 0.5), ('Bb4', 0.5), ('C5', 2.0),
-        ('Ab4', 1.0), ('Bb4', 0.5), ('C5', 0.5), ('Bb4', 1.0),
-        ('Ab4', 0.5), ('G4', 0.5), ('F4', 0.5), ('G4', 0.5), ('Eb4', 2.0),
+        # Stately horn-like theme in Eb Major
+        ('Bb4', 1.0), ('G4', 0.5), ('Eb4', 0.5), ('F4', 1.0), ('G4', 1.0),
+        ('Ab4', 0.5), ('G4', 0.5), ('F4', 1.0), ('Eb4', 0.5), ('F4', 0.5), ('G4', 2.0),
+        
+        ('Bb4', 1.0), ('C5', 0.5), ('Bb4', 0.5), ('Ab4', 1.0), ('G4', 1.0),
+        ('F4', 0.5), ('Eb4', 0.5), ('G4', 1.0), ('F4', 0.5), ('Eb4', 0.5), ('Eb4', 2.0),
+        
+        # Second phrase
+        ('Eb5', 1.0), ('D5', 0.5), ('C5', 0.5), ('Bb4', 1.0), ('Ab4', 1.0),
+        ('Bb4', 0.5), ('C5', 0.5), ('D5', 1.0), ('Eb5', 0.5), ('D5', 0.5), ('Eb5', 2.0),
+        
+        ('Ab4', 1.0), ('Bb4', 0.5), ('Ab4', 0.5), ('G4', 1.0), ('F4', 1.0),
+        ('G4', 0.5), ('Ab4', 0.5), ('Bb4', 1.0), ('Ab4', 0.5), ('G4', 0.5), ('Eb4', 2.0),
     ]
     castle_harmony = [
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('Ab2', 0.5), ('Eb3', 0.5), ('Ab2', 0.5), ('Eb3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('G2', 0.5), ('Bb2', 0.5),
-        ('Ab2', 0.5), ('Eb3', 0.5), ('Ab2', 0.5), ('Eb3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
-        ('Ab2', 0.5), ('Eb3', 0.5), ('Ab2', 0.5), ('Eb3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('Ab2', 0.5), ('Eb3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('Ab2', 0.5), ('Eb3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-    ]
-    melody_track = generate_track_from_sequence(castle_melody, 'triangle', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.5, release=0.3)
-    harmony_track = generate_track_from_sequence(castle_harmony, 'sine', VOLUME * 0.6, use_adsr=True)
+        ('Eb3', 0.5), ('Bb3', 0.5), ('Eb4', 0.5), ('Bb3', 0.5),
+        ('Ab2', 0.5), ('Eb3', 0.5), ('Ab3', 0.5), ('Eb3', 0.5),
+        ('Bb2', 0.5), ('F3', 0.5), ('Bb3', 0.5), ('F3', 0.5),
+        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb3', 0.5), ('Bb2', 0.5),
+        
+        ('Eb3', 0.5), ('Bb3', 0.5), ('Eb4', 0.5), ('Bb3', 0.5),
+        ('Ab2', 0.5), ('Eb3', 0.5), ('Ab3', 0.5), ('Eb3', 0.5),
+        ('Eb3', 0.5), ('Bb3', 0.5), ('Eb4', 0.5), ('Bb3', 0.5),
+        ('Eb2', 4.0),
+    ] * 2
+    melody_track = generate_track_from_sequence(castle_melody, 'triangle', VOLUME, use_adsr=True, attack=0.1, decay=0.3, sustain=0.4, release=0.3)
+    harmony_track = generate_track_from_sequence(castle_harmony, 'sine', VOLUME * 0.5, use_adsr=True, attack=0.05, decay=0.2, sustain=0.3, release=0.2)
     final_length = max(len(melody_track), len(harmony_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
@@ -329,98 +343,90 @@ def generate_music():
     save_wav('bgm_castle.wav', castle_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Cave Music (FF4 Into the Darkness) - Dm, mysterious
+    # Cave Music (FF4 Into the Darkness) - High Fidelity implementation
     # =========================================================================
     TEMPO = 100
     BEAT_DURATION = 60 / TEMPO
+    # Mystery melody - Sinister chromatic descent
     cave_melody = [
-        # Descending chromatic motif - eerie atmosphere
-        ('D4', 0.5), ('E4', 0.5), ('F4', 0.5), ('E4', 0.5),
-        ('D4', 0.5), ('C#4', 0.5), ('D4', 1.0),
-        ('A3', 0.5), ('Bb3', 0.5), ('C4', 0.5), ('Bb3', 0.5),
-        ('A3', 0.5), ('G#3', 0.5), ('A3', 1.0),
-        # Second phrase - descending further
-        ('F4', 0.5), ('E4', 0.5), ('D4', 0.5), ('C4', 0.5),
-        ('Bb3', 0.5), ('A3', 0.5), ('G3', 0.5), ('A3', 0.5),
-        ('D4', 1.0), ('C#4', 0.5), ('D4', 0.5),
-        ('E4', 0.5), ('F4', 0.5), ('E4', 0.5), ('D4', 0.5),
-        # Resolution
-        ('A3', 1.0), ('D4', 1.0),
-        ('F4', 0.5), ('E4', 0.5), ('D4', 1.0),
-        ('A3', 2.0), ('REST', 2.0),
+        ('A3', 0.5), ('G#3', 0.5), ('G3', 0.5), ('F#3', 0.5),
+        ('F3', 0.5), ('E3', 0.5), ('D3', 1.0),
+        ('D3', 0.5), ('E3', 0.5), ('F3', 0.5), ('G3', 0.5),
+        ('Ab3', 0.5), ('G3', 0.5), ('F3', 0.5), ('E3', 0.5),
+        ('D3', 2.0),
+        
+        ('D4', 0.5), ('C#4', 0.5), ('C4', 0.5), ('B3', 0.5),
+        ('Bb3', 0.5), ('A3', 0.5), ('G3', 1.0),
+        ('F3', 0.5), ('G3', 0.5), ('A3', 1.0),
+        ('Bb3', 0.5), ('A3', 0.5), ('G3', 0.5), ('F3', 0.5),
+        ('D3', 2.0),
     ]
-    cave_harmony = [
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('Bb1', 0.5), ('F2', 0.5), ('Bb1', 0.5), ('F2', 0.5),
-        ('A1', 0.5), ('E2', 0.5), ('A1', 0.5), ('E2', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('F2', 0.5), ('A2', 0.5),
-        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('D2', 1.0), ('A2', 1.0),
+    # Spooky high pitched arps/shimmer
+    cave_shimmer = [
+        ('D5', 0.25), ('F5', 0.25), ('A5', 0.25), ('D6', 0.25),
+        ('C#5', 0.25), ('E5', 0.25), ('G#5', 0.25), ('C#6', 0.25),
+    ] * 8
+    # Bass - Low drones
+    cave_bass = [
+        ('D2', 4.0), ('Bb1', 4.0), ('A1', 4.0), ('D2', 4.0),
     ] * 2
-    melody_track = generate_track_from_sequence(cave_melody * 2, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.15, decay=0.3, sustain=0.3, release=0.4)
-    harmony_track = generate_track_from_sequence(cave_harmony, 'sawtooth', VOLUME * 0.4, use_adsr=True, attack=0.1, decay=0.3, sustain=0.2, release=0.2)
-    final_length = max(len(melody_track), len(harmony_track))
+    
+    melody_track = generate_track_from_sequence(cave_melody, 'sawtooth', VOLUME * 0.7, use_adsr=True, attack=0.2, decay=0.5, sustain=0.3, release=0.5)
+    shimmer_track = generate_track_from_sequence(cave_shimmer, 'sine', VOLUME * 0.3, use_adsr=True, attack=0.01, decay=0.1, sustain=0.1, release=0.1)
+    bass_track = generate_track_from_sequence(cave_bass, 'sine', VOLUME * 0.5, use_adsr=True, attack=0.2, decay=0.5, sustain=0.5, release=0.5)
+    
+    final_length = max(len(melody_track), len(shimmer_track), len(bass_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
-    harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
-    cave_music = melody_track + harmony_track
+    shimmer_track = np.pad(shimmer_track, (0, final_length - len(shimmer_track)))
+    bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
+    
+    cave_music = melody_track + shimmer_track + bass_track
     cave_music = np.tile(cave_music, 2)
     cave_music /= np.max(np.abs(cave_music))
     save_wav('bgm_cave.wav', cave_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Town Music (FF4 Welcome to Our Town!) - F major, cheerful
+    # Town Music (FF4 Welcome to Our Town!) - High Fidelity implementation
     # =========================================================================
-    TEMPO = 125
+    TEMPO = 118
     BEAT_DURATION = 60 / TEMPO
+    # Main upbeat melody
     town_melody = [
-        # Cheerful opening motif
-        ('F4', 0.5), ('A4', 0.5), ('C5', 1.0),
-        ('A4', 0.5), ('G4', 0.5), ('F4', 0.5), ('G4', 0.5),
-        ('A4', 1.0), ('G4', 0.5), ('F4', 0.5),
-        ('E4', 1.0), ('F4', 0.5), ('G4', 0.5),
-        # Second phrase
-        ('A4', 0.5), ('Bb4', 0.5), ('C5', 1.0),
-        ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('A4', 0.5),
-        ('G4', 1.0), ('A4', 0.5), ('Bb4', 0.5),
-        ('C5', 2.0),
-        # Melodic bridge
-        ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('A4', 0.5),
-        ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('F4', 0.5),
-        ('G4', 1.0), ('A4', 0.5), ('Bb4', 0.5),
-        ('A4', 1.0), ('G4', 0.5), ('F4', 0.5),
-        # Ending
-        ('E4', 0.5), ('F4', 0.5), ('G4', 0.5), ('A4', 0.5),
-        ('Bb4', 0.5), ('A4', 0.5), ('G4', 0.5), ('F4', 0.5),
-        ('F4', 2.0), ('REST', 1.0),
+        ('F4', 0.5), ('A4', 0.25), ('G4', 0.25), ('F4', 0.5), ('C5', 0.5),
+        ('Bb4', 0.5), ('A4', 0.25), ('G4', 0.25), ('A4', 1.0),
+        ('G4', 0.5), ('F4', 0.25), ('G4', 0.25), ('A4', 0.5), ('F4', 0.5),
+        ('E4', 0.5), ('F4', 0.25), ('G4', 0.25), ('C4', 1.0),
+        
+        ('F4', 0.5), ('A4', 0.25), ('G4', 0.25), ('F4', 0.5), ('C5', 0.5),
+        ('D5', 0.5), ('E5', 0.25), ('F5', 0.25), ('C5', 1.0),
+        ('Bb4', 0.5), ('A4', 0.5), ('G4', 0.5), ('A4', 0.5),
+        ('F4', 2.0),
     ]
+    # Ocarina-like harmony
     town_harmony = [
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('E2', 0.5), ('G2', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('D3', 0.5), ('F3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('D3', 0.5), ('F3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('A2', 0.5), ('C3', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E3', 0.5), ('G3', 0.5),
-        ('Bb2', 0.5), ('F3', 0.5), ('D3', 0.5), ('F3', 0.5),
+        ('C4', 0.5), ('F4', 0.5), ('A4', 0.5), ('F4', 0.5),
+        ('G4', 0.5), ('E4', 0.5), ('C4', 0.5), ('E4', 0.5),
+        ('A4', 0.5), ('F4', 0.5), ('C4', 0.5), ('F4', 0.5),
+        ('G4', 0.5), ('E4', 0.5), ('C4', 0.5), ('E4', 0.5),
+    ] * 2
+    # Walking bass
+    town_bass = [
         ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
-    ]
+        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
+        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
+    ] * 2
+    
     melody_track = generate_track_from_sequence(town_melody, 'triangle', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
-    harmony_track = generate_track_from_sequence(town_harmony, 'triangle', VOLUME * 0.5, use_adsr=True)
-    final_length = max(len(melody_track), len(harmony_track))
+    harmony_track = generate_track_from_sequence(town_harmony, 'sine', VOLUME * 0.4, use_adsr=True)
+    bass_track = generate_track_from_sequence(town_bass, 'triangle', VOLUME * 0.5, use_adsr=True)
+    
+    final_length = max(len(melody_track), len(harmony_track), len(bass_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
-    town_music = melody_track + harmony_track
+    bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
+    
+    town_music = melody_track + harmony_track + bass_track
     town_music = np.tile(town_music, 2)
     town_music /= np.max(np.abs(town_music))
     save_wav('bgm_town.wav', town_music, SAMPLE_RATE)
@@ -431,30 +437,41 @@ def generate_music():
     TEMPO = 165
     BEAT_DURATION = 60 / TEMPO
     
-    # Fast frantic bass intro
+    # Iconic high-speed bass intro
     intro_bass = [
-        ('G2', 0.25), ('G2', 0.25), ('Bb2', 0.25), ('G2', 0.25), 
-        ('C3', 0.25), ('G2', 0.25), ('Bb2', 0.25), ('G2', 0.25)
-    ] * 4
+        ('C3', 0.25), ('C3', 0.25), ('Eb3', 0.25), ('C3', 0.25),
+        ('F3', 0.25), ('C3', 0.25), ('Gb3', 0.25), ('C3', 0.25),
+        ('G3', 0.25), ('C3', 0.25), ('Ab3', 0.25), ('C3', 0.25),
+        ('Bb3', 0.25), ('C3', 0.25), ('B3', 0.25), ('C3', 0.25),
+    ]
     intro_melody = [('REST', 8.0)]
     
-    # Main Melody - aggressive and heroic
+    # Main frantic melody in C minor
     battle_melody = [
-        ('G4', 0.5), ('Bb4', 0.5), ('G4', 0.5), ('C5', 0.5), ('Bb4', 1.0), ('G4', 1.0),
-        ('F4', 0.5), ('Ab4', 0.5), ('F4', 0.5), ('Bb4', 0.5), ('Ab4', 1.0), ('F4', 1.0),
-        ('G4', 0.5), ('Bb4', 0.5), ('C5', 0.5), ('D5', 0.5), ('Eb5', 1.0), ('D5', 1.0),
-        ('C5', 0.5), ('Bb4', 0.5), ('C5', 0.5), ('Eb5', 0.5), ('D5', 2.0),
-    ] * 2
+        ('REST', 4.0), # After intro
+        ('C5', 0.5), ('C5', 0.5), ('Eb5', 0.5), ('F5', 0.5),
+        ('G5', 1.0), ('Eb5', 0.5), ('C5', 0.5),
+        ('G5', 2.0),
+        
+        ('Bb4', 0.5), ('Bb4', 0.5), ('D5', 0.5), ('Eb5', 0.5),
+        ('F5', 1.0), ('D5', 0.5), ('Bb4', 0.5),
+        ('F5', 2.0),
+        
+        ('Ab4', 0.5), ('Ab4', 0.5), ('C5', 0.5), ('Db5', 0.5),
+        ('Eb5', 1.0), ('C5', 0.5), ('Ab4', 0.5),
+        ('Eb5', 2.0),
+        
+        ('G4', 0.5), ('G4', 0.5), ('B4', 0.5), ('D5', 0.5),
+        ('F5', 1.0), ('D5', 0.5), ('G5', 0.5),
+        ('B5', 2.0),
+    ]
     
+    # Driving syncopated bass
     battle_bass = [
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5), 
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5), 
-        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5), 
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5), 
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5)
+        ('C2', 0.5), ('C3', 0.5), ('REST', 0.25), ('C3', 0.25), ('C2', 0.5),
+        ('Bb1', 0.5), ('Bb2', 0.5), ('REST', 0.25), ('Bb2', 0.25), ('Bb1', 0.5),
+        ('Ab1', 0.5), ('Ab2', 0.5), ('REST', 0.25), ('Ab2', 0.25), ('Ab1', 0.5),
+        ('G1', 0.5), ('G2', 0.5), ('REST', 0.25), ('G2', 0.25), ('G1', 0.5),
     ] * 2
 
     percussion_pattern = [1, 0, 0, 1, 1, 0, 1, 0] * 16
@@ -482,7 +499,8 @@ def generate_music():
     victory_melody = [
         # Famous intro triplet-like pattern
         ('C5', 0.33), ('C5', 0.33), ('C5', 0.34), ('C5', 1.0),
-        ('Ab4', 1.0), ('Bb4', 1.0), ('C5', 0.5), ('REST', 0.25), ('Bb4', 0.25), ('C5', 2.0)
+        ('Ab4', 1.0), ('Bb4', 1.0), ('C5', 0.5), ('REST', 0.25), ('Bb4', 0.25), ('C5', 2.0),
+        ('Bb4', 0.5), ('C5', 0.5), ('D5', 1.0), ('D5', 0.5), ('Eb5', 0.5), ('F5', 2.0)
     ]
     victory_harmony = [
         ('C4', 0.33), ('E4', 0.33), ('G4', 0.34), ('C5', 1.0),
@@ -503,48 +521,21 @@ def generate_music():
     TEMPO = 175
     BEAT_DURATION = 60 / TEMPO
 
-    # Aggressive, driving bass intro (E pedal point with chromatic movement)
+    # Aggressive, driving bass intro (Four Fiends theme)
     boss_intro_bass = [
-        ('E2', 0.25), ('E2', 0.25), ('F2', 0.25), ('E2', 0.25),
-        ('G2', 0.25), ('E2', 0.25), ('F#2', 0.25), ('E2', 0.25),
-        ('A2', 0.25), ('E2', 0.25), ('G2', 0.25), ('E2', 0.25),
-        ('Bb2', 0.25), ('E2', 0.25), ('B2', 0.25), ('E2', 0.25),
-    ] * 2
-
-    # Intense, dramatic melody running up and down the scale
+        ('E2', 0.25), ('E2', 0.25), ('F2', 0.25), ('F#2', 0.25),
+        ('G2', 0.25), ('Ab2', 0.25), ('A2', 0.25), ('Bb2', 0.25),
+    ] * 4
     boss_melody = [
-        ('E5', 0.5), ('G5', 0.5), ('E5', 0.5), ('B4', 0.5), 
-        ('C5', 0.5), ('D5', 0.5), ('E5', 0.5), ('D5', 0.5), 
-        ('C5', 0.5), ('B4', 0.5), ('A4', 0.5), ('B4', 0.5), 
-        ('C5', 0.5), ('A4', 0.5), ('B4', 1.0),
-        
-        ('E4', 0.5), ('G4', 0.5), ('A4', 1.0), 
-        ('G4', 0.5), ('F4', 0.5), ('E4', 1.0),
-        
-        ('E5', 0.5), ('F#5', 0.5), ('G5', 0.5), ('A5', 0.5), 
-        ('G5', 0.5), ('F#5', 0.5), ('E5', 0.5), ('D5', 0.5), 
-        ('C5', 0.5), ('B4', 0.5), ('A4', 0.5), ('G4', 0.5), 
-        ('A4', 0.5), ('B4', 0.5), ('C5', 0.5), ('D5', 0.5),
-        
-        ('E5', 1.0), ('REST', 1.0), 
-    ]
-
+        ('E5', 0.25), ('G5', 0.25), ('A5', 0.25), ('Bb5', 0.25),
+        ('B5', 0.5), ('D6', 0.5), ('E6', 1.0),
+        ('D6', 0.5), ('B5', 0.5), ('A5', 0.5), ('G5', 0.5),
+        ('E5', 1.0), ('REST', 1.0),
+    ] * 2
     boss_bass = [
         ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
-        
-        ('C3', 0.5), ('G3', 0.5), ('C3', 0.5), ('G3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        
-        ('D3', 0.5), ('A3', 0.5), ('D3', 0.5), ('A3', 0.5),
-        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        
-        ('E2', 0.5), ('B2', 0.5)
-    ]
+        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
+    ] * 4
 
     boss_percussion = [1, 0, 1, 1, 1, 0, 1, 0] * 16
 
@@ -576,29 +567,29 @@ def generate_music():
         ('Db3', 0.25), ('E3', 0.25), ('G3', 0.25), ('Db4', 0.25),
     ] * 2
 
+    # Iconic frantic Final Battle intro
+    final_intro = [
+        ('C3', 0.25), ('Eb3', 0.25), ('F#3', 0.25), ('C4', 0.25),
+        ('C3', 0.25), ('Eb3', 0.25), ('F#3', 0.25), ('C4', 0.25),
+        ('Db3', 0.25), ('E3', 0.25), ('G3', 0.25), ('Db4', 0.25),
+        ('Db3', 0.25), ('E3', 0.25), ('G3', 0.25), ('Db4', 0.25),
+    ] * 2
+    # Aggressive Final Battle melody
     final_melody = [
-        ('C5', 0.25), ('REST', 0.25), ('C5', 0.25), ('REST', 0.25), 
-        ('Eb5', 0.5), ('F5', 0.25), ('Eb5', 0.25), ('C5', 0.5),
-        ('Bb4', 0.25), ('C5', 0.25), ('Eb5', 0.5), ('F5', 0.5), ('G5', 0.5),
-        ('Ab5', 0.5), ('G5', 0.25), ('F5', 0.25), ('Eb5', 0.5), ('D5', 0.5),
-        ('Eb5', 1.0), ('REST', 0.5), ('C5', 0.5),
-        
-        ('F5', 0.5), ('Eb5', 0.25), ('D5', 0.25), ('C5', 0.5), ('Bb4', 0.5),
-        ('Ab4', 0.25), ('Bb4', 0.25), ('C5', 0.5), ('Eb5', 0.5), ('F5', 0.5),
-        ('G5', 0.5), ('Ab5', 0.25), ('G5', 0.25), ('F5', 0.5), ('Eb5', 0.5),
-        ('D5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('C5', 0.5),
+        ('REST', 8.0), # After intro
+        ('C5', 0.5), ('Eb5', 0.25), ('F5', 0.25), ('Gb5', 0.5), ('F5', 0.5),
+        ('Eb5', 0.5), ('C5', 0.5), ('Bb4', 0.5), ('C5', 0.5),
+        ('Eb5', 0.5), ('F5', 0.25), ('Gb5', 0.25), ('Ab5', 0.5), ('Gb5', 0.5),
+        ('F5', 0.5), ('Eb5', 0.5), ('Db5', 0.5), ('Eb5', 0.5),
     ]
 
+    # Driving Final Battle bass
     final_bass = [
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-        ('Bb1', 0.5), ('F2', 0.5), ('Bb1', 0.5), ('F2', 0.5),
-        ('Ab1', 0.5), ('Eb2', 0.5), ('Ab1', 0.5), ('Eb2', 0.5),
-        ('Eb2', 0.5), ('Bb2', 0.5), ('Eb2', 0.5), ('Bb2', 0.5),
-        ('F2', 0.5), ('C3', 0.5), ('F2', 0.5), ('C3', 0.5),
-        ('Ab1', 0.5), ('Eb2', 0.5), ('Ab1', 0.5), ('Eb2', 0.5),
-        ('G1', 0.5), ('D2', 0.5), ('G1', 0.5), ('D2', 0.5),
-        ('C2', 0.5), ('G2', 0.5), ('C2', 0.5), ('G2', 0.5),
-    ]
+        ('C2', 0.25), ('C2', 0.25), ('C2', 0.25), ('C2', 0.25),
+        ('Ab1', 0.25), ('Ab1', 0.25), ('Ab1', 0.25), ('Ab1', 0.25),
+        ('Bb1', 0.25), ('Bb1', 0.25), ('Bb1', 0.25), ('Bb1', 0.25),
+        ('C2', 0.25), ('C2', 0.25), ('C2', 0.25), ('C2', 0.25),
+    ] * 4
 
     final_percussion = [1, 1, 0, 1, 1, 0, 1, 1] * 16
 
@@ -624,17 +615,16 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     airship_melody = [
-        # Energetic soaring theme
-        ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5), ('A5', 1.0), ('G5', 1.0),
-        ('F#5', 0.5), ('E5', 0.5), ('D5', 1.0), ('B4', 1.0),
-        ('A4', 0.5), ('B4', 0.5), ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5),
-        ('G5', 2.0), ('F#5', 1.0), ('E5', 1.0),
-        
-        ('D5', 1.0), ('F#5', 0.5), ('A5', 0.5), ('G5', 1.0), ('F#5', 1.0),
-        ('E5', 0.5), ('D5', 0.5), ('C#5', 1.0), ('D5', 1.0),
-        ('B4', 0.5), ('C#5', 0.5), ('D5', 1.0), ('E5', 0.5), ('F#5', 0.5),
-        ('D5', 2.0), ('REST', 2.0),
+        ('C5', 0.5), ('E5', 0.5), ('G5', 1.0), ('F5', 0.5), ('E5', 0.5), ('D5', 1.0),
+        ('D5', 0.5), ('F5', 0.5), ('A5', 1.0), ('G5', 0.5), ('F5', 0.5), ('E5', 1.0),
+        ('G5', 0.5), ('C6', 0.5), ('B5', 0.5), ('A5', 0.5), ('G5', 1.0), ('F5', 1.0),
+        ('E5', 2.0), ('REST', 2.0),
     ]
+    # Fast Airship bass
+    airship_bass = [
+        ('C3', 0.25), ('G3', 0.25), ('C4', 0.25), ('G3', 0.25),
+        ('F2', 0.25), ('C3', 0.25), ('F3', 0.25), ('C3', 0.25),
+    ] * 8
 
     airship_harmony = [
         ('D3', 0.5), ('A3', 0.5), ('D4', 0.5), ('A3', 0.5),
@@ -670,22 +660,17 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     love_melody = [
-        # Famous lyrical melody
-        ('E5', 2.0), ('D5', 1.0), ('C5', 1.0),
-        ('B4', 2.0), ('A4', 1.0), ('G4', 1.0),
-        ('A4', 1.5), ('B4', 0.5), ('C5', 1.0), ('D5', 1.0),
-        ('E5', 3.0), ('REST', 1.0),
-        
-        ('D5', 2.0), ('C5', 1.0), ('B4', 1.0),
-        ('A4', 2.0), ('G4', 1.0), ('F4', 1.0),
-        ('G4', 1.5), ('A4', 0.5), ('B4', 1.0), ('C5', 1.0),
-        ('D5', 3.0), ('REST', 1.0),
-        
-        ('C5', 2.0), ('D5', 1.0), ('E5', 1.0),
-        ('F5', 2.0), ('E5', 1.0), ('D5', 1.0),
-        ('C5', 1.5), ('D5', 0.5), ('E5', 1.0), ('D5', 1.0),
-        ('C5', 3.0), ('REST', 1.0),
+        ('G4', 1.0), ('F4', 0.5), ('Eb4', 0.5), ('D4', 1.0), ('Eb4', 1.0),
+        ('C4', 2.0), ('REST', 1.0),
+        ('Ab4', 1.0), ('G4', 0.5), ('F4', 0.5), ('Eb4', 1.0), ('F4', 1.0),
+        ('D4', 2.0), ('REST', 1.0),
     ]
+    # Arpeggiated harp-like harmony
+    love_harmony = [
+        ('C3', 0.5), ('G3', 0.5), ('Eb4', 0.5), ('G3', 0.5),
+        ('Ab2', 0.5), ('Eb3', 0.5), ('C4', 0.5), ('Eb3', 0.5),
+        ('Bb2', 0.5), ('F3', 0.5), ('D4', 0.5), ('F3', 0.5),
+    ] * 4
 
     love_harmony = [
         # Flowing arpeggios
@@ -730,13 +715,12 @@ def generate_music():
     ] * 2
 
     # Tense, hesitant melody
+    # Tense, hesitant melody
     suspense_melody = [
         ('REST', 4.0),
-        ('B3', 1.0), ('C4', 1.0), ('B3', 1.0), ('REST', 1.0),
-        ('Bb3', 1.0), ('B3', 1.0), ('Bb3', 1.0), ('REST', 1.0),
-        ('A3', 1.0), ('Bb3', 1.0), ('A3', 0.5), ('G#3', 0.5), ('A3', 1.0),
-        ('G3', 2.0), ('REST', 2.0), 
-    ]
+        ('B3', 0.5), ('C4', 0.25), ('B3', 0.25), ('G3', 0.5), ('REST', 0.5),
+        ('Bb3', 0.5), ('B3', 0.25), ('Bb3', 0.25), ('F3', 0.5), ('REST', 0.5),
+    ] * 2
 
     melody_track = generate_track_from_sequence(suspense_melody, 'sawtooth', VOLUME * 0.8, use_adsr=True, attack=0.3, decay=0.5, sustain=0.3, release=0.5)
     harmony_track = generate_track_from_sequence(suspense_bass, 'sine', VOLUME * 0.6, use_adsr=True, attack=0.2, decay=0.3, sustain=0.2, release=0.3)
@@ -755,28 +739,15 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     shop_melody = [
-        ('C5', 0.5), ('E5', 0.5), ('G5', 0.5), ('E5', 0.5),
-        ('F5', 0.5), ('A5', 0.5), ('G5', 0.5), ('E5', 0.5),
-        ('D5', 0.5), ('F5', 0.5), ('E5', 0.5), ('C5', 0.5),
-        ('D5', 1.0), ('G4', 1.0),
-        
-        ('C5', 0.5), ('D5', 0.5), ('E5', 0.5), ('G5', 0.5),
+        ('C5', 0.25), ('D5', 0.25), ('E5', 0.25), ('G5', 0.25),
         ('A5', 0.5), ('G5', 0.5), ('E5', 0.5), ('C5', 0.5),
-        ('D5', 0.5), ('E5', 0.5), ('F5', 0.5), ('G5', 0.5),
+        ('D5', 0.25), ('E5', 0.25), ('F5', 0.25), ('G5', 0.25),
         ('C5', 2.0),
-    ]
-
+    ] * 2
     shop_harmony = [
         ('C3', 0.5), ('G3', 0.5), ('C4', 0.5), ('G3', 0.5),
-        ('F3', 0.5), ('C4', 0.5), ('A3', 0.5), ('C4', 0.5),
-        ('G3', 0.5), ('D4', 0.5), ('B3', 0.5), ('D4', 0.5),
-        ('G3', 0.5), ('D4', 0.5), ('B3', 0.5), ('D4', 0.5),
-        
-        ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
-        ('F3', 0.5), ('C4', 0.5), ('A3', 0.5), ('C4', 0.5),
-        ('G3', 0.5), ('D4', 0.5), ('B3', 0.5), ('D4', 0.5),
-        ('C3', 0.5), ('G3', 0.5), ('E4', 0.5), ('G3', 0.5),
-    ]
+        ('F3', 0.5), ('C4', 0.5), ('F4', 0.5), ('C4', 0.5),
+    ] * 4
 
     melody_track = generate_track_from_sequence(shop_melody, 'triangle', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.5, release=0.1)
     harmony_track = generate_track_from_sequence(shop_harmony, 'triangle', VOLUME * 0.5, use_adsr=True, attack=0.01, decay=0.1, sustain=0.3, release=0.1)
@@ -795,28 +766,13 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     inn_melody = [
-        ('G4', 1.0), ('B4', 1.0), ('D5', 2.0),
-        ('C5', 1.0), ('B4', 1.0), ('A4', 2.0),
-        ('G4', 1.0), ('A4', 1.0), ('B4', 1.0), ('G4', 1.0),
-        ('A4', 4.0), 
-        
-        ('B4', 1.0), ('D5', 1.0), ('E5', 2.0),
-        ('D5', 1.0), ('C5', 1.0), ('B4', 2.0),
-        ('C5', 1.0), ('B4', 1.0), ('A4', 1.0), ('F#4', 1.0),
-        ('G4', 4.0), 
+        ('G4', 1.0), ('B4', 0.5), ('C5', 0.5), ('D5', 1.0), ('G4', 1.0),
+        ('A4', 1.0), ('B4', 0.5), ('A4', 0.5), ('G4', 2.0),
     ]
-
     inn_harmony = [
-        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
-        ('C3', 1.0), ('E3', 1.0), ('G3', 1.0), ('C4', 1.0),
-        ('D3', 1.0), ('F#3', 1.0), ('A3', 1.0), ('D4', 1.0),
-        ('G2', 1.0), ('D3', 1.0), ('A3', 1.0), ('D4', 1.0),
-        
-        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
-        ('A2', 1.0), ('C3', 1.0), ('E3', 1.0), ('A3', 1.0),
-        ('D3', 1.0), ('F#3', 1.0), ('A3', 1.0), ('D4', 1.0),
-        ('G2', 1.0), ('B2', 1.0), ('D3', 1.0), ('G3', 1.0),
-    ]
+        ('G2', 1.0), ('D3', 1.0), ('G3', 1.0), ('D3', 1.0),
+        ('C2', 1.0), ('G2', 1.0), ('C3', 1.0), ('G2', 1.0),
+    ] * 2
 
     melody_track = generate_track_from_sequence(inn_melody, 'sine', VOLUME * 0.8, use_adsr=True, attack=0.1, decay=0.3, sustain=0.2, release=0.8)
     harmony_track = generate_track_from_sequence(inn_harmony, 'sine', VOLUME * 0.3, use_adsr=True, attack=0.1, decay=0.3, sustain=0.2, release=0.8)
@@ -834,26 +790,15 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     tower_melody = [
-        ('A3', 0.5), ('C4', 0.5), ('E4', 0.5), ('A4', 0.5),
-        ('G#4', 0.5), ('E4', 0.5), ('C4', 0.5), ('G#3', 0.5),
-        ('A3', 0.5), ('D4', 0.5), ('F4', 0.5), ('A4', 0.5),
-        ('G4', 0.5), ('F4', 0.5), ('D4', 0.5), ('A3', 0.5),
-        ('Bb3', 0.5), ('D4', 0.5), ('F4', 0.5), ('Bb4', 0.5),
-        ('A4', 0.5), ('F4', 0.5), ('D4', 0.5), ('Bb3', 0.5),
-        ('G#3', 0.5), ('B3', 0.5), ('E4', 0.5), ('G#4', 0.5),
-        ('A4', 1.0), ('E4', 0.5), ('A3', 0.5),
+        ('Bb3', 0.5), ('Db4', 0.5), ('F4', 0.5), ('Bb4', 0.5),
+        ('A4', 0.5), ('F4', 0.5), ('Db4', 0.5), ('A3', 0.5),
+        ('Bb3', 0.5), ('Eb4', 0.5), ('Gb4', 0.5), ('Bb4', 0.5),
+        ('Ab4', 0.5), ('Gb4', 0.5), ('Eb4', 0.5), ('Bb3', 0.5),
     ] * 2
-
     tower_bass = [
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        ('G#2', 0.5), ('E3', 0.5), ('G#2', 0.5), ('E3', 0.5),
-        ('D2', 0.5), ('A2', 0.5), ('D2', 0.5), ('A2', 0.5),
-        ('G2', 0.5), ('D3', 0.5), ('G2', 0.5), ('D3', 0.5),
         ('Bb2', 0.5), ('F3', 0.5), ('Bb2', 0.5), ('F3', 0.5),
         ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-        ('E2', 0.5), ('B2', 0.5), ('E2', 0.5), ('B2', 0.5),
-        ('A2', 0.5), ('E3', 0.5), ('A2', 0.5), ('E3', 0.5),
-    ] * 2
+    ] * 4
 
     tower_percussion = [1, 0, 0, 1, 0, 0, 1, 0] * 16
 
@@ -889,15 +834,9 @@ def generate_music():
     ]
 
     prologue_melody = [
-        ('C5', 2.0), ('D5', 1.0), ('E5', 1.0),
-        ('F5', 2.0), ('E5', 1.0), ('D5', 1.0),
-        ('C5', 1.0), ('E5', 1.0), ('G5', 2.0),
-        ('F5', 1.0), ('E5', 1.0), ('D5', 1.0), ('C5', 1.0),
-        ('B4', 2.0), ('C5', 1.0), ('D5', 1.0),
-        ('E5', 2.0), ('D5', 1.0), ('C5', 1.0),
-        ('A4', 1.0), ('B4', 1.0), ('C5', 2.0),
-        ('G4', 1.0), ('A4', 1.0), ('B4', 1.0), ('C5', 1.0),
-    ]
+        ('C5', 1.0), ('B4', 0.5), ('A4', 0.5), ('G4', 1.0), ('F4', 1.0),
+        ('E4', 1.0), ('F4', 0.5), ('G4', 0.5), ('C4', 2.0),
+    ] * 2
 
     prologue_bass = [
         ('C3', 2.0), ('G2', 2.0),
@@ -930,15 +869,9 @@ def generate_music():
     BEAT_DURATION = 60 / TEMPO
 
     gameover_melody = [
-        ('C5', 2.0), ('B4', 1.0), ('Bb4', 1.0),
-        ('A4', 2.0), ('Ab4', 1.0), ('G4', 1.0),
-        ('F#4', 2.0), ('F4', 1.0), ('E4', 1.0),
-        ('Eb4', 2.0), ('D4', 1.0), ('C4', 1.0),
-        ('B3', 1.0), ('C4', 1.0), ('Eb4', 2.0),
-        ('D4', 1.0), ('C4', 1.0), ('B3', 1.0), ('C4', 1.0),
-        ('C4', 4.0),
-        ('REST', 4.0),
-    ]
+        ('C4', 1.0), ('E4', 1.0), ('G4', 1.0), ('C5', 2.0),
+        ('B4', 0.5), ('A4', 0.5), ('G4', 4.0),
+    ] + [('REST', 4.0)]
 
     gameover_harmony = [
         ('C3', 2.0), ('G3', 2.0),
