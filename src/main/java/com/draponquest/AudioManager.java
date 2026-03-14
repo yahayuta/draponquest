@@ -174,6 +174,7 @@ public class AudioManager {
             loadSoundEffect(SOUND_VICTORY, "/sounds/victory.wav");
             loadSoundEffect(SOUND_DEFEAT, "/sounds/defeat.wav");
             loadSoundEffect(SOUND_MENU_SELECT, "/sounds/menu_select.wav");
+            loadSoundEffect(SOUND_MENU_OPEN, "/sounds/menu_open.wav");
             loadSoundEffect(SOUND_SAVE, "/sounds/save.wav");
             loadSoundEffect(SOUND_LOAD, "/sounds/load.wav");
             // Add missing generated sound files

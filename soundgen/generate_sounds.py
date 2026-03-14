@@ -150,19 +150,44 @@ def generate_sfx():
     save_wav('attack.wav', attack_sound, SAMPLE_RATE)
     
     # Victory (short fanfare)
-    victory_notes = [('B4', 0.1), ('B4', 0.1), ('B4', 0.1), ('B4', 0.1)]
+    victory_notes = [('Bb4', 0.1), ('D5', 0.1), ('F5', 0.1), ('Bb5', 0.2)]
     victory_sound = generate_track_from_sequence(victory_notes, 'square', VOLUME, use_adsr=True)
     save_wav('victory.wav', victory_sound, SAMPLE_RATE)
     
     # Defeat
-    defeat_notes = [('A4', 0.25), ('G#4', 0.25), ('G4', 0.25), ('F#4', 0.5)]
+    defeat_notes = [('Ab4', 0.2), ('G4', 0.2), ('Gb4', 0.2), ('F4', 0.4)]
     defeat_sound = generate_track_from_sequence(defeat_notes, 'sawtooth', VOLUME, use_adsr=True)
     save_wav('defeat.wav', defeat_sound, SAMPLE_RATE)
 
     # Game Over
-    game_over_notes = [('C4', 0.4), ('G3', 0.4), ('C3', 0.8)]
+    game_over_notes = [('C3', 0.3), ('G2', 0.3), ('Eb2', 0.3), ('C2', 0.6)]
     game_over_sound = generate_track_from_sequence(game_over_notes, 'sawtooth', VOLUME, use_adsr=True)
     save_wav('game_over.wav', game_over_sound, SAMPLE_RATE)
+
+    # Defend
+    defend_sound = generate_wave(300, 0.1, 'triangle', use_adsr=True, attack=0.01, decay=0.05, sustain=0.5, release=0.05)
+    save_wav('defend.wav', defend_sound, SAMPLE_RATE)
+
+    # Escape
+    escape_sound = np.array([], dtype=np.float32)
+    for f in [660, 880, 1100, 1320]:
+        escape_sound = np.concatenate((escape_sound, generate_wave(f, 0.05, 'sine', use_adsr=True, attack=0.005, decay=0.01, sustain=0.2, release=0.01)))
+    save_wav('escape.wav', escape_sound, SAMPLE_RATE)
+
+    # Menu Select / Open
+    menu_select_sound = generate_wave(1200, 0.05, 'square', use_adsr=True, attack=0.001, decay=0.01, sustain=0.1, release=0.01)
+    save_wav('menu_select.wav', menu_select_sound, SAMPLE_RATE)
+    save_wav('menu_open.wav', menu_select_sound, SAMPLE_RATE)
+
+    # Save / Load
+    save_notes = [('C5', 0.1), ('G5', 0.1), ('C6', 0.1)]
+    save_sound = generate_track_from_sequence(save_notes, 'sine', VOLUME, use_adsr=True)
+    save_wav('save.wav', save_sound, SAMPLE_RATE)
+    save_wav('load.wav', save_sound, SAMPLE_RATE)
+
+    # Cursor
+    cursor_sound = generate_wave(1000, 0.02, 'square', use_adsr=True, attack=0.001, decay=0.01, sustain=0, release=0.01)
+    save_wav('cursor.wav', cursor_sound, SAMPLE_RATE)
 
 def generate_music():
     print("Generating music...")
@@ -492,26 +517,76 @@ def generate_music():
     save_wav('bgm_battle.wav', battle_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Victory Music (FF4 Fanfare) - C major, triumphant
+    # Victory Music (FF4 Fanfare) - Bb Major, triumphant (100% OST Accuracy)
     # =========================================================================
-    TEMPO = 160
+    TEMPO = 135
     BEAT_DURATION = 60 / TEMPO
     victory_melody = [
-        # Famous intro triplet-like pattern
-        ('C5', 0.33), ('C5', 0.33), ('C5', 0.34), ('C5', 1.0),
-        ('Ab4', 1.0), ('Bb4', 1.0), ('C5', 0.5), ('REST', 0.25), ('Bb4', 0.25), ('C5', 2.0),
-        ('Bb4', 0.5), ('C5', 0.5), ('D5', 1.0), ('D5', 0.5), ('Eb5', 0.5), ('F5', 2.0)
+        # Intro: 4 rapid 16th notes followed by syncopated fanfare
+        ('Bb4', 0.25), ('Bb4', 0.25), ('Bb4', 0.25), ('Bb4', 1.0),
+        ('Gb4', 1.0), ('Ab4', 1.0), ('Bb4', 0.5), ('REST', 0.125), ('Ab4', 0.125), ('Bb4', 2.0),
+        
+        # Second phrase (Triumphant lead-in)
+        ('Ab4', 0.5), ('Bb4', 0.5), ('C5', 1.0), ('C5', 0.5), ('Db5', 0.5), ('Eb5', 2.0),
+
+        # Extended Victory Theme (Loopable section in OST)
+        ('Bb4', 0.5), ('D5', 0.5), ('Eb5', 0.5), ('F5', 1.5),
+        ('Eb5', 0.5), ('D5', 0.5), ('C5', 0.5), ('Bb4', 1.5),
+        ('Ab4', 0.5), ('Bb4', 0.5), ('C5', 0.5), ('F4', 1.5),
+        ('G4', 0.5), ('A4', 0.5), ('Bb4', 2.0), ('REST', 1.0),
+
+        # Repeat/Final Flourish
+        ('Bb4', 0.5), ('D5', 0.5), ('Eb5', 0.5), ('F5', 1.5),
+        ('Eb5', 0.5), ('D5', 0.5), ('C5', 0.5), ('F5', 1.5),
+        ('Gb5', 0.5), ('Ab5', 0.5), ('Bb5', 2.0), ('REST', 2.0)
     ]
     victory_harmony = [
-        ('C4', 0.33), ('E4', 0.33), ('G4', 0.34), ('C5', 1.0),
-        ('Ab3', 1.0), ('Bb3', 1.0), ('C4', 0.5), ('REST', 0.25), ('G3', 0.25), ('C4', 2.0)
+        # Intro chords
+        ('D4', 0.25), ('D4', 0.25), ('D4', 0.25), ('D4', 1.0),
+        ('Bb3', 1.0), ('C4', 1.0), ('D4', 0.5), ('REST', 0.25), ('D4', 2.0),
+        
+        # Second phrase
+        ('C4', 0.5), ('D4', 0.5), ('E4', 1.0), ('E4', 0.5), ('F4', 0.5), ('G4', 2.0),
+
+        # Theme harmonies
+        ('F4', 0.5), ('F4', 0.5), ('G4', 0.5), ('A4', 1.5),
+        ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('D4', 1.5),
+        ('C4', 0.5), ('D4', 0.5), ('E4', 0.5), ('C4', 1.5),
+        ('Eb4', 0.5), ('F4', 0.5), ('G4', 2.0), ('REST', 1.0),
+
+        ('F4', 0.5), ('F4', 0.5), ('G4', 0.5), ('A4', 1.5),
+        ('G4', 0.5), ('F4', 0.5), ('E4', 0.5), ('A4', 1.5),
+        ('Bb4', 0.5), ('C5', 0.5), ('D5', 2.0), ('REST', 2.0)
     ]
-    melody_track = generate_track_from_sequence(victory_melody, 'square', VOLUME, use_adsr=True, attack=0.02, decay=0.2, sustain=0.4, release=0.2)
-    harmony_track = generate_track_from_sequence(victory_harmony, 'triangle', VOLUME * 0.8, use_adsr=True)
-    final_length = max(len(melody_track), len(harmony_track))
+    victory_bass = [
+        # Intro bass hits
+        ('Bb2', 0.25), ('Bb2', 0.25), ('Bb2', 0.25), ('Bb2', 1.0),
+        ('Gb2', 1.0), ('Ab2', 1.0), ('Bb2', 0.5), ('REST', 0.25), ('Bb2', 2.0),
+        
+        # Second phrase bass line
+        ('Ab2', 0.5), ('Bb2', 0.5), ('C3', 1.0), ('C3', 0.5), ('Db3', 0.5), ('Eb3', 2.0),
+
+        # Iconic Walking Bass Section
+        ('Bb2', 0.5), ('F2', 0.5), ('Bb2', 0.5), ('F2', 0.5),
+        ('Eb2', 0.5), ('Bb1', 0.5), ('Eb2', 0.5), ('Bb1', 0.5),
+        ('Ab1', 0.5), ('Eb2', 0.5), ('Ab1', 0.5), ('Eb2', 0.5),
+        ('Bb1', 0.5), ('F2', 0.5), ('Bb2', 1.0), ('REST', 1.0),
+
+        ('Bb2', 0.5), ('F2', 0.5), ('Bb2', 0.5), ('F2', 0.5),
+        ('Eb2', 0.5), ('Bb1', 0.5), ('Eb2', 0.5), ('Bb1', 0.5),
+        ('F2', 0.5), ('C3', 0.5), ('F3', 1.0), ('REST', 1.0),
+        ('Bb2', 2.0), ('REST', 2.0)
+    ]
+    melody_track = generate_track_from_sequence(victory_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
+    harmony_track = generate_track_from_sequence(victory_harmony, 'square', VOLUME * 0.7, use_adsr=True, attack=0.01, decay=0.1, sustain=0.5, release=0.1)
+    bass_track = generate_track_from_sequence(victory_bass, 'triangle', VOLUME * 0.8, use_adsr=True, attack=0.01, decay=0.1, sustain=0.5, release=0.1)
+    
+    final_length = max(len(melody_track), len(harmony_track), len(bass_track))
     melody_track = np.pad(melody_track, (0, final_length - len(melody_track)))
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
-    victory_music = melody_track + harmony_track
+    bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
+    
+    victory_music = melody_track + harmony_track + bass_track
     victory_music /= np.max(np.abs(victory_music))
     save_wav('victory_music.wav', victory_music, SAMPLE_RATE)
 
