@@ -253,7 +253,7 @@ def generate_music():
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
     
     field_music = melody_track + harmony_track
-    field_music = np.tile(field_music, 4)
+    field_music = np.tile(field_music, 8)
     if np.max(np.abs(field_music)) > 0:
         field_music /= np.max(np.abs(field_music))
     save_wav('bgm_field.wav', field_music, SAMPLE_RATE)
@@ -282,7 +282,7 @@ def generate_music():
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
     
     castle_music = melody_track + harmony_track
-    castle_music = np.tile(castle_music, 2)
+    castle_music = np.tile(castle_music, 8)
     if np.max(np.abs(castle_music)) > 0:
         castle_music /= np.max(np.abs(castle_music))
     save_wav('bgm_castle.wav', castle_music, SAMPLE_RATE)
@@ -308,7 +308,7 @@ def generate_music():
     bass_track = np.pad(bass_track, (0, final_length - len(bass_track)))
     
     cave_music = melody_track + bass_track
-    cave_music = np.tile(cave_music, 2)
+    cave_music = np.tile(cave_music, 8)
     if np.max(np.abs(cave_music)) > 0:
         cave_music /= np.max(np.abs(cave_music))
     save_wav('bgm_cave.wav', cave_music, SAMPLE_RATE)
@@ -337,7 +337,7 @@ def generate_music():
     harmony_track = np.pad(harmony_track, (0, final_length - len(harmony_track)))
     
     town_music = melody_track + harmony_track
-    town_music = np.tile(town_music, 2)
+    town_music = np.tile(town_music, 8)
     if np.max(np.abs(town_music)) > 0:
         town_music /= np.max(np.abs(town_music))
     save_wav('bgm_town.wav', town_music, SAMPLE_RATE)
@@ -368,24 +368,46 @@ def generate_music():
     percussion_track = np.pad(percussion_track, (0, final_length - len(percussion_track)))
     battle_music = melody_track + harmony_track + percussion_track
     battle_music = np.clip(battle_music, -1.0, 1.0)
-    battle_music = np.tile(battle_music, 2)
+    battle_music = np.tile(battle_music, 8)
     if np.max(np.abs(battle_music)) > 0:
         battle_music /= np.max(np.abs(battle_music))
     save_wav('bgm_battle.wav', battle_music, SAMPLE_RATE)
 
     # =========================================================================
-    # Victory Music (FF1 Fanfare)
+    # Victory Music (FF1 Fanfare - Full Theme)
     # =========================================================================
     TEMPO = 135
     BEAT_DURATION = 60 / TEMPO
-    victory_melody = [
+    
+    # Part 1: Initial Fanfare
+    fanfare_melody = [
         ('C5', 0.25), ('C5', 0.25), ('C5', 0.25), ('C5', 1.0),
         ('Ab4', 1.0), ('Bb4', 1.0), ('C5', 2.0),
     ]
-    melody_track = generate_track_from_sequence(victory_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
-    if np.max(np.abs(melody_track)) > 0:
-        melody_track /= np.max(np.abs(melody_track))
-    save_wav('victory_music.wav', melody_track, SAMPLE_RATE)
+    fanfare_track = generate_track_from_sequence(fanfare_melody, 'square', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
+    
+    # Part 2: Walking Bass Section (The "Waiting" music)
+    walking_bass_seq = [
+        ('C3', 0.5), ('E3', 0.5), ('G3', 0.5), ('A3', 0.5),
+        ('Bb3', 0.5), ('A3', 0.5), ('G3', 0.5), ('E3', 0.5),
+    ] * 4
+    loop_melody_seq = [
+        ('C5', 0.5), ('E5', 0.5), ('G5', 0.5), ('E5', 0.5),
+        ('F5', 0.5), ('A5', 0.5), ('C6', 0.5), ('A5', 0.5),
+    ] * 2
+    
+    bass_track = generate_track_from_sequence(walking_bass_seq, 'triangle', VOLUME * 0.6, use_adsr=True)
+    loop_melody_track = generate_track_from_sequence(loop_melody_seq, 'square', VOLUME * 0.5, use_adsr=True)
+    
+    # Pad loop melody to match bass
+    loop_melody_track = np.pad(loop_melody_track, (0, len(bass_track) - len(loop_melody_track)))
+    loop_section = bass_track + loop_melody_track
+    
+    # Combine fanfare and loop (tiled)
+    victory_full = np.concatenate((fanfare_track, np.tile(loop_section, 2)))
+    if np.max(np.abs(victory_full)) > 0:
+        victory_full /= np.max(np.abs(victory_full))
+    save_wav('victory_music.wav', victory_full, SAMPLE_RATE)
 
     # =========================================================================
     # Shop Music (FF1 Shop)
@@ -399,7 +421,7 @@ def generate_music():
         ('F4', 0.5), ('G4', 0.5), ('A4', 0.5), ('B4', 0.5),
     ]
     melody_track = generate_track_from_sequence(shop_melody, 'triangle', VOLUME, use_adsr=True)
-    shop_music = np.tile(melody_track, 4)
+    shop_music = np.tile(melody_track, 8) # Increased tiling
     if np.max(np.abs(shop_music)) > 0:
         shop_music /= np.max(np.abs(shop_music))
     save_wav('bgm_shop.wav', shop_music, SAMPLE_RATE)
@@ -425,7 +447,7 @@ def generate_music():
         ('G5', 0.5), ('A5', 0.5), ('B5', 0.5), ('C6', 0.5),
     ] * 4
     melody_track = generate_track_from_sequence(airship_melody, 'square', VOLUME, use_adsr=True)
-    airship_music = np.tile(melody_track, 2)
+    airship_music = np.tile(melody_track, 8) # Increased tiling
     if np.max(np.abs(airship_music)) > 0:
         airship_music /= np.max(np.abs(airship_music))
     save_wav('bgm_airship.wav', airship_music, SAMPLE_RATE)
@@ -440,7 +462,8 @@ def generate_music():
         ('F4', 0.25), ('C3', 0.25), ('Gb4', 0.25), ('C3', 0.25),
     ] * 8
     melody_track = generate_track_from_sequence(boss_melody, 'sawtooth', VOLUME, use_adsr=True)
-    save_wav('bgm_boss.wav', melody_track, SAMPLE_RATE)
+    boss_music = np.tile(melody_track, 4) # Increased tiling
+    save_wav('bgm_boss.wav', boss_music, SAMPLE_RATE)
 
     # =========================================================================
     # Final Boss Music (FF1 Final Battle)
@@ -451,7 +474,8 @@ def generate_music():
         ('C3', 0.125), ('C3', 0.125), ('C3', 0.25),
     ] * 32
     melody_track = generate_track_from_sequence(final_boss_melody, 'sawtooth', VOLUME, use_adsr=True)
-    save_wav('bgm_final_boss.wav', melody_track, SAMPLE_RATE)
+    final_boss_music = np.tile(melody_track, 4) # Increased tiling
+    save_wav('bgm_final_boss.wav', final_boss_music, SAMPLE_RATE)
 
     # =========================================================================
     # Game Over Music (FF1 Game Over)
@@ -473,7 +497,8 @@ def generate_music():
         ('C3', 0.5), ('Db3', 0.5), ('D3', 0.5), ('Eb3', 0.5),
     ] * 8
     melody_track = generate_track_from_sequence(suspense_melody, 'sine', VOLUME, use_adsr=True)
-    save_wav('bgm_suspense.wav', melody_track, SAMPLE_RATE)
+    suspense_music = np.tile(melody_track, 4) # Increased tiling
+    save_wav('bgm_suspense.wav', suspense_music, SAMPLE_RATE)
 
 if __name__ == "__main__":
     os.makedirs("src/main/resources/sounds", exist_ok=True)
