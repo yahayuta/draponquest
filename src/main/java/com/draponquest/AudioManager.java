@@ -223,12 +223,12 @@ public class AudioManager {
             loadBackgroundMusicTrack(MUSIC_BOSS, "/sounds/bgm_boss.wav");
             loadBackgroundMusicTrack(MUSIC_FINAL_BOSS, "/sounds/bgm_final_boss.wav");
             loadBackgroundMusicTrack(MUSIC_AIRSHIP, "/sounds/bgm_airship.wav");
-            loadBackgroundMusicTrack(MUSIC_LOVE, "/sounds/bgm_love.wav");
+            loadBackgroundMusicTrack(MUSIC_LOVE, "/sounds/bgm_town.wav"); // Map to Town for FF1
             loadBackgroundMusicTrack(MUSIC_SUSPENSE, "/sounds/bgm_suspense.wav");
             loadBackgroundMusicTrack(MUSIC_SHOP, "/sounds/bgm_shop.wav");
             loadBackgroundMusicTrack(MUSIC_INN, "/sounds/bgm_inn.wav");
-            loadBackgroundMusicTrack(MUSIC_TOWER, "/sounds/bgm_tower.wav");
-            loadBackgroundMusicTrack(MUSIC_PROLOGUE, "/sounds/bgm_prologue.wav");
+            loadBackgroundMusicTrack(MUSIC_TOWER, "/sounds/bgm_cave.wav"); // Map to Cave/Dungeon for FF1
+            loadBackgroundMusicTrack(MUSIC_PROLOGUE, "/sounds/title.wav"); // Map to Title for FF1
             loadBackgroundMusicTrack(MUSIC_GAME_OVER_MUSIC, "/sounds/bgm_game_over.wav");
 
             System.out.println("Background music loaded: " + backgroundMusic.size() + " tracks");
