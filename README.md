@@ -52,7 +52,7 @@ A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This proje
 - **High-Fidelity FF1 Music Remake**:
   - **100% Melodic Accuracy**: All music tracks have been remade with exact, researched note sequences from the original Final Fantasy 1 (NES) soundtrack.
   - **Complete Soundtrack**: Includes **Title (Prelude)**, **Main Theme**, **Town**, **Castle (Cornelia)**, **Dungeon**, **Battle**, **Victory Fanfare**, **Shop**, **Inn**, **Airship**, **Boss**, **Final Battle**, **Game Over**, and **Suspense**.
-  - **Authentic Synthesis**: Enhanced instrumentation with polyphonic harmony layers, custom ADSR envelopes, and SNES-style waveforms (Square, Saw, Triangle).
+  - **Authentic Synthesis**: Enhanced instrumentation with polyphonic harmony layers, custom ADSR envelopes, and true NES-style waveforms (Pulse 12.5%, Pulse 25%, Square 50%, Digital Triangle, Noise).
   - **Dynamic Triggers**: Music now changes contextually during story dialogue, location entry, and different battle tiers (Standard, Boss, Final Boss).
 - **Enemy Scaling**: Enemies now scale in difficulty as the player levels up, keeping combat challenging.
 
@@ -268,7 +268,7 @@ draponquest/
 - ✅ Complete audio system with authentic Final Fantasy-style sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
 - ✅ Real-time audio status display on main screen
-- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies (B4: 493.88 Hz, G4: 392.00 Hz, A4: 440.00 Hz, C5: 523.25 Hz, A#4: 466.16 Hz, D#5: 622.25 Hz, D5: 587.33 Hz, G#4: 415.30 Hz, F5: 698.46 Hz)
+- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies from `music_data.py`.
 - ✅ **Complete audio integration**: All generated sound files (`victory_music.wav`, `game_over.wav`, `title.wav`) are now properly loaded and played at the correct game events
 - ✅ **Minimap System**: Dynamic minimap, featuring global/local switching and automatic hiding in battles and caves.
 - ✅ **Stylish Title Screen**: The game title is now presented in a classic, NES-style bordered window for a more polished and retro look.
@@ -335,9 +335,9 @@ The game now features **17 high-fidelity music tracks** remade for 100% note acc
 | **Tower** | Dungeon (Secondary) | (Mapped to Cave) |
 
 ### Final Fantasy 1 (NES) Synthesis Characteristics
-- **100% Melodic Accuracy**: All melodies and basslines are researched from original NES music transcriptions.
+- **100% Melodic Accuracy**: All melodies and basslines are rigorously transcribed from the original NES music, including exact tempos (`TEMPO`), note frequencies (`NOTE_FREQS`), and durations.
 - **8-bit Aesthetic**: Features multiple layers (Melody, Harmony, Bass, Percussion) playing simultaneously with authentic NES waveforms.
-- **Square Wave Purity**: Uses precise square waves, triangle waves, and white noise for percussion to match the 1987 sound.
+- **True NES Waveforms**: Uses precise pulse wave duty cycles (`pulse_12_5`, `pulse_25`, `pulse_50`), digital triangle waves, and white noise for percussion to match the 1987 Famicom sound expansion.
 - **Dynamic Envelopes**: Custom ADSR envelopes designed to mimic the sharp attack and quick decay of early chiptunes.
 
 ### Audio Controls
