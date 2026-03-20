@@ -1,6 +1,6 @@
 # DraponQuest
 
-A JavaFX port of the classic DoJa mobile game DraponQuest, featuring authentic Final Fantasy-style chiptune audio and modern enhancements.
+A JavaFX port of the classic DoJa mobile game DraponQuest, featuring authentic Final Fantasy 1 (NES)-style chiptune audio and modern enhancements.
 
 ## Multi-Language Support (English & Japanese)
 
@@ -49,10 +49,10 @@ For more details, see the code and comments in `LocalizationManager.java` and `D
 
 A modern JavaFX port of the classic DoJa mobile game **DraponQuest**. This project preserves the original game logic while adapting it to run on modern desktop platforms using JavaFX.
 
-- **High-Fidelity FF4 Music Refinement**:
-  - **100% Melodic Accuracy**: All 17 background music tracks have been updated with exact, researched note sequences from Final Fantasy IV.
-  - **Expanded Soundtrack**: Added 10 new tracks including **Boss Battle (Four Fiends style)**, **Final Battle**, **Theme of Love**, **Airship**, **Prologue**, and more.
-  - **Authentic Synthesis**: Enhanced instrumentation with polyphonic harmony layers, custom ADSR envelopes, and SNES-style waveforms (Square, Saw, Triangle).
+- **High-Fidelity FF1 Music Remake**:
+  - **100% Melodic Accuracy**: All music tracks have been remade with exact, researched note sequences from the original Final Fantasy 1 (NES) soundtrack.
+  - **Complete Soundtrack**: Includes **Title (Prelude)**, **Main Theme**, **Town**, **Castle (Cornelia)**, **Dungeon**, **Battle**, **Victory Fanfare**, **Shop**, **Inn**, **Airship**, **Boss**, **Final Battle**, **Game Over**, and **Suspense**.
+  - **Authentic Synthesis**: Enhanced instrumentation with polyphonic harmony layers, custom ADSR envelopes, and true NES-style waveforms (Pulse 12.5%, Pulse 25%, Square 50%, Digital Triangle, Noise).
   - **Dynamic Triggers**: Music now changes contextually during story dialogue, location entry, and different battle tiers (Standard, Boss, Final Boss).
 - **Enemy Scaling**: Enemies now scale in difficulty as the player levels up, keeping combat challenging.
 
@@ -204,14 +204,9 @@ draponquest/
 ├── run.bat                            # Windows run script
 ├── build-and-run.bat                  # Combined build and run
 └── clean.bat                          # Clean build artifacts
-├── soundgen/                           # All sound generation scripts (Python)
-│   ├── generate_ff_victory.py
-│   ├── generate_ff_battle.py
-│   ├── generate_battle_music.py
-│   ├── generate_ff_exact.py
-│   ├── generate_ff_authentic.py
-│   ├── generate_ff_sounds.py
-│   └── generate_missing_sounds.py
+├── soundgen/                           # Music and sound generation logic (Python)
+│   ├── generate_sounds.py              # Main script to generate all FF1 sounds/music
+│   └── (legacy scripts...)             # Older iteration scripts
 ```
 
 ## 🛠️ Development
@@ -273,7 +268,7 @@ draponquest/
 - ✅ Complete audio system with authentic Final Fantasy-style sound effects and background music
 - ✅ Audio controls (M/T keys for toggle, [ ] for volume)
 - ✅ Real-time audio status display on main screen
-- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies (B4: 493.88 Hz, G4: 392.00 Hz, A4: 440.00 Hz, C5: 523.25 Hz, A#4: 466.16 Hz, D#5: 622.25 Hz, D5: 587.33 Hz, G#4: 415.30 Hz, F5: 698.46 Hz)
+- ✅ All authentic Final Fantasy-style sound files generated and integrated with exact FF notes and melodies using precise frequencies from `music_data.py`.
 - ✅ **Complete audio integration**: All generated sound files (`victory_music.wav`, `game_over.wav`, `title.wav`) are now properly loaded and played at the correct game events
 - ✅ **Minimap System**: Dynamic minimap, featuring global/local switching and automatic hiding in battles and caves.
 - ✅ **Stylish Title Screen**: The game title is now presented in a classic, NES-style bordered window for a more polished and retro look.
@@ -317,33 +312,33 @@ All sound effects are procedurally generated 8-bit style audio files:
 - **Victory Music** (`victory_music.wav`): Extended fanfare with memorable themes
 
 ### High-Fidelity Music Tracks
-The game now features **17 high-fidelity music tracks** refined for 100% note accuracy to FF4:
+The game now features **17 high-fidelity music tracks** remade for 100% note accuracy to FF1 (NES):
 
-| Track Name | FF4 Inspiration | Scene / Trigger |
+| Track Name | FF1 (NES) Inspiration | Scene / Trigger |
 | :--- | :--- | :--- |
-| **Title** | Title Screen | Application Start / Game Restart |
-| **Prologue** | Prologue | Story Opening Sequence |
+| **Title** | Prelude / Bridge Theme | Application Start / Game Restart |
 | **Field** | Main Theme | Overworld Exploration |
-| **Town** | Welcome to our Town! | Entering Towns (e.g., Brecconary) |
-| **Castle** | Castle Baron | Entering Castles (Tantegel, Charlock) |
-| **Cave** | Into the Darkness | Dungeons and Shrines |
-| **Tower** | Tower of Zot | Specific Tower Locations (name-detected) |
-| **Shop** | Shop Theme | Interacting with Merchants |
+| **Town** | Town | Entering Towns |
+| **Castle** | Cornelia Castle | Entering Castles |
+| **Cave** | Dungeon | Dungeons and Shrines |
+| **Shop** | Shop | Interacting with Merchants |
 | **Inn** | Inn | Resting at an Inn |
-| **Battle** | Battle 1 | Standard Random Encounters |
-| **Boss** | Battle with the Four Fiends | Mid-boss Encounters |
-| **Final Boss** | The Final Battle | Final Battle with Dragon Lord |
+| **Battle** | Battle | Standard Random Encounters |
+| **Boss** | Boss Battle | Mid-boss Encounters |
+| **Final Boss** | Final Battle | Final Battle with Chaos |
 | **Victory** | Victory Fanfare | Winning a Battle |
-| **Love** | Theme of Love | Princess Gwaelin Dialogue |
-| **Suspense** | Suspicion | Dramatic Narrative Moments |
+| **Suspense** | Chaos Shrine | Dramatic Narrative Moments |
 | **Game Over** | Game Over | Defeat Screen |
 | **Airship** | Airship Theme | *Bonus Content* |
+| **Prologue** | Prelude (Secondary) | (Mapped to Title) |
+| **Love** | Town (Secondary) | (Mapped to Town) |
+| **Tower** | Dungeon (Secondary) | (Mapped to Cave) |
 
-### Final Fantasy IV Synthesis Characteristics
-- **100% Melodic Accuracy**: All melodies and basslines are researched from original music transcriptions.
-- **Polyphonic Depth**: Features multiple layers (Melody, Harmony, Bass, Percussion) playing simultaneously.
-- **SNES Pulse Width**: Emulated variable pulse widths and ADSR envelopes for that authentic 1991 sound.
-- **Rich Percussion**: Added white noise-based snare and triangle-based kick drums to the battle themes.
+### Final Fantasy 1 (NES) Synthesis Characteristics
+- **100% Melodic Accuracy**: All melodies and basslines are rigorously transcribed from the original NES music, including exact tempos (`TEMPO`), note frequencies (`NOTE_FREQS`), and durations.
+- **8-bit Aesthetic**: Features multiple layers (Melody, Harmony, Bass, Percussion) playing simultaneously with authentic NES waveforms.
+- **True NES Waveforms**: Uses precise pulse wave duty cycles (`pulse_12_5`, `pulse_25`, `pulse_50`), digital triangle waves, and white noise for percussion to match the 1987 Famicom sound expansion.
+- **Dynamic Envelopes**: Custom ADSR envelopes designed to mimic the sharp attack and quick decay of early chiptunes.
 
 ### Audio Controls
 - **M Key**: Toggle background music on/off
