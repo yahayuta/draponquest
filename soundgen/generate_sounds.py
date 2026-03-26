@@ -163,10 +163,6 @@ def generate_sfx():
     game_over_sound = generate_track_from_sequence(game_over_notes, 'triangle', VOLUME, use_adsr=True)
     save_wav('game_over.wav', game_over_sound, SAMPLE_RATE)
 
-    # Defend
-    defend_sound = generate_wave(300, 0.1, 'triangle', use_adsr=True, attack=0.01, decay=0.05, sustain=0.5, release=0.05)
-    save_wav('defend.wav', defend_sound, SAMPLE_RATE)
-
     # Escape
     escape_sound = np.array([], dtype=np.float32)
     for f in [660, 880, 1100, 1320]:
@@ -221,9 +217,20 @@ def generate_music():
 
     # 3. Castle Music
     BEAT_DURATION = 60 / CASTLE_TEMPO
-    melody = generate_track_from_sequence(CASTLE_MELODY, 'pulse_25', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.4, release=0.2)
-    harmony = generate_track_from_sequence(CASTLE_HARMONY, 'pulse_12_5', VOLUME * 0.5, use_adsr=True, attack=0.05, decay=0.2, sustain=0.3, release=0.2)
-    wrap_and_save('bgm_castle.wav', sync_tracks([melody, harmony]), 4)
+    intro_mel = generate_track_from_sequence(CASTLE_INTRO_MELODY, 'pulse_50', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.4, release=0.2)
+    intro_har = generate_track_from_sequence(CASTLE_INTRO_HARMONY, 'pulse_25', VOLUME * 0.5, use_adsr=True, attack=0.05, decay=0.2, sustain=0.3, release=0.2)
+    intro_bas = generate_track_from_sequence(CASTLE_INTRO_BASS, 'triangle', VOLUME * 0.6, use_adsr=True)
+    intro_arp = generate_track_from_sequence(CASTLE_INTRO_ARP, 'pulse_12_5', VOLUME * 0.4, use_adsr=True)
+    intro_sec = sync_tracks([intro_mel, intro_har, intro_bas, intro_arp])
+
+    loop_mel = generate_track_from_sequence(CASTLE_LOOP_MELODY, 'pulse_50', VOLUME, use_adsr=True, attack=0.05, decay=0.2, sustain=0.4, release=0.2)
+    loop_har = generate_track_from_sequence(CASTLE_LOOP_HARMONY, 'pulse_25', VOLUME * 0.5, use_adsr=True, attack=0.05, decay=0.2, sustain=0.3, release=0.2)
+    loop_bas = generate_track_from_sequence(CASTLE_LOOP_BASS, 'triangle', VOLUME * 0.6, use_adsr=True)
+    loop_arp = generate_track_from_sequence(CASTLE_LOOP_ARP, 'pulse_12_5', VOLUME * 0.4, use_adsr=True)
+    loop_sec = sync_tracks([loop_mel, loop_har, loop_bas, loop_arp])
+
+    castle_full = np.concatenate((intro_sec, np.tile(loop_sec, 2)))
+    wrap_and_save('bgm_castle.wav', castle_full, 1)
 
     # 4. Cave (Dungeon)
     BEAT_DURATION = 60 / CAVE_TEMPO
@@ -282,11 +289,6 @@ def generate_music():
     BEAT_DURATION = 60 / INN_TEMPO
     melody = generate_track_from_sequence(INN_MELODY, 'pulse_50', VOLUME, use_adsr=True)
     wrap_and_save('bgm_inn.wav', melody, 1)
-
-    # 10. Airship
-    BEAT_DURATION = 60 / AIRSHIP_TEMPO
-    melody = generate_track_from_sequence(AIRSHIP_MELODY, 'pulse_25', VOLUME, use_adsr=True)
-    wrap_and_save('bgm_airship.wav', melody, 8)
 
     # 11. Boss
     BEAT_DURATION = 60 / BOSS_TEMPO
