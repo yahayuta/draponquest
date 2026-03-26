@@ -235,7 +235,9 @@ def generate_music():
     BEAT_DURATION = 60 / TOWN_TEMPO
     melody = generate_track_from_sequence(TOWN_MELODY, 'pulse_50', VOLUME, use_adsr=True, attack=0.01, decay=0.1, sustain=0.6, release=0.1)
     harmony = generate_track_from_sequence(TOWN_HARMONY, 'pulse_25', VOLUME * 0.4, use_adsr=True)
-    wrap_and_save('bgm_town.wav', sync_tracks([melody, harmony]), 4)
+    bass = generate_track_from_sequence(TOWN_BASS, 'triangle', VOLUME * 0.6, use_adsr=True)
+    arp = generate_track_from_sequence(TOWN_ARP, 'pulse_12_5', VOLUME * 0.4, use_adsr=True)
+    wrap_and_save('bgm_town.wav', sync_tracks([melody, harmony, bass, arp]), 4)
 
     # 6. Battle Music
     BEAT_DURATION = 60 / BATTLE_TEMPO
