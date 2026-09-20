@@ -272,8 +272,9 @@ def generate_music():
     fanfare = sync_tracks([fanfare_mel, fanfare_bas])
 
     loop_mel = generate_track_from_sequence(VICTORY_LOOP_MELODY, 'pulse_50', VOLUME, use_adsr=True)
+    loop_har = generate_track_from_sequence(VICTORY_LOOP_HARMONY, 'pulse_25', VOLUME * 0.5, use_adsr=True)
     loop_bas = generate_track_from_sequence(VICTORY_LOOP_BASS, 'triangle', VOLUME * 0.6, use_adsr=True)
-    loop_sec = sync_tracks([loop_mel, loop_bas])
+    loop_sec = sync_tracks([loop_mel, loop_har, loop_bas])
     
     victory_full = np.concatenate((fanfare, np.tile(loop_sec, 2)))
     wrap_and_save('victory_music.wav', victory_full, 1)
