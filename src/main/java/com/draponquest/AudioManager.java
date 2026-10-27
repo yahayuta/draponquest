@@ -22,8 +22,6 @@ public class AudioManager {
     public static final String SOUND_BATTLE_START = "battle_start";
     /** Sound effect for an attack. */
     public static final String SOUND_ATTACK = "attack";
-    /** Sound effect for defending. */
-    public static final String SOUND_DEFEND = "defend";
     /** Sound effect for escaping from battle. */
     public static final String SOUND_ESCAPE = "escape";
     /** Sound effect for winning a battle. */
@@ -62,8 +60,6 @@ public class AudioManager {
     public static final String MUSIC_BOSS = "boss";
     /** Background music for the final boss battle. */
     public static final String MUSIC_FINAL_BOSS = "final_boss";
-    /** Background music for airship travel. */
-    public static final String MUSIC_AIRSHIP = "airship";
     /** Background music for love/story themes. */
     public static final String MUSIC_LOVE = "love";
     /** Background music for suspense/tension scenes. */
@@ -169,7 +165,6 @@ public class AudioManager {
             loadSoundEffect(SOUND_MOVE, "/sounds/move.wav");
             loadSoundEffect(SOUND_BATTLE_START, "/sounds/battle_start.wav");
             loadSoundEffect(SOUND_ATTACK, "/sounds/attack.wav");
-            loadSoundEffect(SOUND_DEFEND, "/sounds/defend.wav");
             loadSoundEffect(SOUND_ESCAPE, "/sounds/escape.wav");
             loadSoundEffect(SOUND_VICTORY, "/sounds/victory.wav");
             loadSoundEffect(SOUND_DEFEAT, "/sounds/defeat.wav");
@@ -222,7 +217,6 @@ public class AudioManager {
             loadBackgroundMusicTrack(MUSIC_CAVE, "/sounds/bgm_cave.wav");
             loadBackgroundMusicTrack(MUSIC_BOSS, "/sounds/bgm_boss.wav");
             loadBackgroundMusicTrack(MUSIC_FINAL_BOSS, "/sounds/bgm_final_boss.wav");
-            loadBackgroundMusicTrack(MUSIC_AIRSHIP, "/sounds/bgm_airship.wav");
             loadBackgroundMusicTrack(MUSIC_LOVE, "/sounds/bgm_town.wav"); // Map to Town for FF1
             loadBackgroundMusicTrack(MUSIC_SUSPENSE, "/sounds/bgm_suspense.wav");
             loadBackgroundMusicTrack(MUSIC_SHOP, "/sounds/bgm_shop.wav");
